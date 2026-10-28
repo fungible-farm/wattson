@@ -1,0 +1,1 @@
+Using the power flow solver, find the scale factor s in [0.9, 1.1] applied to every load's active and reactive demand on case 'snem-sa-2000' such that the voltage at bus 1775 equals 1.029394 pu (within 0.00012539460485665453 pu). Return only the scale factor.

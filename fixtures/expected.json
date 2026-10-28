@@ -1,0 +1,91 @@
+{
+  "n_pass": 20,
+  "n_pass_norm": 20,
+  "n_tasks": 20,
+  "scorers": {
+    "pass": "solver-verified-traced-v2",
+    "pass_norm": "solver-verified-normalised-v4"
+  },
+  "tasks": {
+    "ex_0e361a03797547be": {
+      "pass": true,
+      "pass_norm": true
+    },
+    "ex_17d2c33be1144cf1": {
+      "pass": true,
+      "pass_norm": true
+    },
+    "ex_2431b936977832e1": {
+      "pass": true,
+      "pass_norm": true
+    },
+    "ex_2633cc85c2550527": {
+      "pass": true,
+      "pass_norm": true
+    },
+    "ex_300fcfc0c7794f24": {
+      "pass": true,
+      "pass_norm": true
+    },
+    "ex_3e9d03097badeec5": {
+      "pass": true,
+      "pass_norm": true
+    },
+    "ex_4d1468f5465147d7": {
+      "pass": true,
+      "pass_norm": true
+    },
+    "ex_59c8cb9561a97624": {
+      "pass": true,
+      "pass_norm": true
+    },
+    "ex_5d1a4cd311d959c2": {
+      "pass": true,
+      "pass_norm": true
+    },
+    "ex_73af8d592b5a04b4": {
+      "pass": true,
+      "pass_norm": true
+    },
+    "ex_7461d26386bfd085": {
+      "pass": true,
+      "pass_norm": true
+    },
+    "ex_80925c940e97694d": {
+      "pass": true,
+      "pass_norm": true
+    },
+    "ex_845ce27dcf852a78": {
+      "pass": true,
+      "pass_norm": true
+    },
+    "ex_b91e2020c38494c1": {
+      "pass": true,
+      "pass_norm": true
+    },
+    "ex_bfa8b3e3c5e8049d": {
+      "pass": true,
+      "pass_norm": true
+    },
+    "ex_d12fc716589e7f87": {
+      "pass": true,
+      "pass_norm": true
+    },
+    "ex_d1b0f724f39a446a": {
+      "pass": true,
+      "pass_norm": true
+    },
+    "ex_d92e03950c02a97a": {
+      "pass": true,
+      "pass_norm": true
+    },
+    "ex_de33c72bf3eca1df": {
+      "pass": true,
+      "pass_norm": true
+    },
+    "ex_f3b14a3e249e1193": {
+      "pass": true,
+      "pass_norm": true
+    }
+  }
+}

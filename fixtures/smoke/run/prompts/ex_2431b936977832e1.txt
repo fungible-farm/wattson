@@ -1,0 +1,1 @@
+Using the power flow solver, find the scale factor s in [0.9, 1.1] applied to the thermal rating of line 0 on case 'snem-sa-2000' such that the loading of line 0 equals 0.903292 percent (within 0.003398894806363897 percent). Return only the scale factor.

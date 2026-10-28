@@ -1,0 +1,1 @@
+Using the power flow solver, find the scale factor s in [0.9, 1.1] applied to the active-power dispatch of generator 0 on case 'snem-sa-2000' such that the loading of transformer 1 equals 0.300799 percent (within 0.0011068557719491367 percent). Return only the scale factor.

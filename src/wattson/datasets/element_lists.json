@@ -1,0 +1,602 @@
+{
+  "case": "snem-sa-2000",
+  "scale": [
+    0.9,
+    1.1
+  ],
+  "load_scale_buses": [
+    {
+      "bus": 1663,
+      "vm_lo": 0.987597,
+      "vm_hi": 0.97868
+    },
+    {
+      "bus": 1671,
+      "vm_lo": 0.984642,
+      "vm_hi": 0.990979
+    },
+    {
+      "bus": 1687,
+      "vm_lo": 0.989786,
+      "vm_hi": 0.9818
+    },
+    {
+      "bus": 1727,
+      "vm_lo": 1.024471,
+      "vm_hi": 1.016549
+    },
+    {
+      "bus": 1751,
+      "vm_lo": 1.046186,
+      "vm_hi": 1.040425
+    },
+    {
+      "bus": 1759,
+      "vm_lo": 1.043664,
+      "vm_hi": 1.050684
+    },
+    {
+      "bus": 1775,
+      "vm_lo": 1.029453,
+      "vm_hi": 1.023183
+    },
+    {
+      "bus": 1783,
+      "vm_lo": 1.006997,
+      "vm_hi": 0.979799
+    },
+    {
+      "bus": 1791,
+      "vm_lo": 0.972384,
+      "vm_hi": 1.030361
+    },
+    {
+      "bus": 1799,
+      "vm_lo": 0.953647,
+      "vm_hi": 1.042274
+    },
+    {
+      "bus": 1815,
+      "vm_lo": 1.025027,
+      "vm_hi": 1.019069
+    },
+    {
+      "bus": 1823,
+      "vm_lo": 1.018705,
+      "vm_hi": 1.008535
+    },
+    {
+      "bus": 1831,
+      "vm_lo": 1.059545,
+      "vm_hi": 1.051654
+    },
+    {
+      "bus": 1839,
+      "vm_lo": 1.018142,
+      "vm_hi": 1.005838
+    },
+    {
+      "bus": 1847,
+      "vm_lo": 1.022906,
+      "vm_hi": 1.017876
+    },
+    {
+      "bus": 1855,
+      "vm_lo": 1.021767,
+      "vm_hi": 1.015227
+    },
+    {
+      "bus": 1863,
+      "vm_lo": 1.021642,
+      "vm_hi": 1.011787
+    },
+    {
+      "bus": 1871,
+      "vm_lo": 1.018374,
+      "vm_hi": 1.006339
+    },
+    {
+      "bus": 1879,
+      "vm_lo": 1.019226,
+      "vm_hi": 1.006494
+    },
+    {
+      "bus": 1887,
+      "vm_lo": 1.017405,
+      "vm_hi": 1.007734
+    },
+    {
+      "bus": 1895,
+      "vm_lo": 1.020528,
+      "vm_hi": 1.007848
+    },
+    {
+      "bus": 1903,
+      "vm_lo": 1.016687,
+      "vm_hi": 1.006047
+    },
+    {
+      "bus": 1911,
+      "vm_lo": 1.019553,
+      "vm_hi": 1.013646
+    },
+    {
+      "bus": 1919,
+      "vm_lo": 1.01937,
+      "vm_hi": 1.013677
+    },
+    {
+      "bus": 1927,
+      "vm_lo": 1.023846,
+      "vm_hi": 1.015717
+    },
+    {
+      "bus": 1943,
+      "vm_lo": 1.024488,
+      "vm_hi": 1.016424
+    },
+    {
+      "bus": 1951,
+      "vm_lo": 1.018557,
+      "vm_hi": 1.006069
+    },
+    {
+      "bus": 1959,
+      "vm_lo": 1.010425,
+      "vm_hi": 1.004905
+    },
+    {
+      "bus": 1975,
+      "vm_lo": 1.013547,
+      "vm_hi": 1.001245
+    },
+    {
+      "bus": 1991,
+      "vm_lo": 1.005458,
+      "vm_hi": 0.991729
+    },
+    {
+      "bus": 1999,
+      "vm_lo": 0.999393,
+      "vm_hi": 0.986861
+    },
+    {
+      "bus": 2015,
+      "vm_lo": 1.026503,
+      "vm_hi": 0.996486
+    },
+    {
+      "bus": 2031,
+      "vm_lo": 1.094957,
+      "vm_hi": 1.088676
+    },
+    {
+      "bus": 2039,
+      "vm_lo": 1.006895,
+      "vm_hi": 0.990023
+    },
+    {
+      "bus": 2047,
+      "vm_lo": 1.011709,
+      "vm_hi": 0.98873
+    },
+    {
+      "bus": 2055,
+      "vm_lo": 0.994832,
+      "vm_hi": 0.98289
+    },
+    {
+      "bus": 2063,
+      "vm_lo": 1.025707,
+      "vm_hi": 1.013467
+    },
+    {
+      "bus": 2071,
+      "vm_lo": 0.981659,
+      "vm_hi": 0.959538
+    },
+    {
+      "bus": 2079,
+      "vm_lo": 1.000776,
+      "vm_hi": 0.989587
+    },
+    {
+      "bus": 2087,
+      "vm_lo": 0.995467,
+      "vm_hi": 0.987087
+    },
+    {
+      "bus": 2095,
+      "vm_lo": 1.019918,
+      "vm_hi": 1.006925
+    },
+    {
+      "bus": 2103,
+      "vm_lo": 1.095849,
+      "vm_hi": 1.066971
+    }
+  ],
+  "line_rating_lines": [
+    {
+      "line": 0,
+      "load_lo": 0.9347,
+      "load_hi": 0.7648
+    },
+    {
+      "line": 4,
+      "load_lo": 0.0454,
+      "load_hi": 0.0372
+    },
+    {
+      "line": 8,
+      "load_lo": 0.1234,
+      "load_hi": 0.1009
+    },
+    {
+      "line": 16,
+      "load_lo": 1.5692,
+      "load_hi": 1.2839
+    },
+    {
+      "line": 20,
+      "load_lo": 1.6458,
+      "load_hi": 1.3466
+    },
+    {
+      "line": 24,
+      "load_lo": 0.3165,
+      "load_hi": 0.259
+    },
+    {
+      "line": 28,
+      "load_lo": 1.2044,
+      "load_hi": 0.9854
+    },
+    {
+      "line": 32,
+      "load_lo": 0.4426,
+      "load_hi": 0.3621
+    },
+    {
+      "line": 36,
+      "load_lo": 0.0578,
+      "load_hi": 0.0473
+    },
+    {
+      "line": 40,
+      "load_lo": 0.36,
+      "load_hi": 0.2946
+    },
+    {
+      "line": 44,
+      "load_lo": 1.2736,
+      "load_hi": 1.0421
+    },
+    {
+      "line": 48,
+      "load_lo": 0.0675,
+      "load_hi": 0.0552
+    },
+    {
+      "line": 52,
+      "load_lo": 0.3953,
+      "load_hi": 0.3234
+    },
+    {
+      "line": 56,
+      "load_lo": 0.1311,
+      "load_hi": 0.1073
+    },
+    {
+      "line": 64,
+      "load_lo": 0.3727,
+      "load_hi": 0.3049
+    },
+    {
+      "line": 68,
+      "load_lo": 0.6869,
+      "load_hi": 0.562
+    },
+    {
+      "line": 72,
+      "load_lo": 0.0528,
+      "load_hi": 0.0432
+    },
+    {
+      "line": 76,
+      "load_lo": 1.3602,
+      "load_hi": 1.1129
+    },
+    {
+      "line": 80,
+      "load_lo": 1.2812,
+      "load_hi": 1.0482
+    },
+    {
+      "line": 84,
+      "load_lo": 0.2157,
+      "load_hi": 0.1765
+    },
+    {
+      "line": 88,
+      "load_lo": 0.4683,
+      "load_hi": 0.3831
+    },
+    {
+      "line": 92,
+      "load_lo": 0.363,
+      "load_hi": 0.297
+    },
+    {
+      "line": 96,
+      "load_lo": 0.8897,
+      "load_hi": 0.7279
+    },
+    {
+      "line": 100,
+      "load_lo": 0.3384,
+      "load_hi": 0.2769
+    },
+    {
+      "line": 104,
+      "load_lo": 0.1812,
+      "load_hi": 0.1482
+    },
+    {
+      "line": 108,
+      "load_lo": 0.092,
+      "load_hi": 0.0753
+    },
+    {
+      "line": 112,
+      "load_lo": 0.2183,
+      "load_hi": 0.1786
+    },
+    {
+      "line": 116,
+      "load_lo": 2.9571,
+      "load_hi": 2.4194
+    },
+    {
+      "line": 124,
+      "load_lo": 0.0445,
+      "load_hi": 0.0364
+    },
+    {
+      "line": 128,
+      "load_lo": 0.1442,
+      "load_hi": 0.118
+    },
+    {
+      "line": 132,
+      "load_lo": 0.2637,
+      "load_hi": 0.2158
+    },
+    {
+      "line": 136,
+      "load_lo": 0.2346,
+      "load_hi": 0.192
+    },
+    {
+      "line": 140,
+      "load_lo": 0.1108,
+      "load_hi": 0.0907
+    },
+    {
+      "line": 144,
+      "load_lo": 0.4349,
+      "load_hi": 0.3558
+    },
+    {
+      "line": 148,
+      "load_lo": 0.323,
+      "load_hi": 0.2643
+    },
+    {
+      "line": 152,
+      "load_lo": 0.2184,
+      "load_hi": 0.1787
+    },
+    {
+      "line": 156,
+      "load_lo": 0.0607,
+      "load_hi": 0.0497
+    },
+    {
+      "line": 160,
+      "load_lo": 0.1579,
+      "load_hi": 0.1292
+    },
+    {
+      "line": 164,
+      "load_lo": 0.2125,
+      "load_hi": 0.1738
+    },
+    {
+      "line": 168,
+      "load_lo": 0.2229,
+      "load_hi": 0.1824
+    },
+    {
+      "line": 172,
+      "load_lo": 0.1013,
+      "load_hi": 0.0829
+    },
+    {
+      "line": 176,
+      "load_lo": 0.1194,
+      "load_hi": 0.0977
+    },
+    {
+      "line": 180,
+      "load_lo": 0.0437,
+      "load_hi": 0.0357
+    },
+    {
+      "line": 184,
+      "load_lo": 0.0408,
+      "load_hi": 0.0334
+    },
+    {
+      "line": 188,
+      "load_lo": 0.1576,
+      "load_hi": 0.1289
+    },
+    {
+      "line": 192,
+      "load_lo": 0.1628,
+      "load_hi": 0.1332
+    },
+    {
+      "line": 196,
+      "load_lo": 0.0414,
+      "load_hi": 0.0339
+    },
+    {
+      "line": 200,
+      "load_lo": 0.1411,
+      "load_hi": 0.1155
+    },
+    {
+      "line": 204,
+      "load_lo": 0.032,
+      "load_hi": 0.0261
+    },
+    {
+      "line": 208,
+      "load_lo": 0.2919,
+      "load_hi": 0.2388
+    },
+    {
+      "line": 212,
+      "load_lo": 0.0572,
+      "load_hi": 0.0468
+    },
+    {
+      "line": 216,
+      "load_lo": 0.0608,
+      "load_hi": 0.0497
+    },
+    {
+      "line": 220,
+      "load_lo": 0.2059,
+      "load_hi": 0.1685
+    },
+    {
+      "line": 224,
+      "load_lo": 0.1642,
+      "load_hi": 0.1344
+    },
+    {
+      "line": 228,
+      "load_lo": 0.092,
+      "load_hi": 0.0753
+    },
+    {
+      "line": 232,
+      "load_lo": 0.0506,
+      "load_hi": 0.0414
+    },
+    {
+      "line": 240,
+      "load_lo": 0.1449,
+      "load_hi": 0.1185
+    },
+    {
+      "line": 244,
+      "load_lo": 0.1432,
+      "load_hi": 0.1172
+    },
+    {
+      "line": 248,
+      "load_lo": 0.9187,
+      "load_hi": 0.7517
+    },
+    {
+      "line": 252,
+      "load_lo": 0.1594,
+      "load_hi": 0.1305
+    },
+    {
+      "line": 264,
+      "load_lo": 0.4387,
+      "load_hi": 0.3589
+    },
+    {
+      "line": 268,
+      "load_lo": 0.4862,
+      "load_hi": 0.3978
+    },
+    {
+      "line": 272,
+      "load_lo": 0.0679,
+      "load_hi": 0.0556
+    },
+    {
+      "line": 276,
+      "load_lo": 0.3673,
+      "load_hi": 0.3005
+    },
+    {
+      "line": 280,
+      "load_lo": 0.3583,
+      "load_hi": 0.2931
+    },
+    {
+      "line": 284,
+      "load_lo": 0.959,
+      "load_hi": 0.7847
+    },
+    {
+      "line": 288,
+      "load_lo": 0.611,
+      "load_hi": 0.4999
+    },
+    {
+      "line": 292,
+      "load_lo": 1.115,
+      "load_hi": 0.9123
+    }
+  ],
+  "gen_dispatch_pairs": [
+    {
+      "gen": 0,
+      "gen_bus": 1635,
+      "trafo": 1,
+      "load_lo": 0.2491,
+      "load_hi": 0.3045
+    },
+    {
+      "gen": 1,
+      "gen_bus": 1639,
+      "trafo": 3,
+      "load_lo": 0.7305,
+      "load_hi": 0.8926
+    },
+    {
+      "gen": 2,
+      "gen_bus": 1640,
+      "trafo": 4,
+      "load_lo": 0.1564,
+      "load_hi": 0.1911
+    },
+    {
+      "gen": 11,
+      "gen_bus": 1682,
+      "trafo": 13,
+      "load_lo": 0.6998,
+      "load_hi": 0.831
+    }
+  ],
+  "_provenance": {
+    "generated_by": "scripts/powercoder-discover-elements.py",
+    "case": "snem-sa-2000 (data/snemSA.m, CSIRO Synthetic-NEM-2000-Bus)",
+    "solver": "pandapower 3.5.4 Newton-Raphson (numba=True)",
+    "scale_range": [
+      0.9,
+      1.1
+    ],
+    "min_endpoint_spread": 0.005,
+    "note": "Curated (case,element) lists of monotonic, bracketed fit targets. Re-derive with: uv run python scripts/powercoder-discover-elements.py. Values are real solver measurements at scale 0.9 and 1.1."
+  }
+}

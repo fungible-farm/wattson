@@ -1,0 +1,28 @@
+{
+  "model": "powercoder-qwen-v9py",
+  "base_url": "http://127.0.0.1:8101",
+  "independence_audit": {
+    "rows": 20,
+    "unique_prompts": 20,
+    "unique_tasks": 20,
+    "duplicate_ids": 0,
+    "duplicate_prompts": 0,
+    "duplicate_tasks": 0,
+    "overlap_ids": [],
+    "clean": true
+  },
+  "inputs": {
+    "training/unsloth/out/smoke-validation-20-20261024-v2/examples.jsonl": "2e6119c55ec4f78b7eb8daef5afa1cf2972d5c53c8055f4f126f584afc289bf3",
+    "training/unsloth/out/train-split-20261024-v2/examples.jsonl": "6636232ca0328051c3a7a525f59861ae709399d72c518484c38f061f47cdeece"
+  },
+  "max_turns": 12,
+  "max_tool_calls": 24,
+  "max_tokens": 8192,
+  "inference_timeout_s": 1800.0,
+  "temperature": 0.0,
+  "attempts_per_task": 1,
+  "concurrency": 8,
+  "first_turn_tool_choice": "auto",
+  "server_tool_strict_level": "auto",
+  "tool_set": "study+python"
+}

@@ -1,0 +1,44 @@
+[project]
+name = "wattson"
+version = "0.1.0"
+description = "WattsOn: small language models that plan and run verified power-system studies, with a Python shell in place of model arithmetic."
+readme = "README.md"
+# 3.14 or newer (the user's requirement). The lab's evidence was produced on 3.12.3, where the interpreter changed solver floats in the last digits (FM-27), so the smoke check re-scores shipped journals and requires the counts to match across interpreters.
+requires-python = ">=3.14"
+# Runtime for the CPU smoke check: the solver, the tool server, the harness, the scorers.
+dependencies = [
+    # Pinned to exactly the versions that produced the lab's evidence (read from its working environment, 2026-10-30), so a
+    # reproduction compares like with like. The first fresh resolve broke twice: powerio 0.11 dropped parse_file, and
+    # pydantic 2.14 removed an internal that mcp 1.12.2 imports.
+    "pandapower==3.5.4",
+    "powerio==0.7.2",
+    "numpy==2.4.6",
+    "scipy==1.18.0",
+    "pandas==2.3.3",
+    "numba==0.66.0",
+    "llvmlite==0.48.0",
+    "networkx==3.6.1",
+    "mcp==1.12.2",
+    "pydantic==2.13.4",
+    "httpx==0.28.1",
+    "jsonschema==4.26.0",
+    "pyyaml==6.0.3",
+]
+
+[project.optional-dependencies]
+# Training and the train/serve parity check (GPU stages; not part of the CPU smoke check).
+train = ["torch", "transformers", "peft", "datasets"]
+
+[dependency-groups]
+dev = ["pytest>=8.0"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/wattson"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]
