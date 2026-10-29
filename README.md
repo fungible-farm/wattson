@@ -36,7 +36,7 @@ output, as an issue: that is exactly what this release is for.
 ## What is and is not here
 
 - **Base model for the first release:** IBM Granite 4.2 8B (`ibm-granite/granite-4.2-8b`, Apache-2.0 per IBM's model card). The
-  lab's earlier work used Qwen3.5-4B; it is not used here because its provenance is not established to our satisfaction.
+  lab's earlier work used a Qwen3.5-4B copy whose provenance we have not established, so it is not used here.
 - **No weights, no training data dumps.** Training and evaluation of the students (GPU) live in the lab repository for now.
 - **Scope:** AC power flow on a handful of networks (the CSIRO synthetic NEM cases, IEEE 39, others from pandapower). One tool
   protocol. Not a general agent.
@@ -52,7 +52,8 @@ must also trace to the prompt, the tool schema, a tool reply or a printed result
 
 ## Licence and data
 
-MIT (see `LICENSE`). The CSIRO Synthetic-NEM-2000bus case files are fetched, not redistributed (CC BY 4.0, CSIRO). pandapower is
+Licensed under either of MIT (`LICENSE-MIT`) or Apache-2.0 (`LICENSE-APACHE`), at your option. Unless you state otherwise, any
+contribution you submit for inclusion is dual licensed as above, without additional terms or conditions. The CSIRO Synthetic-NEM-2000bus case files are fetched, not redistributed (CC BY 4.0, CSIRO). pandapower is
 BSD-3-Clause. The shipped `fixtures/` are model outputs and generated synthetic tasks.
 
 ## Lineage

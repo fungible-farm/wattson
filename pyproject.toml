@@ -3,6 +3,8 @@ name = "wattson"
 version = "0.1.0"
 description = "WattsOn: small language models that plan and run verified power-system studies, with a Python shell in place of model arithmetic."
 readme = "README.md"
+license = "MIT OR Apache-2.0"
+license-files = ["LICENSE-MIT", "LICENSE-APACHE"]
 # 3.14 or newer (the user's requirement). The lab's evidence was produced on 3.12.3, where the interpreter changed solver floats in the last digits (FM-27), so the smoke check re-scores shipped journals and requires the counts to match across interpreters.
 requires-python = ">=3.14"
 # Runtime for the CPU smoke check: the solver, the tool server, the harness, the scorers.

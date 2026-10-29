@@ -1,6 +1,6 @@
 {
   "suite": "smoke-validation-20-20261022-reworded-v2",
-  "source": "/home/brianh/promptexecution/fungible/nem-poweragent-lab/training/unsloth/out/smoke-validation-20-20261022/examples.jsonl",
+  "source": "smoke-validation-20-20261024-v2 (frozen suite from the PowerCoder lab)",
   "source_sha256": "566885d902d4769cb7ceb6610e602bedaba6201bfdb7ea5ad52699d48e0dd206",
   "source_manifest": {
     "allocation": "equal per subfamily where availability allows; pass rates weight subfamilies by this allocation, not by the source's composition",

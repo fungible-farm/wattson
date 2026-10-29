@@ -1,5 +1,5 @@
 name: smoke
-# The v0.1.0 smoke check on a machine that is neither the author's DGX nor the 3090 host: GitHub's x86_64 runner.
+# The v0.1.0 smoke check on a machine that is none of the authors': GitHub's x86_64 runner.
 on:
   push:
   pull_request:
