@@ -4,10 +4,11 @@ Small language models that plan and run verified power-system studies, and never
 Python program the model writes and a restricted shell runs against a real solver (pandapower). Every answer is graded by
 re-solving the network, not by matching text.
 
-**Status: v0.1.0, a smoke check.** This release exists to answer one question: *does this toolchain reproduce on a machine
-that is not the author's?* It ships the tool server, the Python shell, the harness, the scorers and the oracle trajectory
-builder, plus a CPU-only `scripts/smoke.sh` that exercises all of them. It does **not** ship model weights; there is no
-released model yet.
+**Status: v0.1.0 smoke check, with two released models.** The toolchain here reproduces on machines other than the author's
+(`scripts/smoke.sh`, CPU only), and two trained students are published on Hugging Face under Apache-2.0:
+[`PromptExecutionAU/wattson-granite-4.2-8b-py`](https://huggingface.co/PromptExecutionAU/wattson-granite-4.2-8b-py) and
+[`PromptExecutionAU/wattson-qwen3.5-4b-pyt`](https://huggingface.co/PromptExecutionAU/wattson-qwen3.5-4b-pyt). Measured results,
+with seeds and limits, are in [`docs/results.md`](docs/results.md). The repository is not yet tagged.
 
 ## Run the smoke check
 
