@@ -86,7 +86,7 @@ def relevant_evidence(task: dict[str, Any], answer: str, events: list[dict[str, 
     from wattson.distillation.filter import _parse_element
 
     inputs = task["task"]["inputs"]
-    if task["subfamily"] == "pf-worst-contingency":
+    if task["subfamily"] in {"pf-worst-contingency", "pf-derived"}:
         from wattson.datasets.judgement import studied_every_candidate
 
         return studied_every_candidate(task, events)
@@ -142,6 +142,9 @@ def grade(task: dict[str, Any], journal: Path) -> TaskResult:
         correct, verification, diagnostics = score_answer(task, answer)
     evidence = relevant_evidence(task, answer, events)
     provenance = provenance_check(answer, events, task["task"].get("prompt", ""))
+    if task["subfamily"] == "pf-derived":
+        # A sum, difference or mean is in no tool reply by construction; its arithmetic is measured separately.
+        provenance = {**provenance, "traced": True, "untraced": []}
     return {
         "example_id": task["example_id"], "subfamily": task["subfamily"],
         "answer": answer, "numerical_pass": correct, "tool_evidence_pass": evidence,

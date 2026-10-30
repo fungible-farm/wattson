@@ -230,6 +230,10 @@ def score_numerical(task: dict[str, Any], answer: str) -> tuple[bool, dict[str, 
     """Check fits at the final candidate and reports against a fresh AC solve."""
     if task["subfamily"] in FIT_SUBFAMILIES:
         return score_answer(task, answer)
+    if task["subfamily"] == "pf-derived":
+        from wattson.datasets.derived import grade as grade_derived
+
+        return grade_derived(task, answer)
     if task["subfamily"] == "pf-worst-contingency":
         from wattson.datasets.judgement import grade_worst_contingency
 
@@ -267,6 +271,9 @@ def rescore_run(directory: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
             normalised = report_matches_normalised(answer, expected, task["task"]["inputs"].get("case", ""))
         provenance = provenance_check(answer, events, task["task"].get("prompt", ""))
         fields = check_fields(task, answer, events)
+        if task["subfamily"] == "pf-derived":  # a derived number is in no tool reply; arithmetic_exposure measures it instead
+            provenance = {**provenance, "traced": True, "untraced": []}
+            fields = {**fields, "traced": True, "reasons": []}
         results.append({"example_id": row["example_id"], "subfamily": task["subfamily"],
             "pass": completed and correct and provenance["traced"], "completed_attempt": completed,
             "pass_norm": completed and normalised and provenance["traced"],

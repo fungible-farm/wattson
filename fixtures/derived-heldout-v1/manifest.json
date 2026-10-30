@@ -1,0 +1,16 @@
+{
+  "suite": "derived-v1",
+  "seed": 20261030,
+  "n_tasks": 40,
+  "by_case_and_kind": {
+    "snem-1803:sum_violations": 5,
+    "snem-1803:loading_difference": 5,
+    "snem-1803:mean_loading": 5,
+    "snem-1803:min_voltage_outage": 5,
+    "ieee39:sum_violations": 5,
+    "ieee39:loading_difference": 5,
+    "ieee39:mean_loading": 5,
+    "ieee39:min_voltage_outage": 5
+  },
+  "examples_sha256": "4ea09a9c3029e56f8159ea47e6c718c9cbc1368708c883205c5186ae56daa4b6"
+}
