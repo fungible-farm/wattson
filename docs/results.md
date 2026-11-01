@@ -14,7 +14,7 @@ of the same recipe on the same data; with 3 seeds or fewer, differences smaller 
 | Untrained Qwen3.5-4B + shell (1 run) | not run | 21 |
 | Python shell, non-thinking (Qwen3.5-4B, 3 seeds) | 0, 0, 0 | 0, 0, 0 |
 | Python shell, thinking (Qwen3.5-4B, 3 seeds) | 0, 0, 0 | 1, 3, 1 |
-| Python shell (Granite 4.2 8B, 1 seed) | 0 | 1 |
+| Python shell (Granite 4.2 8B, 1 seed) | 0 | 0 (1 flagged, a false positive: see below) |
 
 ## Accuracy (passes per suite, per seed)
 
@@ -42,18 +42,28 @@ Smoke (20 tasks) is at ceiling for every Python arm (20 of 20) and 19 for plain 
 - The untrained model with the shell scores 35 on the derived suite, equal to the thinking mean: on that suite the non-thinking
   fine-tune costs accuracy, and thinking recovers it. One untrained run has no variance estimate.
 
-- Granite 4.2 8B with the shell has the best derived score measured (37 of 40, one untraced-number attempt in 40), ahead of
+- Granite 4.2 8B with the shell has the best derived score measured (37 of 40, no untraced number: the one attempt the exposure measure flagged computed a mean in Python and printed `mean88.69`, which the measure's tokeniser does not read), ahead of
   Qwen thinking (mean 35.3). One seed, so no variance estimate. The three plain-tool controls trained on older data (23, 20, 23)
   score below every Python-shell run; the plain control on the final data (31) sits inside the non-thinking Python range (27-31), so
   the shell's advantage over plain on derived accuracy is not established, while its advantage in untraced numbers
   (0 against 5-18 of 40) and on the held-out suite (88-90 against 69-76) is.
 
+## Reading the exposure counts
+
+`arithmetic_exposure` is a heuristic and can over-count: a program that prints a number glued to a word (`mean88.69`) makes the measure
+report the copied number as untraced. One Granite attempt was checked by hand and is exactly this. The counts for the other arms were not
+all audited, so treat them as upper bounds. For emitted answers the enforcement rule (`provenance.check`, the scorer's rule) is the one that
+decides, and on it: non-thinking shell students 0, 0, 0 of 120 answers; Granite 0 of 40; thinking students 1, 1, 2; the untrained model 13
+of 39; plain-tool students 23 of 37 and 9 of 29.
+
 ## Runtime guard
 
-With `--enforce` the harness refuses a final answer containing a number no tool produced (see [evaluation](evaluation.md)). One greedy run
-each of the untrained Qwen3.5-4B with the shell on the derived suite: 32 of 40 unguarded and 33 of 40 guarded; answers with an untraced number
-13 of 37 unguarded and 0 of 38 guarded; 12 attempts sent back, none refused. The guard polices emitted answers only: numbers written anywhere,
-reasoning included, went from 23 to 22 attempts. It was not run on the trained students, where the unguarded rate is already 0 to 3 of 40.
+With `--enforce` the harness refuses a final answer containing a number no tool produced (see [evaluation](evaluation.md)). Derived suite,
+one greedy run each, guarded against unguarded: untrained Qwen3.5-4B + shell 32 to 33 of 40 passes, emitted answers with an untraced number
+13 of 37 to 0 of 38 (12 sent back, none refused); Granite 4.2 8B student 37 to 37, 0 to 0 (never fired); Qwen3.5-4B thinking student, seed 42,
+37 to 37, 1 of 40 to 0 of 39 (1 sent back and refused). The guard polices emitted answers only: for the untrained model 63 of 70 untraced
+numbers were in private reasoning. The thinking student scored 37 here against 39 in the original lab run of the same weights; one greedy
+run on different hardware, so the difference is sampling and batching noise, not an effect.
 
 ## Known limits
 

@@ -51,19 +51,19 @@ numbers and telling it to compute them with `run_python`, at most twice. If it s
 unguarded one, and the default is off, so every number in [results](results.md) describes the unguarded harness.
 
 **What it guarantees, and what it does not.** It guarantees that no emitted answer contains a number nothing verified. It does not stop a
-model computing in its private reasoning or inside the code it writes, and it cannot make a wrong answer right. Measured on the derived suite
-with the untrained Qwen3.5-4B (one greedy run each):
+model computing in its private reasoning or inside the code it writes, and it cannot make a wrong answer right. Measured on the derived suite,
+one greedy run each, through the pod:
 
-| | Unguarded | Guarded |
-|---|---|---|
-| passes (of 40) | 32 | 33 |
-| answers emitted containing an untraced number | 13 of 37 | 0 of 38 |
-| attempts sent back by the guard | - | 12 |
-| attempts refused | - | 0 |
-| any untraced number written anywhere, reasoning included | 23 | 22 |
+| Model | Passes (of 40), unguarded to guarded | Emitted answers with an untraced number | Sent back | Refused |
+|---|---|---|---|---|
+| Untrained Qwen3.5-4B + shell | 32 to 33 | 13 of 37 to 0 of 38 | 12 | 0 |
+| Granite 4.2 8B student | 37 to 37 | 0 of 40 to 0 of 40 | 0 | 0 |
+| Qwen3.5-4B thinking student (seed 42) | 37 to 37 | 1 of 40 to 0 of 39 | 1 | 1 |
 
-In the unguarded run the model often added three tool results in its head and wrote the total. The guard turned those into shell
-computations. Its private reasoning still contains numbers, which is why the last row barely moved.
+For the untrained model the guard turned in-head sums into shell computations at no cost in accuracy. The Granite student never needed it. The
+thinking student needed it once: it kept giving an untraced number after being sent back, so the attempt failed closed instead of emitting
+the number. The numbers a model writes in its private reasoning are not policed: for the untrained model 63 of its 70 untraced numbers were
+in reasoning, which no answer-side guard can touch.
 
 ## Reading the results
 
