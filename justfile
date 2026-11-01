@@ -20,18 +20,25 @@ log_level := env("WATTSON_LOG_LEVEL", "INFO")
 host_port := env("WATTSON_PORT", "8000")
 image     := registry + "/wattson-harness:" + tag
 lab_image := registry + "/wattson:" + tag
+hf_image  := registry + "/wattson-hf:" + tag
+csiro_image := registry + "/wattson-csiro:" + tag
 
 default:
     @just --list
 
 # --- no model, no GPU -------------------------------------------------------------------------------------------------------
 
-# Run lab N's self-check (1, 2 or 3) in the container. The CSIRO case files are fetched into a volume on first use.
-lab n:
+# Fetch the CSIRO case files into the wattson-cases volume (the wattson-csiro image; skipped when they are already there and verified).
+cases:
+    @podman volume exists wattson-cases || podman volume create wattson-cases >/dev/null
+    @podman run --rm -v wattson-cases:/cases {{csiro_image}} fetch >/dev/null
+
+# Run lab N's self-check (1, 2 or 3) in the container.
+lab n: cases
     podman run --rm -v wattson-cases:/cases {{lab_image}} lab {{n}}
 
 # Labs 1, 2 and 3 in turn.
-labs:
+labs: cases
     @for n in 1 2 3; do echo "=== lab $n"; podman run --rm -v wattson-cases:/cases {{lab_image}} lab $n; done
 
 # Check the container environment (no model server).
@@ -51,7 +58,7 @@ up model="granite":
     esac
     mkdir -p "$PWD/out"
     for v in wattson-models wattson-cases; do podman volume exists "$v" || podman volume create "$v" >/dev/null; done
-    sed -e "s|@IMAGE@|{{image}}|g" -e "s|@VLLM_IMAGE@|{{vllm}}|g" -e "s|@MODEL_REPO@|$repo|g" -e "s|@MODEL_DIR@|$dir|g" \
+    sed -e "s|@IMAGE@|{{image}}|g" -e "s|@HF_IMAGE@|{{hf_image}}|g" -e "s|@CSIRO_IMAGE@|{{csiro_image}}|g" -e "s|@VLLM_IMAGE@|{{vllm}}|g" -e "s|@MODEL_REPO@|$repo|g" -e "s|@MODEL_DIR@|$dir|g" \
         -e "s|@REASONING@|$reasoning|g" -e "s|@GPU_UTIL@|{{gpu_util}}|g" -e "s|@MAX_LEN@|{{max_len}}|g" \
         -e "s|@LOG_LEVEL@|{{log_level}}|g" -e "s|@HOST_PORT@|{{host_port}}|g" -e "s|@WORK@|$PWD|g" kube/wattson.yaml > "$PWD/out/wattson.rendered.yaml"
     podman kube play --replace "$PWD/out/wattson.rendered.yaml"
@@ -78,6 +85,10 @@ doctor:
 ask question *flags:
     podman exec wattson-harness bash -lc 'just --justfile /app/justfile ask "$1" $2' _ "{{question}}" "{{flags}}"
 
+# Lab 1's task given to the served model, graded by re-solving, next to the lab's committed bisection result. Add --enforce for the guard.
+lab1-agent *flags:
+    podman exec wattson-harness bash -lc "just --justfile /app/justfile lab1-agent {{flags}}"
+
 # Run a frozen suite: smoke | heldout | judgement | unsolvable | planning | derived. Add --enforce for the runtime provenance guard.
 eval suite="smoke" *flags:
     podman exec wattson-harness bash -lc "just --justfile /app/justfile eval {{suite}} {{flags}}"
@@ -92,7 +103,9 @@ shell:
 
 # --- build and publish locally (CI does this for the registry) -----------------------------------------------------------
 
-# Build both images from this checkout.
+# Build all four images from this checkout.
 build:
     podman build -f containers/Containerfile --target wattson -t {{lab_image}} .
     podman build -f containers/Containerfile --target harness -t {{image}} .
+    podman build -f containers/hf/Containerfile -t {{hf_image}} .
+    podman build -f containers/csiro/Containerfile -t {{csiro_image}} .

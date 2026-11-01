@@ -30,6 +30,11 @@ ask question *flags:
     wattson fetch-data
     wattson ask "{{question}}" --base-url {{base}} --model {{model}} {{flags}}
 
+# Lab 1's task given to the served model through the tool harness, graded by re-solving, printed next to the lab's committed bisection result.
+lab1-agent *flags:
+    wattson fetch-data
+    wattson lab 1 --agent --base-url {{base}} --model {{model}} {{flags}}
+
 # Run a frozen suite (smoke | heldout | judgement | unsolvable | planning | derived) and grade it by re-solving.
 eval suite="smoke" *flags:
     wattson fetch-data

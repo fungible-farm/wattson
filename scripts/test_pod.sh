@@ -2,12 +2,13 @@
 # Test the quick-start pod without a GPU or a model download: render kube/wattson.yaml, drop the parts that need them (see
 # scripts/pod_filter.py), play what is left under a separate pod name, and check the harness from outside the way a user would.
 #
-#   scripts/test_pod.sh [harness-image]      default localhost/wattson-harness:local
+#   scripts/test_pod.sh [harness-image] [csiro-image]      defaults localhost/wattson-harness:local localhost/wattson-csiro:local
 #
 # Each step prints PASS/FAIL with the evidence. The script exits non-zero if any step fails and always removes its pod and volume.
 set -uo pipefail
 
 IMAGE="${1:-localhost/wattson-harness:local}"
+CSIRO_IMAGE="${2:-localhost/wattson-csiro:local}"
 POD="wattson-test"
 HERE="$(cd "$(dirname "$0")/.." && pwd)"
 WORK="$(mktemp -d)"
@@ -34,7 +35,7 @@ for placeholder in $(grep -o '@[A-Z_]*@' "$HERE/kube/wattson.yaml" | sort -u); d
 done
 
 # 2. render with dummy values and reduce to the part that needs no GPU
-sed -e "s|@IMAGE@|$IMAGE|g" -e "s|@VLLM_IMAGE@|unused|g" -e "s|@MODEL_REPO@|unused/unused|g" -e "s|@MODEL_DIR@|unused|g" \
+sed -e "s|@IMAGE@|$IMAGE|g" -e "s|@HF_IMAGE@|unused|g" -e "s|@CSIRO_IMAGE@|$CSIRO_IMAGE|g" -e "s|@VLLM_IMAGE@|unused|g" -e "s|@MODEL_REPO@|unused/unused|g" -e "s|@MODEL_DIR@|unused|g" \
     -e "s|@REASONING@|qwen3|g" -e "s|@GPU_UTIL@|0.5|g" -e "s|@MAX_LEN@|32768|g" -e "s|@LOG_LEVEL@|DEBUG|g" -e "s|@HOST_PORT@|18000|g" -e "s|@WORK@|$WORK|g" \
     "$HERE/kube/wattson.yaml" > "$WORK/rendered.yaml"
 if grep -q '@[A-Z_]*@' "$WORK/rendered.yaml"; then fail "unfilled placeholder in the rendered YAML"; else pass "rendered YAML has no placeholder left"; fi

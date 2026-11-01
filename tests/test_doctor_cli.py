@@ -137,3 +137,9 @@ def test_enforce_reaches_the_evaluator_and_the_probe_command_lines() -> None:
     assert parser.parse_args(["eval", "smoke", "--base-url", "u", "--model", "m", "--enforce"]).enforce is True
     assert parser.parse_args(["eval", "smoke", "--base-url", "u", "--model", "m"]).enforce is False
     assert parser.parse_args(["ask", "q", "--base-url", "u", "--model", "m", "--enforce"]).enforce is True
+
+
+def test_lab_agent_mode_is_wired_and_only_for_lab_1(capsys: pytest.CaptureFixture[str]) -> None:
+    args = cli.build_parser().parse_args(["lab", "1", "--agent", "--base-url", "http://h:8000/v1", "--model", "m", "--enforce"])
+    assert args.agent and args.enforce and args.number == 1
+    assert cli.main(["lab", "2", "--agent"]) == 2 and "lab 1 only" in capsys.readouterr().err

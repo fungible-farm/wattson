@@ -1,7 +1,9 @@
 name: containers
 # Publish multi-arch images to the GitHub Container Registry:
-#   ghcr.io/fungible-farm/wattson          the package, labs and data               (CPU; runs the labs)
+#   ghcr.io/fungible-farm/wattson          solver, tools, labs and data             (CPU; runs the labs)
 #   ghcr.io/fungible-farm/wattson-harness  the above plus Node, the pi agent, just  (the interactive harness)
+#   ghcr.io/fungible-farm/wattson-hf       Hugging Face models: pull and verify     (small; one concern)
+#   ghcr.io/fungible-farm/wattson-csiro    CSIRO case data: fetch and verify        (small; one concern)
 # Each architecture is built natively (no emulation) and pushed by digest; a final job joins the digests into one manifest list.
 # Nothing is published unless container-smoke passes. Model weights are never in an image: they come from Hugging Face.
 on:
@@ -34,25 +36,26 @@ jobs:
 
   build:
     needs: smoke
-    name: build (${{ matrix.target }}, ${{ matrix.arch }})
+    name: build (${{ matrix.image }}, ${{ matrix.arch }})
     strategy:
       fail-fast: false
-      # Spelled out, not target x include: `include` entries that share no key with the base matrix are applied to every combination and the
+      # Spelled out, not image x include: `include` entries that share no key with the base matrix are applied to every combination and the
       # last one overwrites the others, which silently dropped the amd64 build and published an arm64-only image.
       matrix:
         include:
-          - {target: wattson, platform: linux/amd64, runner: ubuntu-24.04, arch: amd64}
-          - {target: wattson, platform: linux/arm64, runner: ubuntu-24.04-arm, arch: arm64}
-          - {target: harness, platform: linux/amd64, runner: ubuntu-24.04, arch: amd64}
-          - {target: harness, platform: linux/arm64, runner: ubuntu-24.04-arm, arch: arm64}
+          - {image: wattson, file: containers/Containerfile, target: wattson, platform: linux/amd64, runner: ubuntu-24.04, arch: amd64}
+          - {image: wattson, file: containers/Containerfile, target: wattson, platform: linux/arm64, runner: ubuntu-24.04-arm, arch: arm64}
+          - {image: wattson-harness, file: containers/Containerfile, target: harness, platform: linux/amd64, runner: ubuntu-24.04, arch: amd64}
+          - {image: wattson-harness, file: containers/Containerfile, target: harness, platform: linux/arm64, runner: ubuntu-24.04-arm, arch: arm64}
+          - {image: wattson-hf, file: containers/hf/Containerfile, target: "", platform: linux/amd64, runner: ubuntu-24.04, arch: amd64}
+          - {image: wattson-hf, file: containers/hf/Containerfile, target: "", platform: linux/arm64, runner: ubuntu-24.04-arm, arch: arm64}
+          - {image: wattson-csiro, file: containers/csiro/Containerfile, target: "", platform: linux/amd64, runner: ubuntu-24.04, arch: amd64}
+          - {image: wattson-csiro, file: containers/csiro/Containerfile, target: "", platform: linux/arm64, runner: ubuntu-24.04-arm, arch: arm64}
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
       - name: Image name
-        run: |
-          owner="${GITHUB_REPOSITORY_OWNER,,}"
-          if [ "${{ matrix.target }}" = harness ]; then name=wattson-harness; else name=wattson; fi
-          echo "IMAGE=${REGISTRY}/${owner}/${name}" >> "$GITHUB_ENV"
+        run: echo "IMAGE=${REGISTRY}/${GITHUB_REPOSITORY_OWNER,,}/${{ matrix.image }}" >> "$GITHUB_ENV"
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
@@ -64,17 +67,17 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: containers/Containerfile
+          file: ${{ matrix.file }}
           target: ${{ matrix.target }}
           platforms: ${{ matrix.platform }}
           labels: |
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
-            org.opencontainers.image.description=WattsOn ${{ matrix.target }} image
+            org.opencontainers.image.description=WattsOn ${{ matrix.image }} image
             org.opencontainers.image.licenses=MIT OR Apache-2.0
             org.opencontainers.image.revision=${{ github.sha }}
           outputs: type=image,name=${{ env.IMAGE }},push-by-digest=true,name-canonical=true,push=true
-          cache-from: type=gha,scope=${{ matrix.target }}-${{ matrix.arch }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.target }}-${{ matrix.arch }}
+          cache-from: type=gha,scope=${{ matrix.image }}-${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}-${{ matrix.arch }}
       - name: Export digest
         run: |
           mkdir -p /tmp/digests
@@ -82,28 +85,27 @@ jobs:
           touch "/tmp/digests/${digest#sha256:}"
       - uses: actions/upload-artifact@v4
         with:
-          name: digests-${{ matrix.target }}-${{ matrix.arch }}
+          # The double underscore keeps `digests__wattson__*` from also matching `digests__wattson-harness__*`.
+          name: digests__${{ matrix.image }}__${{ matrix.arch }}
           path: /tmp/digests/*
           if-no-files-found: error
           retention-days: 1
 
   merge:
     needs: build
+    name: merge (${{ matrix.image }})
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        target: [wattson, harness]
+        image: [wattson, wattson-harness, wattson-hf, wattson-csiro]
     steps:
       - uses: actions/checkout@v4
       - name: Image name
-        run: |
-          owner="${GITHUB_REPOSITORY_OWNER,,}"
-          if [ "${{ matrix.target }}" = harness ]; then name=wattson-harness; else name=wattson; fi
-          echo "IMAGE=${REGISTRY}/${owner}/${name}" >> "$GITHUB_ENV"
+        run: echo "IMAGE=${REGISTRY}/${GITHUB_REPOSITORY_OWNER,,}/${{ matrix.image }}" >> "$GITHUB_ENV"
       - uses: actions/download-artifact@v4
         with:
           path: /tmp/digests
-          pattern: digests-${{ matrix.target }}-*
+          pattern: digests__${{ matrix.image }}__*
           merge-multiple: true
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3

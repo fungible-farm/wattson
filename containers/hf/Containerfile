@@ -1,0 +1,19 @@
+# wattson-hf: Hugging Face models, and nothing else.
+#
+# One job: download a released student from Hugging Face into /models and verify every file against the repository's hash_manifest.json.
+# No solver, no tools, no data: just the downloader, so the image is small and has one reason to change. It runs `python -m wattson.models`,
+# built from the same source file the `wattson models` command uses (only that file and its one dependency, log.py, are copied in).
+#
+# Build:  podman build -f containers/hf/Containerfile -t wattson-hf:local .
+# Run:    podman run --rm -v wattson-models:/models wattson-hf:local pull PromptExecutionAU/wattson-granite-4.2-8b-py --dest /models/granite-4.2-8b-py
+FROM docker.io/library/python:3.14-slim
+RUN pip install --no-cache-dir huggingface_hub==2.1.1 \
+ && useradd --create-home --uid 1000 wattson \
+ && mkdir -p /models /opt/wattson/wattson && chown wattson:wattson /models
+COPY src/wattson/__init__.py src/wattson/log.py src/wattson/models.py /opt/wattson/wattson/
+ENV PYTHONPATH=/opt/wattson PYTHONUNBUFFERED=1 HF_HOME=/models/.hf
+USER wattson
+WORKDIR /models
+VOLUME ["/models"]
+ENTRYPOINT ["python", "-m", "wattson.models"]
+CMD ["--help"]

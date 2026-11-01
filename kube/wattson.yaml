@@ -1,9 +1,9 @@
 # WattsOn quick-start pod for `podman kube play`. The justfile fills the markers written between two at-signs; you rarely edit this by hand.
 #
-#   init   pull-model   downloads a released student from Hugging Face into the wattson-models volume and verifies every hash
-#          fetch-cases  downloads the CSIRO case files into the wattson-cases volume (checksum-verified)
+#   init   pull-model   wattson-hf: downloads a released student from Hugging Face into the wattson-models volume, verifying every hash
+#          fetch-cases  wattson-csiro: downloads the CSIRO case files into the wattson-cases volume (checksum-verified)
 #   main   vllm         the model server (upstream vllm/vllm-openai, GPU via CDI), its own container
-#          harness      the WattsOn tools + pi + just; shares the pod's network, so the server is at 127.0.0.1:8000
+#          harness      wattson-harness: the solver tools + pi + just; shares the pod's network, so the server is at 127.0.0.1:8000
 #
 # Everything the harness writes goes to /work, which is the directory you ran `just up` from.
 apiVersion: v1
@@ -19,16 +19,19 @@ metadata:
 spec:
   restartPolicy: Never
   initContainers:
+    # One image per concern. pull-model is wattson-hf (Hugging Face models only); fetch-cases is wattson-csiro (CSIRO case data only).
     - name: pull-model
-      image: @IMAGE@
-      command: ["wattson", "models", "pull", "@MODEL_REPO@", "--dest", "/models/@MODEL_DIR@"]
+      image: @HF_IMAGE@
+      args: ["pull", "@MODEL_REPO@", "--dest", "/models/@MODEL_DIR@"]
       env:
         - {name: WATTSON_LOG_LEVEL, value: "@LOG_LEVEL@"}
       volumeMounts:
         - {name: models, mountPath: /models}
     - name: fetch-cases
-      image: @IMAGE@
-      command: ["wattson", "fetch-data"]
+      image: @CSIRO_IMAGE@
+      args: ["fetch"]
+      env:
+        - {name: WATTSON_LOG_LEVEL, value: "@LOG_LEVEL@"}
       volumeMounts:
         - {name: cases, mountPath: /cases}
   containers:

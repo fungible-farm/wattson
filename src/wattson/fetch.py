@@ -71,3 +71,30 @@ def fetch_one(filename: str, expected: str, directory: Path) -> str:
 def fetch_all() -> dict[str, str]:
     directory = case_dir()
     return {name: fetch_one(name, expected, directory) for name, expected in CHECKSUMS.items()}
+
+
+def main(argv: list[str] | None = None) -> int:
+    """``python -m wattson.fetch [status]``: the entry point of the ``wattson-csiro`` image (and of ``wattson fetch-data``)."""
+    import argparse
+    import json
+
+    parser = argparse.ArgumentParser(prog="wattson-csiro", description=__doc__)
+    parser.add_argument("action", nargs="?", choices=["fetch", "status"], default="fetch")
+    arguments = parser.parse_args(argv)
+    log.configure()
+    if arguments.action == "status":
+        state = status()
+        print(json.dumps(state))
+        return 0 if all(v == "ok" for v in state.values()) else 1
+    try:
+        print(json.dumps(fetch_all()))
+    except ChecksumMismatch as error:
+        _LOG.error("fetch.failed", extra={"error": str(error)})
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    import sys
+
+    sys.exit(main())

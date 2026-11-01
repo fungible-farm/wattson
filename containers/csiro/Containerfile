@@ -1,0 +1,17 @@
+# wattson-csiro: the CSIRO Synthetic-NEM case files, and nothing else.
+#
+# One job: download the two CSIRO MATPOWER case files (CC BY 4.0) at a pinned upstream commit into /cases and verify their SHA-256. The files are
+# fetched at run time and never stored in an image, so the image carries no CSIRO data. Standard library only: no pip install at all.
+#
+# Build:  podman build -f containers/csiro/Containerfile -t wattson-csiro:local .
+# Run:    podman run --rm -v wattson-cases:/cases wattson-csiro:local          (add `status` to check without downloading)
+FROM docker.io/library/python:3.14-slim
+RUN useradd --create-home --uid 1000 wattson \
+ && mkdir -p /cases /opt/wattson/wattson && chown wattson:wattson /cases
+COPY src/wattson/__init__.py src/wattson/log.py src/wattson/fetch.py /opt/wattson/wattson/
+ENV PYTHONPATH=/opt/wattson PYTHONUNBUFFERED=1 WATTSON_CASE_DIR=/cases
+USER wattson
+WORKDIR /cases
+VOLUME ["/cases"]
+ENTRYPOINT ["python", "-m", "wattson.fetch"]
+CMD ["fetch"]

@@ -8,7 +8,7 @@ import yaml
 
 REPO: Path = Path(__file__).resolve().parents[1]
 FILLED: dict[str, str] = {
-    "@IMAGE@": "img:t", "@VLLM_IMAGE@": "vllm:t", "@MODEL_REPO@": "o/n", "@MODEL_DIR@": "dir", "@REASONING@": "qwen3", "@GPU_UTIL@": "0.5",
+    "@IMAGE@": "img:t", "@HF_IMAGE@": "hf:t", "@CSIRO_IMAGE@": "csiro:t", "@VLLM_IMAGE@": "vllm:t", "@MODEL_REPO@": "o/n", "@MODEL_DIR@": "dir", "@REASONING@": "qwen3", "@GPU_UTIL@": "0.5",
     "@MAX_LEN@": "32768", "@LOG_LEVEL@": "INFO", "@HOST_PORT@": "8000", "@WORK@": "/w"}
 
 
@@ -57,7 +57,7 @@ def test_the_server_is_started_with_the_flags_the_students_were_evaluated_with()
 def test_the_model_is_pulled_before_the_server_starts_and_is_mounted_read_only_into_it() -> None:
     spec = pod()["spec"]
     init = {c["name"]: c for c in spec["initContainers"]}
-    assert init["pull-model"]["command"][:3] == ["wattson", "models", "pull"]
+    assert init["pull-model"]["args"][0] == "pull"
     mounts = {m["name"]: m for m in containers()["vllm"]["volumeMounts"]}
     assert mounts["models"]["readOnly"] is True
 
@@ -76,3 +76,16 @@ def test_the_harness_stops_promptly_on_sigterm() -> None:
     """Regression: `sleep infinity` as PID 1 ignores SIGTERM, so stopping the pod waited out the 10 s grace period and then killed it."""
     command = containers()["harness"]["command"]
     assert command[:2] == ["bash", "-c"] and "trap" in command[2] and "TERM" in command[2]
+
+
+def test_each_concern_has_its_own_single_purpose_image() -> None:
+    """Hugging Face models, CSIRO case data, the model server and the harness are four containers with four images, and the two data
+    containers run their image's own entry point (no `command` override that would turn them back into a general-purpose shell)."""
+    spec = pod()["spec"]
+    init = {c["name"]: c for c in spec["initContainers"]}
+    assert init["pull-model"]["image"] == "hf:t" and init["fetch-cases"]["image"] == "csiro:t"
+    assert all("command" not in c for c in init.values())
+    images = [init["pull-model"]["image"], init["fetch-cases"]["image"], containers()["vllm"]["image"], containers()["harness"]["image"]]
+    assert len(set(images)) == 4
+    assert [m["name"] for m in init["pull-model"]["volumeMounts"]] == ["models"], "the model puller sees only the models volume"
+    assert [m["name"] for m in init["fetch-cases"]["volumeMounts"]] == ["cases"], "the case fetcher sees only the cases volume"

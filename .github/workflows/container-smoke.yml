@@ -15,23 +15,35 @@ jobs:
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
-      - name: Build the wattson and harness images
+      - name: Build the four images
         run: |
           podman --version
           podman build -f containers/Containerfile --target wattson -t localhost/wattson:ci .
           podman build -f containers/Containerfile --target harness -t localhost/wattson-harness:ci .
+          podman build -f containers/hf/Containerfile -t localhost/wattson-hf:ci .
+          podman build -f containers/csiro/Containerfile -t localhost/wattson-csiro:ci .
           podman images
       - name: Doctor inside the image
         run: podman run --rm localhost/wattson:ci --log-level ERROR doctor
-      - name: Labs 1-3 inside the image (case files fetched into a volume)
+      - name: Labs 1-3 inside the image (case files fetched by the wattson-csiro image)
         run: |
           volume="wattson-cases-${{ matrix.runner }}-${{ github.run_id }}"
           podman volume rm --force "$volume"
           podman volume create "$volume"
           trap 'podman volume rm --force "$volume"' EXIT
+          echo "=== CSIRO case data (the wattson-csiro image)"
+          podman run --rm -v "$volume":/cases localhost/wattson-csiro:ci fetch
           for n in 1 2 3; do
             echo "=== lab $n"
             podman run --rm -v "$volume":/cases localhost/wattson:ci --log-format text lab "$n"
           done
+      - name: The two data images do their one job
+        run: |
+          podman run --rm localhost/wattson-hf:ci --help
+          # With nothing to verify against, both must FAIL (exit 1) rather than report success.
+          code=0; podman run --rm localhost/wattson-hf:ci verify /models || code=$?
+          test "$code" = 1
+          code=0; podman run --rm localhost/wattson-csiro:ci status || code=$?
+          test "$code" = 1
       - name: Quick-start pod, without the GPU parts
-        run: scripts/test_pod.sh localhost/wattson-harness:ci
+        run: scripts/test_pod.sh localhost/wattson-harness:ci localhost/wattson-csiro:ci

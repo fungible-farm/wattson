@@ -83,3 +83,32 @@ def pull(repo_id: str, dest: Path, revision: str | None = None, force: bool = Fa
     (dest / MARKER).write_text(json.dumps(record, indent=2) + "\n")
     _LOG.info("model.ready", extra=record)
     return {**record, "dest": str(dest), "downloaded": True}
+
+
+def main(argv: list[str] | None = None) -> int:
+    """``python -m wattson.models pull REPO --dest DIR`` / ``verify DIR``: the entry point of the ``wattson-hf`` image (and of ``wattson models``)."""
+    import argparse
+
+    parser = argparse.ArgumentParser(prog="wattson-hf", description=__doc__)
+    sub = parser.add_subparsers(dest="action", required=True)
+    pull_parser = sub.add_parser("pull", help="download a released student and verify every file against its hash_manifest.json")
+    pull_parser.add_argument("repo")
+    pull_parser.add_argument("--dest", required=True, type=Path)
+    pull_parser.add_argument("--revision")
+    pull_parser.add_argument("--force", action="store_true")
+    verify_parser = sub.add_parser("verify", help="verify a directory against its hash_manifest.json")
+    verify_parser.add_argument("directory", type=Path)
+    arguments = parser.parse_args(argv)
+    log.configure()
+    if arguments.action == "pull":
+        print(json.dumps(pull(arguments.repo, arguments.dest, arguments.revision, arguments.force)))
+        return 0
+    checked, problems = verify(arguments.directory)
+    print(f"{'FAIL' if problems else 'PASS'}: {checked} files, {len(problems)} problems {problems[:5] if problems else ''}")
+    return 1 if problems else 0
+
+
+if __name__ == "__main__":
+    import sys
+
+    sys.exit(main())

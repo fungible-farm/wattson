@@ -6,6 +6,7 @@
     wattson models pull REPO --dest DIR [--force]                         download a released student, verify its hashes
     wattson models verify DIR
     wattson lab {1,2,3} [--step STEP]                                     run a lab's self-check (deterministic, CPU only)
+    wattson lab 1 --agent [--base-url URL] [--model NAME] [--enforce]     lab 1's task given to a served model, graded by re-solving
     wattson ask "QUESTION" --base-url URL --model NAME                    one question through the real tool harness
     wattson eval SUITE --base-url URL --model NAME                        run a frozen suite and grade it by re-solving
     wattson pi-setup --base-url URL --model NAME                          write the pi agent's provider + MCP configuration
@@ -65,13 +66,7 @@ def cmd_doctor(a: argparse.Namespace) -> int:
 
 
 def cmd_fetch(_: argparse.Namespace) -> int:
-    try:
-        results = fetch.fetch_all()
-    except fetch.ChecksumMismatch as error:
-        _LOG.error("fetch.failed", extra={"error": str(error)})
-        return 1
-    print(json.dumps(results))
-    return 0
+    return fetch.main([])
 
 
 def cmd_verify_data(_: argparse.Namespace) -> int:
@@ -84,14 +79,22 @@ def cmd_verify_data(_: argparse.Namespace) -> int:
 
 def cmd_models(a: argparse.Namespace) -> int:
     if a.action == "pull":
-        print(json.dumps(models.pull(a.repo, Path(a.dest), a.revision, a.force)))
-        return 0
-    checked, problems = models.verify(Path(a.repo))
-    print(f"{'FAIL' if problems else 'PASS'}: {checked} files, {len(problems)} problems {problems[:5] if problems else ''}")
-    return 1 if problems else 0
+        return models.main(["pull", a.repo, "--dest", a.dest, *(["--revision", a.revision] if a.revision else []), *(["--force"] if a.force else [])])
+    return models.main(["verify", a.repo])
+
+
+AGENT_LAB: int = 1  # the lab with an agent mode: Lab 1's task given to a served model and graded by re-solving
+AGENT_SCRIPT: str = "benchmarks/lab01-simple-loadflow-fit/agent_mode.py"
 
 
 def cmd_lab(a: argparse.Namespace) -> int:
+    if a.agent:
+        if a.number != AGENT_LAB:
+            print(f"agent mode exists for lab {AGENT_LAB} only", file=sys.stderr)
+            return 2
+        out = Path(os.environ.get("WATTSON_OUT", "out")) / "lab01-agent"
+        return _stream([sys.executable, AGENT_SCRIPT, "--base-url", a.base_url, "--model", a.model, "--out", str(out),
+                        *(["--enforce"] if a.enforce else [])], "lab1-agent")
     script, default_step = LABS[a.number]
     missing = {name: state for name, state in fetch.status().items() if state != "ok"}
     if missing:
@@ -226,6 +229,10 @@ def build_parser() -> argparse.ArgumentParser:
     m.set_defaults(run=cmd_models)
     lab = sub.add_parser("lab", help="run a lab's self-check")
     lab.add_argument("number", type=int, choices=sorted(LABS)), lab.add_argument("--step")
+    lab.add_argument("--agent", action="store_true", help="give lab 1's task to a served model through the tool harness and grade it by re-solving")
+    lab.add_argument("--base-url", default=os.environ.get("WATTSON_BASE_URL", "http://127.0.0.1:8000/v1"))
+    lab.add_argument("--model", default=os.environ.get("WATTSON_SERVED_MODEL", "wattson"))
+    lab.add_argument("--enforce", action="store_true", help="with --agent: refuse an answer containing a number no tool produced")
     lab.set_defaults(run=cmd_lab)
     ev = sub.add_parser("eval", help="evaluate a model on a frozen suite")
     ev.add_argument("suite", choices=sorted(SUITES)), ev.add_argument("--base-url", required=True), ev.add_argument("--model", required=True)
