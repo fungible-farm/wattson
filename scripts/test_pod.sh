@@ -71,8 +71,12 @@ check "the log file is JSON lines" bash -c "head -1 '$WORK/out/wattson.log' | py
 # 7. pi can be configured against a server address without a server running
 check "pi-setup writes the provider and the MCP server" bash -c "podman exec ${POD}-harness wattson pi-setup --base-url http://127.0.0.1:8000/v1 --model wattson && podman exec ${POD}-harness bash -lc 'pi mcp list' | grep -q wattson"
 
-# 8. tear down cleanly
-check "pod removes cleanly" podman pod rm --force "$POD"
+# 8. tear down. The contract is that nothing is left running. `podman pod rm` can also exit non-zero for reasons in the host's sandbox, not
+#    the pod (on GitHub's runners: "rootless netns: kill network process: permission denied"); that is reported as a WARN, never hidden.
+podman pod rm --force "$POD" >"$WORK/rm.out" 2>&1; RM_CODE=$?
+LEFT="$(podman ps --filter "pod=$POD" --format '{{.Names}}' 2>/dev/null | wc -l)"
+if [ "$LEFT" -eq 0 ]; then pass "no container of the pod is left running"; else fail "$LEFT container(s) still running after pod removal"; fi
+if [ "$RM_CODE" -ne 0 ]; then printf 'WARN  podman pod rm exited %s: %s\n' "$RM_CODE" "$(tr '\n' ' ' < "$WORK/rm.out" | cut -c1-240)"; fi
 
 echo
 if [ "$FAILED" -eq 0 ]; then echo "POD TEST OK"; else echo "POD TEST FAILED"; fi
