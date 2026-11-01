@@ -10,21 +10,22 @@ of the same recipe on the same data; with 3 seeds or fewer, differences smaller 
 
 | Arm | Held-out 90: attempts with an untraced number | Derived 40: attempts with an untraced number |
 |---|---|---|
-| Plain tools, trained (1 seed) | 87 | 18 |
+| Plain tools, trained (4 runs: 3 on older data, 1 on the final data) | 86, 85, 86, 87 | 7, 5, 18 (3 runs) |
 | Untrained Qwen3.5-4B + shell (1 run) | not run | 21 |
 | Python shell, non-thinking (Qwen3.5-4B, 3 seeds) | 0, 0, 0 | 0, 0, 0 |
 | Python shell, thinking (Qwen3.5-4B, 3 seeds) | 0, 0, 0 | 1, 3, 1 |
-| Python shell (Granite 4.2 8B, 1 seed) | 0 | not yet run |
+| Python shell (Granite 4.2 8B, 1 seed) | 0 | 1 |
 
 ## Accuracy (passes per suite, per seed)
 
 | Arm | Held-out (90) | Judgement (40) | Unsolvable (28) | Planning (40) | Derived (40) |
 |---|---|---|---|---|---|
-| Plain tools, trained (1 seed) | 75 | 38 | 25 | 40 | 31 |
+| Plain tools, trained, final data (1 seed) | 75 | 38 | 25 | 40 | 31 |
+| Plain tools, trained, older data (2 seeds, derived only) | - | - | - | - | 23, 20 |
 | Python shell, non-thinking (3 seeds) | 89, 88, 90 | 40, 40, 40 | 27, 18, 20 | 40, 40, 40 | 31, 30, 27 |
 | Python shell, thinking (3 seeds) | 90, 89, 85 | 40, 40, 40 | 26, 19, 26 | 40, 40, 40 | 39, 29, 38 |
 | Untrained Qwen3.5-4B + shell (1 run) | - | - | - | - | 35 |
-| Granite 4.2 8B + shell (1 seed) | 90 | 36 | 14 | 40 | not yet run |
+| Granite 4.2 8B + shell (1 seed) | 90 | 36 | 14 | 40 | 37 |
 
 Smoke (20 tasks) is at ceiling for every Python arm (20 of 20) and 19 for plain tools.
 
@@ -41,6 +42,12 @@ Smoke (20 tasks) is at ceiling for every Python arm (20 of 20) and 19 for plain 
 - The untrained model with the shell scores 35 on the derived suite, equal to the thinking mean: on that suite the non-thinking
   fine-tune costs accuracy, and thinking recovers it. One untrained run has no variance estimate.
 
+- Granite 4.2 8B with the shell has the best derived score measured (37 of 40, one untraced-number attempt in 40), ahead of
+  Qwen thinking (mean 35.3). One seed, so no variance estimate. The two plain-tool controls trained on older data (23, 20) score
+  below every Python-shell run; the plain control on the final data (31) sits inside the non-thinking Python range (27-31), so
+  the shell's advantage over plain on derived accuracy is not established, while its advantage in untraced numbers
+  (0 against 5-18 of 40) and on the held-out suite (88-90 against 75-76) is.
+
 ## Known limits
 
 - The Python shell is **not a security boundary** (a restricted `python -I` child with a module allowlist, a wall timeout and a
@@ -49,5 +56,5 @@ Smoke (20 tasks) is at ceiling for every Python arm (20 of 20) and 19 for plain 
   tolerance. The suite is frozen (`fixtures/derived-heldout-v1`); a v2 suite should ask for four decimals.
 - Unsolvable-task refusals vary by 9 tasks between seeds; six of the ten failures in one seed were correct refusals that
   stated a maximum line id by computing `count - 1` (an untraced number). The shell should return the highest valid id.
-- Granite has one seed and no derived-suite result yet; Qwen3.5-4B results are lab evidence about the recipe, and the project's
+- Granite has one seed; Qwen3.5-4B results are lab evidence about the recipe, and the project's
   preferred base for new work is Granite 4.2 8B (Apache-2.0).

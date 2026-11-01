@@ -28,7 +28,8 @@ an N-1 contingency, choosing the worst of several outages, or refusing a task th
 | Unsolvable: must refuse (28) | 14 of 28 |
 | Planning: multi-candidate (40) | 40 of 40 |
 | Held-out attempts containing a number no tool or prompt gave the model | 0 of 90 |
-| Derived-arithmetic suite (40) | **not yet run** |
+| Derived-arithmetic suite (40) | 37 of 40 |
+| Derived-suite attempts containing a number no tool or prompt gave the model | 1 of 40 |
 
 One training seed. The Qwen3.5-4B students of the same recipe vary by up to 9 tasks between seeds on the unsolvable suite, so
 the unsolvable score here should not be read as stable. Full tables and limits: `docs/results.md` in the repository.
