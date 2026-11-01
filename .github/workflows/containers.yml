@@ -34,13 +34,17 @@ jobs:
 
   build:
     needs: smoke
+    name: build (${{ matrix.target }}, ${{ matrix.arch }})
     strategy:
       fail-fast: false
+      # Spelled out, not target x include: `include` entries that share no key with the base matrix are applied to every combination and the
+      # last one overwrites the others, which silently dropped the amd64 build and published an arm64-only image.
       matrix:
-        target: [wattson, harness]
         include:
-          - {platform: linux/amd64, runner: ubuntu-24.04, arch: amd64}
-          - {platform: linux/arm64, runner: ubuntu-24.04-arm, arch: arm64}
+          - {target: wattson, platform: linux/amd64, runner: ubuntu-24.04, arch: amd64}
+          - {target: wattson, platform: linux/arm64, runner: ubuntu-24.04-arm, arch: arm64}
+          - {target: harness, platform: linux/amd64, runner: ubuntu-24.04, arch: amd64}
+          - {target: harness, platform: linux/arm64, runner: ubuntu-24.04-arm, arch: arm64}
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
@@ -90,6 +94,7 @@ jobs:
       matrix:
         target: [wattson, harness]
     steps:
+      - uses: actions/checkout@v4
       - name: Image name
         run: |
           owner="${GITHUB_REPOSITORY_OWNER,,}"
@@ -113,3 +118,5 @@ jobs:
           docker buildx imagetools create -t "${IMAGE}:latest" -t "${IMAGE}:sha-${short}" $(printf "${IMAGE}@sha256:%s " *)
       - name: Show what was published
         run: docker buildx imagetools inspect "${IMAGE}:latest"
+      - name: Fail unless both architectures were published
+        run: docker buildx imagetools inspect "${IMAGE}:latest" --raw | python3 scripts/check_platforms.py linux/amd64 linux/arm64
