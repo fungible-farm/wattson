@@ -1,0 +1,20 @@
+{
+  "case": "snem1803.m",
+  "buses": 1803,
+  "branches": 2795,
+  "pandapower": {
+    "solve_s": 2.2826623916625977,
+    "total_gen_mw": 30262.83717328953,
+    "total_load_mw": 29226.905040849244,
+    "total_loss_mw": 1035.9321324395278
+  },
+  "pypowsybl": {
+    "solve_s": 0.17334842681884766,
+    "total_gen_mw": 30261.20081851366,
+    "total_load_mw": 29226.905040849244,
+    "total_loss_mw": 1034.1355795839766,
+    "slack_mismatch_mw": -0.1602814625441873
+  },
+  "total_loss_diff_pct": 0.1734237986537308,
+  "total_gen_diff_pct": 0.005407142649911241
+}

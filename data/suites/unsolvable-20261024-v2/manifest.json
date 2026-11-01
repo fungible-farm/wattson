@@ -1,0 +1,11 @@
+{
+  "suite": "unsolvable-v1",
+  "source": "training/unsloth/out/judgement-20261024-v2/examples.jsonl",
+  "n_tasks": 28,
+  "by_source_family": {
+    "fit:snem-sa-2000": 10,
+    "pf-report:snem-1803": 9,
+    "pf-report:snem-sa-2000": 9
+  },
+  "examples_sha256": "b35daad47f945dfc0e91dfebb20415c5eb3c602543e8494de8f6ca8022b07aa7"
+}

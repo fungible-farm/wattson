@@ -1,0 +1,64 @@
+{
+  "suite": "smoke-validation-20-20261022-reworded-v2",
+  "source": "training/unsloth/out/smoke-validation-20-20261022/examples.jsonl",
+  "source_sha256": "566885d902d4769cb7ceb6610e602bedaba6201bfdb7ea5ad52699d48e0dd206",
+  "source_manifest": {
+    "allocation": "equal per subfamily where availability allows; pass rates weight subfamilies by this allocation, not by the source's composition",
+    "allocation_by_subfamily": {
+      "pf-gen-dispatch-fit": 3,
+      "pf-line-rating-fit": 7,
+      "pf-load-scale-fit": 7,
+      "pf-report": 3
+    },
+    "dataset": "nem-powercoder-stratified-sample",
+    "dropped_duplicates": 0,
+    "dropped_overlapping": 6,
+    "example_ids": [
+      "ex_7461d26386bfd085",
+      "ex_73af8d592b5a04b4",
+      "ex_d1b0f724f39a446a",
+      "ex_de33c72bf3eca1df",
+      "ex_4d1468f5465147d7",
+      "ex_2431b936977832e1",
+      "ex_300fcfc0c7794f24",
+      "ex_2633cc85c2550527",
+      "ex_3e9d03097badeec5",
+      "ex_845ce27dcf852a78",
+      "ex_0e361a03797547be",
+      "ex_d12fc716589e7f87",
+      "ex_f3b14a3e249e1193",
+      "ex_59c8cb9561a97624",
+      "ex_5d1a4cd311d959c2",
+      "ex_bfa8b3e3c5e8049d",
+      "ex_17d2c33be1144cf1",
+      "ex_d92e03950c02a97a",
+      "ex_b91e2020c38494c1",
+      "ex_80925c940e97694d"
+    ],
+    "examples_sha256": "566885d902d4769cb7ceb6610e602bedaba6201bfdb7ea5ad52699d48e0dd206",
+    "excluded_sha256": "540c0ac1eecd9e76d77a3859bcadb92b6d8d50c0d013d54394a5cbf1d4fe0e34",
+    "excluded_source": "powercoder/datasets/smoke/splits/train.jsonl",
+    "independence_audit": {
+      "clean": true,
+      "duplicate_ids": 0,
+      "duplicate_prompts": 0,
+      "duplicate_tasks": 0,
+      "overlap_ids": [],
+      "rows": 20,
+      "unique_prompts": 20,
+      "unique_tasks": 20
+    },
+    "n_tasks": 20,
+    "order": "seeded draw per subfamily, interleaved round-robin in sorted subfamily order",
+    "seed": 20261022,
+    "skipped_subfamilies": [
+      "mcp-trajectory"
+    ],
+    "source": "powercoder/datasets/smoke/splits/validation.jsonl",
+    "source_sha256": "d3ad6775cfff8532cb526ee9ccc2af16e7bdfac90e5ed595910a88763e379ed1"
+  },
+  "prompt_wording": "v2",
+  "n_tasks": 20,
+  "prompts_reworded": 17,
+  "examples_sha256": "2e6119c55ec4f78b7eb8daef5afa1cf2972d5c53c8055f4f126f584afc289bf3"
+}

@@ -1,0 +1,222 @@
+{
+  "candidate_bus": 175,
+  "voltage_band_pu": [
+    0.9,
+    1.1
+  ],
+  "thermal_limit_percent": 100.0,
+  "agree_count": 21,
+  "total_count": 21,
+  "comparisons": [
+    {
+      "line": 142,
+      "pandapower_worst_voltage_pu": 0.8992493336150033,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150024,
+      "voltage_diff_pu": 8.881784197001252e-16,
+      "pandapower_worst_loading_percent": 97.84211644660711,
+      "pypowsybl_worst_loading_percent": 100.8462424112857,
+      "loading_diff_percent": 3.070381215964353,
+      "agrees": true
+    },
+    {
+      "line": 143,
+      "pandapower_worst_voltage_pu": 0.8992493336150027,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150023,
+      "voltage_diff_pu": 4.440892098500626e-16,
+      "pandapower_worst_loading_percent": 97.84211644660715,
+      "pypowsybl_worst_loading_percent": 101.04582015859182,
+      "loading_diff_percent": 3.2743606008696133,
+      "agrees": true
+    },
+    {
+      "line": 144,
+      "pandapower_worst_voltage_pu": 0.8992493336150027,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150023,
+      "voltage_diff_pu": 4.440892098500626e-16,
+      "pandapower_worst_loading_percent": 97.8421164466067,
+      "pypowsybl_worst_loading_percent": 100.79566544664405,
+      "loading_diff_percent": 3.018688788942064,
+      "agrees": true
+    },
+    {
+      "line": 145,
+      "pandapower_worst_voltage_pu": 0.8992493336150029,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150023,
+      "voltage_diff_pu": 6.661338147750939e-16,
+      "pandapower_worst_loading_percent": 97.84211644660675,
+      "pypowsybl_worst_loading_percent": 100.84322698291348,
+      "loading_diff_percent": 3.0672992830694303,
+      "agrees": true
+    },
+    {
+      "line": 146,
+      "pandapower_worst_voltage_pu": 0.899249333615003,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150023,
+      "voltage_diff_pu": 7.771561172376096e-16,
+      "pandapower_worst_loading_percent": 97.84211644660692,
+      "pypowsybl_worst_loading_percent": 100.84299127721825,
+      "loading_diff_percent": 3.0670583789435093,
+      "agrees": true
+    },
+    {
+      "line": 147,
+      "pandapower_worst_voltage_pu": 0.8992493336150027,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150023,
+      "voltage_diff_pu": 4.440892098500626e-16,
+      "pandapower_worst_loading_percent": 97.84211644660716,
+      "pypowsybl_worst_loading_percent": 100.83881281715365,
+      "loading_diff_percent": 3.0627877639807566,
+      "agrees": true
+    },
+    {
+      "line": 148,
+      "pandapower_worst_voltage_pu": 0.8992493336150025,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150023,
+      "voltage_diff_pu": 2.220446049250313e-16,
+      "pandapower_worst_loading_percent": 97.84211644660633,
+      "pypowsybl_worst_loading_percent": 100.83816529281397,
+      "loading_diff_percent": 3.0621259586536276,
+      "agrees": true
+    },
+    {
+      "line": 149,
+      "pandapower_worst_voltage_pu": 0.8992493336150028,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150024,
+      "voltage_diff_pu": 4.440892098500626e-16,
+      "pandapower_worst_loading_percent": 97.84211644660716,
+      "pypowsybl_worst_loading_percent": 100.84638416539799,
+      "loading_diff_percent": 3.0705260964282894,
+      "agrees": true
+    },
+    {
+      "line": 150,
+      "pandapower_worst_voltage_pu": 0.8992493336150031,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150023,
+      "voltage_diff_pu": 8.881784197001252e-16,
+      "pandapower_worst_loading_percent": 97.84211644660681,
+      "pypowsybl_worst_loading_percent": 100.97485417253147,
+      "loading_diff_percent": 3.201829477630132,
+      "agrees": true
+    },
+    {
+      "line": 151,
+      "pandapower_worst_voltage_pu": 0.8992493336150027,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150024,
+      "voltage_diff_pu": 3.3306690738754696e-16,
+      "pandapower_worst_loading_percent": 113.00103012472817,
+      "pypowsybl_worst_loading_percent": 113.00099272156659,
+      "loading_diff_percent": 3.309984125238787e-05,
+      "agrees": true
+    },
+    {
+      "line": 152,
+      "pandapower_worst_voltage_pu": 0.8992493336150027,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150024,
+      "voltage_diff_pu": 3.3306690738754696e-16,
+      "pandapower_worst_loading_percent": 111.3678212484922,
+      "pypowsybl_worst_loading_percent": 111.36778432379266,
+      "loading_diff_percent": 3.315562711864207e-05,
+      "agrees": true
+    },
+    {
+      "line": 181,
+      "pandapower_worst_voltage_pu": 0.8992493336150029,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150024,
+      "voltage_diff_pu": 5.551115123125783e-16,
+      "pandapower_worst_loading_percent": 97.84211644660714,
+      "pypowsybl_worst_loading_percent": 100.83422098656669,
+      "loading_diff_percent": 3.05809466171182,
+      "agrees": true
+    },
+    {
+      "line": 182,
+      "pandapower_worst_voltage_pu": 0.8992493336150029,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150023,
+      "voltage_diff_pu": 6.661338147750939e-16,
+      "pandapower_worst_loading_percent": 97.84211644660698,
+      "pypowsybl_worst_loading_percent": 100.8370317838899,
+      "loading_diff_percent": 3.0609674504713538,
+      "agrees": true
+    },
+    {
+      "line": 205,
+      "pandapower_worst_voltage_pu": 0.8992493336150034,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150023,
+      "voltage_diff_pu": 1.1102230246251565e-15,
+      "pandapower_worst_loading_percent": 97.8421164466067,
+      "pypowsybl_worst_loading_percent": 100.84551901718113,
+      "loading_diff_percent": 3.0696418675830874,
+      "agrees": true
+    },
+    {
+      "line": 265,
+      "pandapower_worst_voltage_pu": 0.8992493336150028,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150024,
+      "voltage_diff_pu": 4.440892098500626e-16,
+      "pandapower_worst_loading_percent": 97.87424103545798,
+      "pypowsybl_worst_loading_percent": 101.88068887178116,
+      "loading_diff_percent": 4.093465036292558,
+      "agrees": true
+    },
+    {
+      "line": 284,
+      "pandapower_worst_voltage_pu": 0.8992493336150027,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150023,
+      "voltage_diff_pu": 4.440892098500626e-16,
+      "pandapower_worst_loading_percent": 97.84211644660643,
+      "pypowsybl_worst_loading_percent": 100.83043333853878,
+      "loading_diff_percent": 3.0542234780490625,
+      "agrees": true
+    },
+    {
+      "line": 298,
+      "pandapower_worst_voltage_pu": 0.8992493336150025,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150023,
+      "voltage_diff_pu": 2.220446049250313e-16,
+      "pandapower_worst_loading_percent": 97.8421164466072,
+      "pypowsybl_worst_loading_percent": 100.83832868469675,
+      "loading_diff_percent": 3.062292954102832,
+      "agrees": true
+    },
+    {
+      "line": 315,
+      "pandapower_worst_voltage_pu": 0.899249333615003,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150023,
+      "voltage_diff_pu": 7.771561172376096e-16,
+      "pandapower_worst_loading_percent": 97.84211644660658,
+      "pypowsybl_worst_loading_percent": 100.84561472631736,
+      "loading_diff_percent": 3.0697396875606446,
+      "agrees": true
+    },
+    {
+      "line": 343,
+      "pandapower_worst_voltage_pu": 0.8992493336150028,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150024,
+      "voltage_diff_pu": 4.440892098500626e-16,
+      "pandapower_worst_loading_percent": 97.84211644660702,
+      "pypowsybl_worst_loading_percent": 100.98057878127189,
+      "loading_diff_percent": 3.207680341192886,
+      "agrees": true
+    },
+    {
+      "line": 385,
+      "pandapower_worst_voltage_pu": 0.8992493336150033,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150024,
+      "voltage_diff_pu": 8.881784197001252e-16,
+      "pandapower_worst_loading_percent": 97.84211644660658,
+      "pypowsybl_worst_loading_percent": 100.84710675084352,
+      "loading_diff_percent": 3.07126461831679,
+      "agrees": true
+    },
+    {
+      "line": 434,
+      "pandapower_worst_voltage_pu": 0.899249333615003,
+      "pypowsybl_worst_voltage_pu": 0.8992493336150024,
+      "voltage_diff_pu": 6.661338147750939e-16,
+      "pandapower_worst_loading_percent": 97.84211644660694,
+      "pypowsybl_worst_loading_percent": 100.8473032309402,
+      "loading_diff_percent": 3.0714654317327765,
+      "agrees": true
+    }
+  ]
+}

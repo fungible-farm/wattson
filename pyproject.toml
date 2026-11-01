@@ -30,6 +30,12 @@ dependencies = [
 [project.optional-dependencies]
 # Training and the train/serve parity check (GPU stages; not part of the CPU smoke check).
 train = ["torch", "transformers", "peft", "datasets"]
+# The labs in benchmarks/ draw charts; matplotlib is pinned to the version the lab repository locked.
+labs = [
+    "matplotlib==3.11.1",
+    # The second-engine cross-checks in labs 2 and 3; no aarch64 wheel exists, so those tests skip there.
+    "pypowsybl>=1.16.1; sys_platform != 'linux' or platform_machine != 'aarch64'",
+]
 
 [dependency-groups]
 dev = ["pytest>=8.0"]

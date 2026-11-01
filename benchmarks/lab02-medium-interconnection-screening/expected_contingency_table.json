@@ -1,0 +1,212 @@
+[
+  {
+    "line": 142,
+    "from_bus": 175,
+    "to_bus": 195,
+    "converged": true,
+    "worst_voltage_pu": 0.8992493336150031,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 97.84211644660674,
+    "worst_loading_line": 1070
+  },
+  {
+    "line": 143,
+    "from_bus": 175,
+    "to_bus": 249,
+    "converged": true,
+    "worst_voltage_pu": 0.8992493336150031,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 97.84211644660724,
+    "worst_loading_line": 1070
+  },
+  {
+    "line": 144,
+    "from_bus": 175,
+    "to_bus": 254,
+    "converged": true,
+    "worst_voltage_pu": 0.8992493336150027,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 97.84211644660714,
+    "worst_loading_line": 1070
+  },
+  {
+    "line": 145,
+    "from_bus": 175,
+    "to_bus": 275,
+    "converged": true,
+    "worst_voltage_pu": 0.8992493336150033,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 97.84211644660711,
+    "worst_loading_line": 1070
+  },
+  {
+    "line": 146,
+    "from_bus": 175,
+    "to_bus": 275,
+    "converged": true,
+    "worst_voltage_pu": 0.8992493336150033,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 97.84211644660687,
+    "worst_loading_line": 1070
+  },
+  {
+    "line": 147,
+    "from_bus": 175,
+    "to_bus": 328,
+    "converged": true,
+    "worst_voltage_pu": 0.8992493336150027,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 97.84211644660664,
+    "worst_loading_line": 1070
+  },
+  {
+    "line": 148,
+    "from_bus": 175,
+    "to_bus": 328,
+    "converged": true,
+    "worst_voltage_pu": 0.8992493336150029,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 97.84211644660668,
+    "worst_loading_line": 1070
+  },
+  {
+    "line": 149,
+    "from_bus": 175,
+    "to_bus": 371,
+    "converged": true,
+    "worst_voltage_pu": 0.8992493336150031,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 97.84211644660667,
+    "worst_loading_line": 1070
+  },
+  {
+    "line": 150,
+    "from_bus": 175,
+    "to_bus": 249,
+    "converged": true,
+    "worst_voltage_pu": 0.8992493336150029,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 97.84211644660658,
+    "worst_loading_line": 1070
+  },
+  {
+    "line": 151,
+    "from_bus": 175,
+    "to_bus": 608,
+    "converged": true,
+    "worst_voltage_pu": 0.8992493336150027,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 113.0010301247298,
+    "worst_loading_line": 152
+  },
+  {
+    "line": 152,
+    "from_bus": 175,
+    "to_bus": 608,
+    "converged": true,
+    "worst_voltage_pu": 0.8992493336150027,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 111.36782124849188,
+    "worst_loading_line": 151
+  },
+  {
+    "line": 181,
+    "from_bus": 185,
+    "to_bus": 254,
+    "converged": true,
+    "worst_voltage_pu": 0.899249333615003,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 97.84211644660726,
+    "worst_loading_line": 1070
+  },
+  {
+    "line": 182,
+    "from_bus": 185,
+    "to_bus": 254,
+    "converged": true,
+    "worst_voltage_pu": 0.8992493336150033,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 97.84211644660715,
+    "worst_loading_line": 1070
+  },
+  {
+    "line": 205,
+    "from_bus": 195,
+    "to_bus": 371,
+    "converged": true,
+    "worst_voltage_pu": 0.899249333615003,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 97.84211644660733,
+    "worst_loading_line": 1070
+  },
+  {
+    "line": 265,
+    "from_bus": 231,
+    "to_bus": 249,
+    "converged": true,
+    "worst_voltage_pu": 0.8992493336150027,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 97.87424103553343,
+    "worst_loading_line": 79
+  },
+  {
+    "line": 284,
+    "from_bus": 254,
+    "to_bus": 328,
+    "converged": true,
+    "worst_voltage_pu": 0.8992493336150029,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 97.84211644660697,
+    "worst_loading_line": 1070
+  },
+  {
+    "line": 298,
+    "from_bus": 275,
+    "to_bus": 328,
+    "converged": true,
+    "worst_voltage_pu": 0.899249333615003,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 97.84211644660688,
+    "worst_loading_line": 1070
+  },
+  {
+    "line": 315,
+    "from_bus": 294,
+    "to_bus": 249,
+    "converged": true,
+    "worst_voltage_pu": 0.8992493336150033,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 97.84211644660716,
+    "worst_loading_line": 1070
+  },
+  {
+    "line": 343,
+    "from_bus": 328,
+    "to_bus": 443,
+    "converged": true,
+    "worst_voltage_pu": 0.899249333615003,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 97.84211644660675,
+    "worst_loading_line": 1070
+  },
+  {
+    "line": 385,
+    "from_bus": 388,
+    "to_bus": 608,
+    "converged": true,
+    "worst_voltage_pu": 0.8992493336150034,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 97.84211644660729,
+    "worst_loading_line": 1070
+  },
+  {
+    "line": 434,
+    "from_bus": 608,
+    "to_bus": 617,
+    "converged": true,
+    "worst_voltage_pu": 0.8992493336150029,
+    "worst_voltage_bus": 1126,
+    "worst_loading_percent": 97.84211644660672,
+    "worst_loading_line": 1070
+  }
+]

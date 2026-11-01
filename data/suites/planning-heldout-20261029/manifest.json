@@ -1,0 +1,12 @@
+{
+  "suite": "planning-heldout-v1",
+  "seed": 20261029,
+  "n_tasks": 40,
+  "by_case_and_wording": {
+    "snem-1803:wording0": 10,
+    "snem-1803:wording2": 10,
+    "ieee39:wording0": 10,
+    "ieee39:wording2": 10
+  },
+  "examples_sha256": "29a7ea024083d4cba1d7b1fd214285a86fd00d7c1f8efc629df98252d8767901"
+}

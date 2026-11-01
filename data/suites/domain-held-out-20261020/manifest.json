@@ -1,0 +1,50 @@
+{
+  "base_seed": 20261020,
+  "candidate_count": 500,
+  "content_hash": "sha256:10e799fdf305ee668d3f12b0c49b623e77e900c4370adb51cf5edb59bcc53285",
+  "counts_by_family": {
+    "power-flow-contingency": 306
+  },
+  "counts_by_lifecycle_status": {
+    "verified": 306
+  },
+  "counts_by_subfamily": {
+    "pf-gen-dispatch-fit": 40,
+    "pf-line-rating-fit": 120,
+    "pf-load-scale-fit": 120,
+    "pf-report": 26
+  },
+  "created_utc": "2026-10-20T03:56:37Z",
+  "dataset": "nem-powercoder-held-out-domain",
+  "element_lists_sha256": "402fd5e37ab348cee3778b1b475ac122a137c4f88dc54eeee0cd2cdb6fee390e",
+  "examples_sha256": "f2523a141ca1f3160617647b595e2b3a7cfbd16c8bded70caf0a4430fed29bca",
+  "excluded_sources": {
+    "powercoder/datasets/smoke/examples.jsonl": "bb035acdd5760cab5338dec03893c69bed0590793f108805da34c02acc7f00b5"
+  },
+  "generator": "powercoder/datasets/generate.py",
+  "git_commit": "59c2efdabe1b14bb998a71eedae30cf582828f88",
+  "independence_audit": {
+    "clean": true,
+    "duplicate_ids": 0,
+    "duplicate_prompts": 0,
+    "duplicate_tasks": 0,
+    "overlap_ids": [],
+    "rows": 306,
+    "unique_prompts": 306,
+    "unique_tasks": 306
+  },
+  "licence": "CSIRO Synthetic-NEM-2000-Bus case data (public); generated examples (c) PromptExecution, MIT",
+  "notes": "500-example smoke dataset (MISSION.md M04). All expected values are real pandapower solver output. snem-1803 excluded (EXECUTION_FAILURE; reserved for code-repair family). See schemas/training-example.schema.json.",
+  "requested_counts": {
+    "mcp-trajectory": 100,
+    "pf-gen-dispatch-fit": 40,
+    "pf-line-rating-fit": 120,
+    "pf-load-scale-fit": 120,
+    "pf-report": 120
+  },
+  "scope": "M04 power-flow families; broader M09 suites still required",
+  "solver": "pandapower",
+  "solver_version": "3.5.4",
+  "total_examples": 306,
+  "version": "0.1.0"
+}

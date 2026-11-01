@@ -1,0 +1,23 @@
+{
+  "suite": "judgement-20261024-reworded-v2",
+  "source": "training/unsloth/out/judgement-20261024/examples.jsonl",
+  "source_sha256": "bc9528ede333981a325b8a052f5db4d15d6f89c3aa36520486606ea37386b637",
+  "source_manifest": {
+    "suite": "judgement-v1",
+    "seed": 20261023,
+    "n_tasks": 40,
+    "by_variant": {
+      "intent-2": 1,
+      "intent-1": 5,
+      "intent-0": 4,
+      "open-interval": 10,
+      "pf-worst-contingency": 10,
+      "held-out-network": 10
+    },
+    "examples_sha256": "bc9528ede333981a325b8a052f5db4d15d6f89c3aa36520486606ea37386b637"
+  },
+  "prompt_wording": "v2",
+  "n_tasks": 40,
+  "prompts_reworded": 10,
+  "examples_sha256": "7003be8eff932e9335f4e73a65834bec78aec0684ac4f32d98b68238051b83f1"
+}

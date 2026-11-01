@@ -18,6 +18,8 @@ from pathlib import Path
 DATA: Path = Path(__file__).resolve().parents[1] / "data"
 MANIFEST: Path = DATA / "MANIFEST.json"
 SELF: str = "MANIFEST.json"
+# The CSIRO case files are downloaded by scripts/fetch_csiro_nem_data.py and checksum-verified there, not shipped.
+FETCHED_SUFFIX: str = ".m"
 
 
 def digest(path: Path) -> str:
@@ -29,7 +31,7 @@ def digest(path: Path) -> str:
 
 
 def files() -> list[Path]:
-    return sorted(p for p in DATA.rglob("*") if p.is_file() and p.name != SELF)
+    return sorted(p for p in DATA.rglob("*") if p.is_file() and p.name != SELF and p.suffix != FETCHED_SUFFIX)
 
 
 def build() -> dict[str, str]:

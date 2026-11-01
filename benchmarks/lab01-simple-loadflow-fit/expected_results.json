@@ -1,0 +1,11 @@
+{
+  "target_bus": 2008,
+  "base_case_voltage_pu": 0.934801,
+  "field_scada_voltage_pu": 0.9422,
+  "fitted_scale": 0.925,
+  "fitted_voltage_pu": 0.941409,
+  "residual_pu": -0.000791,
+  "iterations": 3,
+  "converged": true,
+  "tolerance_pu": 0.002
+}

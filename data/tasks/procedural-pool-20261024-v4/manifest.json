@@ -1,0 +1,61 @@
+{
+  "pool": "procedural-v4",
+  "seed": 20261024,
+  "n_tasks": 210,
+  "by_network": {
+    "snem-sa-2000": 70,
+    "ieee118": 70,
+    "pegase89": 70
+  },
+  "held_out_networks": [
+    "snem-1803",
+    "ieee39"
+  ],
+  "audited_against": {
+    "benchmarks/power-agent-bench-lite/results/domain-stratified-100-20261022/examples.jsonl": {
+      "clean": true,
+      "overlap_ids": []
+    },
+    "benchmarks/power-agent-bench-lite/results/domain-stratified-100-20261024-v2/examples.jsonl": {
+      "clean": true,
+      "overlap_ids": []
+    },
+    "training/unsloth/out/smoke-validation-20-20261022/examples.jsonl": {
+      "clean": true,
+      "overlap_ids": []
+    },
+    "training/unsloth/out/smoke-validation-20-20261024-v2/examples.jsonl": {
+      "clean": true,
+      "overlap_ids": []
+    },
+    "training/unsloth/out/judgement-20261024-v2/examples.jsonl": {
+      "clean": true,
+      "overlap_ids": []
+    },
+    "training/unsloth/out/unsolvable-20261024-v2/examples.jsonl": {
+      "clean": true,
+      "overlap_ids": []
+    }
+  },
+  "open_interval": 36,
+  "free_text": 39,
+  "contingency": 48,
+  "operating_points": 60,
+  "by_subfamily": {
+    "pf-gen-dispatch-fit": 30,
+    "pf-line-rating-fit": 30,
+    "pf-load-scale-fit": 150
+  },
+  "discovered_elements": {
+    "snem-sa-2000": 40,
+    "snem-sa-2000:pf-line-rating-fit": 33,
+    "snem-sa-2000:pf-gen-dispatch-fit": 40,
+    "ieee118": 40,
+    "ieee118:pf-line-rating-fit": 22,
+    "ieee118:pf-gen-dispatch-fit": 23,
+    "pegase89": 40,
+    "pegase89:pf-line-rating-fit": 40,
+    "pegase89:pf-gen-dispatch-fit": 40
+  },
+  "examples_sha256": "a42ba7c41f0d7ae465b2d04ec944ecbf895b050006776caf78a266568230bfd6"
+}

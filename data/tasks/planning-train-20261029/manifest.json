@@ -1,0 +1,12 @@
+{
+  "suite": "planning-train-v1",
+  "seed": 20261029,
+  "n_tasks": 80,
+  "by_case_and_wording": {
+    "pegase89:wording0": 20,
+    "pegase89:wording1": 20,
+    "snem-sa-2000:wording0": 20,
+    "snem-sa-2000:wording1": 20
+  },
+  "examples_sha256": "ea5e41309be1e0b80c90905b2cf8f428c80f9a45e7c44821ee3accb1e5b08727"
+}

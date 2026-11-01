@@ -1,0 +1,66 @@
+{
+  "pool": "procedural-v4",
+  "seed": 20261024,
+  "n_tasks": 90,
+  "by_network": {
+    "snem-1803": 45,
+    "ieee39": 45
+  },
+  "held_out_networks": [
+    "snem-1803",
+    "ieee39"
+  ],
+  "networks": [
+    "snem-1803",
+    "ieee39"
+  ],
+  "split": "test",
+  "audited_against": {
+    "benchmarks/power-agent-bench-lite/results/domain-stratified-100-20261022/examples.jsonl": {
+      "clean": true,
+      "overlap_ids": []
+    },
+    "benchmarks/power-agent-bench-lite/results/domain-stratified-100-20261024-v2/examples.jsonl": {
+      "clean": true,
+      "overlap_ids": []
+    },
+    "training/unsloth/out/smoke-validation-20-20261022/examples.jsonl": {
+      "clean": true,
+      "overlap_ids": []
+    },
+    "training/unsloth/out/smoke-validation-20-20261024-v2/examples.jsonl": {
+      "clean": true,
+      "overlap_ids": []
+    },
+    "training/unsloth/out/judgement-20261024-v2/examples.jsonl": {
+      "clean": true,
+      "overlap_ids": []
+    },
+    "training/unsloth/out/unsolvable-20261024-v2/examples.jsonl": {
+      "clean": true,
+      "overlap_ids": []
+    },
+    "training/unsloth/out/procedural-pool-20261024-v4/examples.jsonl": {
+      "clean": true,
+      "overlap_ids": []
+    }
+  },
+  "open_interval": 12,
+  "free_text": 12,
+  "contingency": 16,
+  "operating_points": 40,
+  "by_subfamily": {
+    "pf-gen-dispatch-fit": 20,
+    "pf-line-rating-fit": 20,
+    "pf-load-scale-fit": 50
+  },
+  "discovered_elements": {
+    "snem-1803": 40,
+    "snem-1803:pf-line-rating-fit": 40,
+    "snem-1803:pf-gen-dispatch-fit": 40,
+    "ieee39": 28,
+    "ieee39:pf-line-rating-fit": 35,
+    "ieee39:pf-gen-dispatch-fit": 32
+  },
+  "examples_sha256": "fd0be09a1a6f15c161c16d657610b7c650e0a0379653680594ba3a3e9d8ce3ab"
+}

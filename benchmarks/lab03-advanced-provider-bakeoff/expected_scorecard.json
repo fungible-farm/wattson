@@ -1,0 +1,102 @@
+[
+  {
+    "provider": "local-policy-A",
+    "task_family": "load-scale-fit",
+    "passed": true,
+    "error_margin": 0.001349,
+    "iterations": 3,
+    "wall_clock_s": 0.5658,
+    "tokens": null,
+    "detail": "fitted=0.9250x -> 0.9598pu (target 0.9585pu)"
+  },
+  {
+    "provider": "local-policy-A",
+    "task_family": "line-rating-fit",
+    "passed": true,
+    "error_margin": 0.350889,
+    "iterations": 3,
+    "wall_clock_s": 0.5796,
+    "tokens": null,
+    "detail": "fitted=0.9750x -> 100.3509% (target 100.0%)"
+  },
+  {
+    "provider": "local-policy-A",
+    "task_family": "gen-droop-fit",
+    "passed": true,
+    "error_margin": 0.305384,
+    "iterations": 2,
+    "wall_clock_s": 0.4089,
+    "tokens": null,
+    "detail": "fitted=1.0500x -> 38.1946% (target 38.5%)"
+  },
+  {
+    "provider": "local-policy-B",
+    "task_family": "load-scale-fit",
+    "passed": true,
+    "error_margin": 0.001135,
+    "iterations": 2,
+    "wall_clock_s": 0.4151,
+    "tokens": null,
+    "detail": "fitted=0.9229x -> 0.9596pu (target 0.9585pu)"
+  },
+  {
+    "provider": "local-policy-B",
+    "task_family": "line-rating-fit",
+    "passed": true,
+    "error_margin": 0.079763,
+    "iterations": 2,
+    "wall_clock_s": 0.4251,
+    "tokens": null,
+    "detail": "fitted=0.9792x -> 99.9202% (target 100.0%)"
+  },
+  {
+    "provider": "local-policy-B",
+    "task_family": "gen-droop-fit",
+    "passed": true,
+    "error_margin": 0.002944,
+    "iterations": 1,
+    "wall_clock_s": 0.3218,
+    "tokens": null,
+    "detail": "fitted=1.0579x -> 38.4971% (target 38.5%)"
+  },
+  {
+    "provider": "local-policy-C",
+    "task_family": "load-scale-fit",
+    "passed": true,
+    "error_margin": 0.001401,
+    "iterations": 3,
+    "wall_clock_s": 0.5246,
+    "tokens": null,
+    "detail": "fitted=0.9255x -> 0.9599pu (target 0.9585pu)"
+  },
+  {
+    "provider": "local-policy-C",
+    "task_family": "line-rating-fit",
+    "passed": true,
+    "error_margin": 0.225983,
+    "iterations": 3,
+    "wall_clock_s": 0.6928,
+    "tokens": null,
+    "detail": "fitted=0.9762x -> 100.2260% (target 100.0%)"
+  },
+  {
+    "provider": "local-policy-C",
+    "task_family": "gen-droop-fit",
+    "passed": true,
+    "error_margin": 0.259751,
+    "iterations": 2,
+    "wall_clock_s": 0.4322,
+    "tokens": null,
+    "detail": "fitted=1.0512x -> 38.2402% (target 38.5%)"
+  },
+  {
+    "provider": "PowerFM-OpenPowerBench-stub",
+    "task_family": "load-forecast-24h",
+    "passed": true,
+    "error_margin": 1.4807,
+    "iterations": null,
+    "wall_clock_s": 1.6e-05,
+    "tokens": null,
+    "detail": "MAPE=1.48% over 24 held-out hours (pass <= 5.0%)"
+  }
+]
