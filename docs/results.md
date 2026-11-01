@@ -46,7 +46,7 @@ Smoke (20 tasks) is at ceiling for every Python arm (20 of 20) and 19 for plain 
   Qwen thinking (mean 35.3). One seed, so no variance estimate. The two plain-tool controls trained on older data (23, 20) score
   below every Python-shell run; the plain control on the final data (31) sits inside the non-thinking Python range (27-31), so
   the shell's advantage over plain on derived accuracy is not established, while its advantage in untraced numbers
-  (0 against 5-18 of 40) and on the held-out suite (88-90 against 75-76) is.
+  (0 against 5-18 of 40) and on the held-out suite (88-90 against 69-76) is.
 
 ## Known limits
 
