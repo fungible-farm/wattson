@@ -44,6 +44,7 @@ PyTorch (Apache-2.0 / BSD-3-Clause) and bitsandbytes (MIT).
 from __future__ import annotations
 
 import argparse
+import gzip
 import hashlib
 import importlib.metadata
 import json
@@ -71,6 +72,18 @@ GENERATION_CONFIG: str = "generation_config.json"
 GENERATION_CHECKS_PER_SUBFAMILY: int = 2
 GENERATION_CHECK_TOKENS: int = 32
 
+
+
+def read_trajectory_bytes(path: Path) -> bytes:
+    """The trajectory file's content, decompressed if it is ``.gz``.
+
+    The manifest records the SHA-256 of the uncompressed ``trajectories.jsonl``; ``data/trajectories/*`` ships it gzipped (about a tenth of the
+    size), so the hash is taken over the decompressed bytes and both forms verify against the same manifest.
+    """
+    if path.suffix == ".gz":
+        with gzip.open(path, "rb") as stream:
+            return stream.read()
+    return path.read_bytes()
 
 def normalise(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Decode tool-call arguments: chat templates iterate them as a mapping."""
@@ -256,14 +269,15 @@ def train(config_path: Path, preflight: bool = False) -> None:
     base_hashes = verify_hub_snapshot(model_cfg) if model_cfg["verify"] == "hub_snapshot" else verify_base(model_cfg)
     trajectories = Path(data["trajectories"])
     manifest = json.loads((trajectories.parent / "manifest.json").read_text())
-    if manifest["trajectories_sha256"] != digest(trajectories) or manifest["benchmark_access"]:
+    raw = read_trajectory_bytes(trajectories)
+    if manifest["trajectories_sha256"] != hashlib.sha256(raw).hexdigest() or manifest["benchmark_access"]:
         raise ValueError("Trajectories are not the frozen, benchmark-free set their manifest describes")
     set_seed(settings["seed"])
     tokenizer = AutoTokenizer.from_pretrained(model_cfg["name"], local_files_only=True)
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token_id = tokenizer.eos_token_id
     tokenizer.padding_side = "right"
-    rows = [json.loads(line) for line in trajectories.read_text().splitlines() if line.strip()]
+    rows = [json.loads(line) for line in raw.decode().splitlines() if line.strip()]
     features: list[Features] = []
     for row in rows:
         def render(messages: list[dict[str, Any]], generation: bool, tools: list = row["tools"]) -> str:

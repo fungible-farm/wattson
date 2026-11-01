@@ -53,7 +53,7 @@ Smoke (20 tasks) is at ceiling for every Python arm (20 of 20) and 19 for plain 
 - The Python shell is **not a security boundary** (a restricted `python -I` child with a module allowlist, a wall timeout and a
   memory cap). Packaging and containment are separate work and out of scope here.
 - `min_voltage_outage` in the derived suite asks for "X pu" without a precision, so a two-decimal answer fails the 1e-3
-  tolerance. The suite is frozen (`fixtures/derived-heldout-v1`); a v2 suite should ask for four decimals.
+  tolerance. The suite is frozen (`data/suites/derived-heldout-20261030`); a v2 suite should ask for four decimals.
 - Unsolvable-task refusals vary by 9 tasks between seeds; six of the ten failures in one seed were correct refusals that
   stated a maximum line id by computing `count - 1` (an untraced number). The shell should return the highest valid id.
 - Granite has one seed; Qwen3.5-4B results are lab evidence about the recipe, and the project's

@@ -1,0 +1,19 @@
+# Training image for src/wattson/training/agent_sft.py (LoRA supervised fine-tuning of the students) and the torch-dependent tests.
+#
+# Every package is pinned to the versions the released students were trained with. flash-linear-attention matters for Qwen3.5: without it
+# transformers runs the Gated DeltaNet layers through a reference PyTorch loop (measured ~125 s per 8-sequence step, ~12.7 h for 365 steps).
+# torch comes from the CUDA 13.0 wheel index, which publishes both x86_64 and aarch64 builds.
+#
+# Build:   podman build -f containers/train/Containerfile -t localhost/wattson-train:local .
+# Train:   see docs/training.md
+FROM docker.io/library/python:3.13-slim
+RUN pip install --no-cache-dir torch==2.13.0 torchvision==0.28.0 --index-url https://download.pytorch.org/whl/cu130 \
+ && pip install --no-cache-dir transformers==5.17.0 peft==0.21.2 trl==1.15.0 datasets==4.8.5 accelerate==1.15.0 \
+      bitsandbytes==0.50.2 flash-linear-attention==0.5.2 fla-core==0.5.2 triton==3.7.1 safetensors==0.8.0 \
+      tokenizers==0.23.3 huggingface_hub==1.33.0 PyYAML==6.0.3 numpy==2.4.6 einops==0.8.2 sentencepiece==0.2.2 \
+      protobuf==7.36.2 Jinja2==3.1.6 pillow==12.3.0 pytest==8.4.2 \
+ && pip freeze > /installed.txt
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential \
+ && rm -rf /var/lib/apt/lists/*
+WORKDIR /workspace
+ENV PYTHONPATH=/workspace/src PYTHONUNBUFFERED=1 HF_HOME=/models

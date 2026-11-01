@@ -1,0 +1,44 @@
+# WattsOn v0.1.0 base (Granite 4.2 8B, Apache-2.0 per IBM): the v11 Python-shell trajectories (v2 shell, planning rows), the r7e2 recipe, two epochs.
+model:
+  # Apache-2.0 (IBM model card); the pinned r4 download, verified by its hub metadata.
+  name: models/granite-4.2-8b-base
+  source_hf_id: ibm-granite/granite-4.2-8b
+  source_revision: b3791992239dce12d0038f1f54a8adb7b02d59ab
+  verify: local_dir_metadata
+  loader: causal
+lora:
+  # r/alpha/dropout as the r4 students. Every decoder-layer linear layer
+  # (attention, MLP); not lm_head.
+  r: 32
+  alpha: 64
+  dropout: 0.0
+  target_modules: '^model\.layers\.\d+\.(self_attn\.(q|k|v|o)_proj|mlp\.(gate|up|down)_proj)$'
+  bias: none
+dataset:
+  # r7 (2026-10-24; v6 = v3 with fit prompts in wording v2 and the IR 0.3.0 tool schema: 7 networks, load_level): the same 238 procedures under IR 0.2.0 (no placeholder ids), 25
+  # pf-unsolvable refusals and 238 recovery variants, two of them id-free (invented_observation,
+  # wrong_element; bad ids drawn per row from the network's id gaps). Hyperparameters are
+  # unchanged from v2, so the data is the only difference.
+  trajectories: data/trajectories/20261029-v11-python/trajectories.jsonl.gz
+training:
+  # The longest rendered trajectory is 7,001 tokens (Qwen) / 6,501 (Granite).
+  seq_len: 8192
+  # 1e-4 is a common LoRA rate, chosen, not tuned (r4's 2e-5 x 100 steps saw 400
+  # short rows). One epoch: the first r6 Qwen run's training loss was 0.0016 by
+  # step 20 of 60 (epoch 0.67), so a second epoch repeated memorised targets.
+  epochs: 2
+  # 8 conversations per optimizer step: 501 trajectories (injected mistakes are context
+  # only), one epoch -> 63 steps for both students.
+  conversations_per_step: 8
+  warmup_fraction: 0.05
+  learning_rate: 1.0e-4
+  logging_steps: 5
+  save_steps: 1000
+  optim: adamw_8bit
+  weight_decay: 0.01
+  lr_scheduler_type: cosine
+  seed: 42
+  gradient_checkpointing: true
+output:
+  dir: out/agent-sft-granite42-8b-20261030-g11py
+  adapter_name: granite42-8b-agent-lora

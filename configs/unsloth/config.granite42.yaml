@@ -4,7 +4,7 @@
 # Keep the original Qwen experiment's training split and hyperparameters;
 # this is a separate student, never an overwrite of the Qwen adapter.
 model:
-  name: training/unsloth/out/granite-4.2-8b-base
+  name: models/granite-4.2-8b-base
   source_hf_id: ibm-granite/granite-4.2-8b
   source_revision: b3791992239dce12d0038f1f54a8adb7b02d59ab
   dtype: bfloat16
@@ -39,5 +39,5 @@ training:
   seed: 42
   gradient_checkpointing: true
 output:
-  dir: training/unsloth/out/granite42-sft-r1
+  dir: out/granite42-sft-r1
   adapter_name: granite42-8b-lora

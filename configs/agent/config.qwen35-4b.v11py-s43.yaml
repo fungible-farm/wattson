@@ -1,0 +1,51 @@
+# Backlog 0041 v11: v2 shell (exists, report text, report numbers), planning rows, redesigned thinking; the r7e2 recipe, two epochs.
+# Qwen3.5-4B tool-call student (AGENTS.md FM-19 retrain). Hyperparameters are
+# identical to config.granite42-8b.yaml; only the model block differs.
+model:
+  # The hub cache is mounted at /hub; the snapshot is the r2-r4 base revision
+  # (run_comparison.QWEN_BASE_SNAPSHOT).
+  name: /hub/models--Qwen--Qwen3.5-4B/snapshots/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a
+  source_hf_id: Qwen/Qwen3.5-4B
+  source_revision: 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a
+  verify: hub_snapshot
+  # Qwen3_5ForConditionalGeneration: keep the VL architecture so the merged
+  # checkpoint is served exactly like the base.
+  loader: image-text-to-text
+lora:
+  # r/alpha/dropout as the r4 students. Every decoder-layer linear layer (full and
+  # linear attention, MLP); not the vision tower or lm_head.
+  r: 32
+  alpha: 64
+  dropout: 0.0
+  target_modules: '^model\.language_model\.layers\.\d+\.(self_attn\.(q|k|v|o)_proj|linear_attn\.(in_proj_(qkv|z|b|a)|out_proj)|mlp\.(gate|up|down)_proj)$'
+  bias: none
+dataset:
+  # r7 (2026-10-24; v6 = v3 with fit prompts in wording v2 and the IR 0.3.0 tool schema: 7 networks, load_level): the same 238 procedures under IR 0.2.0 (no placeholder ids), 25
+  # pf-unsolvable refusals and 238 recovery variants, two of them id-free (invented_observation,
+  # wrong_element; bad ids drawn per row from the network's id gaps). Hyperparameters are
+  # unchanged from v2, so the data is the only difference.
+  trajectories: data/trajectories/20261029-v11-python/trajectories.jsonl.gz
+training:
+  # The longest rendered trajectory is 7,001 tokens (Qwen) / 6,501 (Granite).
+  seq_len: 8192
+  # 1e-4 is a common LoRA rate, chosen, not tuned (r4's 2e-5 x 100 steps saw 400
+  # short rows). One epoch: the first r6 Qwen run's training loss was 0.0016 by
+  # step 20 of 60 (epoch 0.67), so a second epoch repeated memorised targets.
+  epochs: 2
+  # 8 conversations per optimizer step: 501 trajectories (injected mistakes are context
+  # only), one epoch -> 63 steps for both students.
+  conversations_per_step: 8
+  warmup_fraction: 0.05
+  learning_rate: 1.0e-4
+  logging_steps: 5
+  save_steps: 1000
+  optim: adamw_8bit
+  weight_decay: 0.01
+  lr_scheduler_type: cosine
+  seed: 43
+  gradient_checkpointing: true
+  # Loss over the supervised tail only (same loss, far less logits memory): the 5,546-token v11 turns ran the 24 GB card out of memory.
+  tail_loss: true
+output:
+  dir: out/agent-sft-qwen35-4b-20261029-v11py-s43
+  adapter_name: qwen35-4b-agent-lora

@@ -46,7 +46,7 @@ def test_the_frozen_suite_is_unchanged_and_its_expected_answers_pass_their_own_g
     import json
     from pathlib import Path
 
-    suite = Path(__file__).resolve().parents[2] / "fixtures" / "derived-heldout-v1"
+    suite = Path(__file__).resolve().parents[2] / "data" / "suites" / "derived-heldout-20261030"
     manifest = json.loads((suite / "manifest.json").read_text())
     assert hashlib.sha256((suite / "examples.jsonl").read_bytes()).hexdigest() == manifest["examples_sha256"]
     rows = [json.loads(line) for line in (suite / "examples.jsonl").read_text().splitlines() if line.strip()]

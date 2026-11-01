@@ -4,72 +4,78 @@ Small language models that plan and run verified power-system studies, and never
 Python program the model writes and a restricted shell runs against a real solver (pandapower). Every answer is graded by
 re-solving the network, not by matching text.
 
-**Status: v0.1.0 smoke check, with two released models.** The toolchain here reproduces on machines other than the author's
-(`scripts/smoke.sh`, CPU only), and two trained students are published on Hugging Face under Apache-2.0:
+**Status: v0.1.0, untagged, with two released models.** Weights are on Hugging Face under Apache-2.0:
 [`PromptExecutionAU/wattson-granite-4.2-8b-py`](https://huggingface.co/PromptExecutionAU/wattson-granite-4.2-8b-py) and
-[`PromptExecutionAU/wattson-qwen3.5-4b-pyt`](https://huggingface.co/PromptExecutionAU/wattson-qwen3.5-4b-pyt). Measured results,
-with seeds and limits, are in [`docs/results.md`](docs/results.md). The repository is not yet tagged.
+[`PromptExecutionAU/wattson-qwen3.5-4b-pyt`](https://huggingface.co/PromptExecutionAU/wattson-qwen3.5-4b-pyt).
+Measured results, with seeds and limits, are in [`docs/results.md`](docs/results.md).
 
-## Run the smoke check
+## Quick start
+
+You need [Podman](https://podman.io) 5 or newer and [`just`](https://just.systems). Nothing else is installed on your machine.
 
 ```bash
 git clone https://github.com/fungible-farm/wattson && cd wattson
-scripts/smoke.sh
+
+just labs            # labs 1-3, in a container. CPU only, no model, no GPU. About a minute.
 ```
 
-Needs Python 3.14 (uv fetches it) and [`uv`](https://docs.astral.sh/uv/) and network access to PyPI and GitHub (for the CSIRO case files). No GPU. It takes a few
-minutes and exits non-zero on the first failing stage. It checks, in order:
+To run a model, which needs an NVIDIA GPU (see [install](docs/install.md) for the one-time driver setup):
 
-1. **Environment.** `uv sync` from the lockfile on Python 3.14 (the numerical stack is pinned to the exact versions that produced the lab's evidence).
-2. **Data.** The CSIRO Synthetic-NEM case files are fetched at a pinned commit and verified by sha256.
-3. **Tests.** The CPU test suite (solver tools, the Python shell and its sandbox limits, the scorers including the
-   float-tolerant normalised scorer, the trajectory builder, the DAgger relabeller, the train/serve parity machinery).
-4. **Oracle trajectories.** The oracle writes and runs real programs through the real tool server for a handful of tasks (a fit,
-   a report, a refusal, a three-outage planning question) and each is graded; a failure here means the solver, the shell and
-   the grader disagree on your machine.
-5. **Re-scoring shipped journals.** 20 recorded model attempts (`fixtures/`) are re-scored by the normalised scorer from
-   scratch, re-solving the networks on your machine, and the counts must equal `fixtures/expected.json`. This is the check
-   that floating-point and library differences do not change a score.
+```bash
+just up granite      # first run downloads 17 GB from Hugging Face and verifies every file's hash
+just doctor          # checks everything, including one real completion from the model
+just ask "Using the power flow solver, find the scale factor s in [0.9, 1.1] applied to the active-power dispatch of generator 2 on case 'snem-sa-2000' such that the loading of transformer 4 equals 0.184093 percent (within 0.0006941900815668939 percent). Return only the scale factor."
+just eval smoke      # 20 tasks, graded by re-solving the network
+just pi              # the pi coding agent, wired to the model and its tools
+just down            # stop the pod; the downloaded model is kept
+```
 
-A passing run prints `SMOKE OK` and the versions of the libraries it used. Please report a failing or surprising run, with the
-output, as an issue: that is exactly what this release is for.
+`just up qwen` starts the smaller Qwen3.5-4B student (8.5 GB). If something else on your machine uses port 8000, set
+`WATTSON_PORT=8100`. If anything is wrong, `just doctor` says what and how to fix it; [troubleshooting](docs/troubleshooting.md)
+lists every failure we hit while building this.
 
-## What is and is not here
+## What is here
 
-- **Preferred base model:** IBM Granite 4.2 8B (`ibm-granite/granite-4.2-8b`, Apache-2.0 per IBM's model card). The lab's
-  earlier work also used Qwen3.5-4B (Apache-2.0); those students are kept as evidence about the recipe, not as the preferred base.
-- **Weights are published separately on Hugging Face, not in this repository:**
-  [`PromptExecutionAU/wattson-granite-4.2-8b-py`](https://huggingface.co/PromptExecutionAU/wattson-granite-4.2-8b-py) and
-  [`PromptExecutionAU/wattson-qwen3.5-4b-pyt`](https://huggingface.co/PromptExecutionAU/wattson-qwen3.5-4b-pyt) (both Apache-2.0,
-  seed-42 students; each repo carries a `hash_manifest.json`). Model cards are in `model-cards/`; measured
-  results, with seeds and limits, are in `docs/results.md`. No training data dumps: the oracle trajectories are regenerated by
-  `wattson.datasets.trajectories`. GPU training and evaluation orchestration live in the lab repository for now.
-- **Scope:** AC power flow on a handful of networks (the CSIRO synthetic NEM cases, IEEE 39, others from pandapower). One tool
-  protocol. Not a general agent.
-- **Security:** the Python shell is a restricted interpreter with resource limits. It is **not a security boundary**; do not run
-  it on untrusted input. Containment is out of scope for this release.
+| | |
+|---|---|
+| [`docs/`](docs/index.md) | install, quick start, containers, serving, the `pi` agent, data, training, evaluation, results, troubleshooting |
+| `src/wattson/` | the tool server and Python shell, the harness, the scorers, the trajectory builder, the `wattson` CLI |
+| `benchmarks/` | labs 1-3, deterministic power-system tasks with committed expected results |
+| `data/` | every task set, frozen evaluation suite and oracle trajectory used to train and score the released models, with a SHA-256 manifest |
+| `containers/`, `kube/`, `justfile` | the layered images, the pod definition, and the commands above |
+| `model-cards/` | the cards published with each model |
 
-## Derived-arithmetic suite
+## Use it, and what may flow back
 
-`fixtures/derived-heldout-v1` is a frozen 40-task suite of questions whose answer is a sum, difference or mean over several solver
-results (plus a minimum-voltage ranking). No tool reply contains the answer, so a model that adds in its head gets it wrong.
-`wattson.datasets.derived` builds and grades it by value; `wattson.inference.arithmetic_exposure` counts the numbers a model
-wrote that nothing gave it.
+Anyone may use this **downstream**: MIT or Apache-2.0, at your option. Fine-tune it, run it on your own networks, redistribute it.
+What flows **upstream** into this repository (task sets, benchmarks, trajectories, weights published from here, contributions)
+must be derived from public data, with its provenance recorded. [`docs/policy.md`](docs/policy.md) says exactly what that means.
 
 ## How scores are computed
 
 A fit is correct if re-solving the network at the answered scale reaches the target within the task's tolerance. A report is
 correct if each of the five solver values appears as a distinct number in the answer, whatever the wording, after every number is
 normalised to 4 decimals with exact decimal arithmetic; voltages within 1e-3 pu are the same voltage. Every number in an answer
-must also trace to the prompt, the tool schema, a tool reply or a printed result. See `src/wattson/inference/domain_scorecard.py`.
+must also trace to the prompt, the tool schema, a tool reply or a printed result. A separate suite
+(`data/suites/derived-heldout-20261030`) asks questions whose answer is a sum, difference or mean over several solver results, so
+a model that adds in its head gets it wrong. See [evaluation](docs/evaluation.md).
+
+## Limits
+
+- **Scope:** AC power flow on a handful of networks (the CSIRO synthetic NEM cases, IEEE 39, others from pandapower). One tool
+  protocol. Not a general agent.
+- **Security:** the Python shell is a restricted interpreter with resource limits. It is **not a security boundary**; do not run
+  it on untrusted input. Containment is out of scope for this release.
+- **`pi` needs special configuration** or these models invent commands and numbers; `just pi` and `wattson pi` apply it
+  ([why](docs/pi.md)).
 
 ## Licence and data
 
 Licensed under either of MIT (`LICENSE-MIT`) or Apache-2.0 (`LICENSE-APACHE`), at your option. Unless you state otherwise, any
-contribution you submit for inclusion is dual licensed as above, without additional terms or conditions. The CSIRO Synthetic-NEM-2000bus case files are fetched, not redistributed (CC BY 4.0, CSIRO). pandapower is
-BSD-3-Clause. The shipped `fixtures/` are model outputs and generated synthetic tasks.
+contribution you submit for inclusion is dual licensed as above, without additional terms or conditions. The CSIRO
+Synthetic-NEM-2000bus case files are fetched, not redistributed (CC BY 4.0, CSIRO). pandapower is BSD-3-Clause.
 
 ## Lineage
 
 Extracted from the PowerCoder lab (`fungible-farm/nem-poweragent-lab`), renamed. Evidence, backlog notes and the experiment
-history stay there.
+history stay there; the labs' environment is described in that repository's README, which now points here.
