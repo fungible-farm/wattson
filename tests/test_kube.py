@@ -70,3 +70,9 @@ def test_the_host_user_is_mapped_to_the_images_user_so_the_work_directory_is_wri
 def test_the_server_binds_to_loopback_on_the_host_only() -> None:
     port = containers()["vllm"]["ports"][0]
     assert port["hostIP"] == "127.0.0.1"
+
+
+def test_the_harness_stops_promptly_on_sigterm() -> None:
+    """Regression: `sleep infinity` as PID 1 ignores SIGTERM, so stopping the pod waited out the 10 s grace period and then killed it."""
+    command = containers()["harness"]["command"]
+    assert command[:2] == ["bash", "-c"] and "trap" in command[2] and "TERM" in command[2]

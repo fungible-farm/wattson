@@ -70,7 +70,8 @@ spec:
         - {name: shm, mountPath: /dev/shm}
     - name: harness
       image: @IMAGE@
-      command: ["sleep", "infinity"]
+      # PID 1 ignores SIGTERM unless it handles it, so a bare `sleep infinity` made `just down` wait 10 s and then SIGKILL the container.
+      command: ["bash", "-c", "trap 'exit 0' TERM INT; sleep infinity & wait"]
       workingDir: /work
       env:
         - {name: WATTSON_BASE_URL, value: "http://127.0.0.1:8000/v1"}
