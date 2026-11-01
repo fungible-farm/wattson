@@ -11,7 +11,7 @@
 | parity check | `src/wattson/training/parity_check.py` | shipped |
 | base models | Hugging Face: `ibm-granite/granite-4.2-8b`, `Qwen/Qwen3.5-4B` | pinned by revision in each config |
 
-**Verified:** the training image builds on aarch64 and the 18 torch-dependent tests pass inside it (including the supervised-tail loss
+**Verified:** the training image builds on aarch64 and on x86_64, and the 18 torch-dependent tests pass inside each (including the supervised-tail loss
 tests, which are skipped on any machine without torch). The trainer's `--preflight` mode, which renders and tokenizes the whole training set
 without a GPU, passes on the Qwen thinking config: 826 trajectories from the shipped `.jsonl.gz`, 438,362 supervised tokens, longest
 sequence 5,588 tokens, the data hash equal to its manifest, and the pinned library versions reported.
