@@ -29,16 +29,18 @@ export WATTSON_REGISTRY=localhost WATTSON_TAG=local
 
 | Step | Command | What to say | Time |
 |---|---|---|---|
-| 1 | `just labs` | Three deterministic labs run in a container and match their committed results. No GPU, no model. | 15 s |
-| 2 | `just up granite` | One pod, four containers, each with one job: a model puller (Hugging Face), a case-data fetcher (CSIRO), the model server, the harness. | about 3 min (model cached) |
-| 3 | `just doctor` | Every check, including one real completion from the model. | about 25 s |
-| 4 | `just ask "<the Lab 1 question>"` | The model writes a Python program; the solver does the arithmetic; the answer is graded by re-solving. | about 30 s |
-| 5 | `just lab1-agent` | Lab 1's task given to the model, printed next to the lab's own bisection result. | not yet measured |
-| 6 | `just eval smoke --enforce` | 20 tasks graded by re-solving, with the guard on. | about 4 min |
+| 1 | `just labs` | Three deterministic labs run in a container and match their committed results. No GPU, no model. | 15 to 65 s (65 s with a fresh image pull) |
+| 2 | `just up granite` | One pod, four containers, each with one job: a model puller (Hugging Face), a case-data fetcher (CSIRO), the model server, the harness. | about 4 min 20 s from a clean machine (images pulled, model cached) |
+| 3 | `just doctor` | Every check, including one real completion from the model. | about 20 s |
+| 4 | `just ask "<the Lab 1 question>"` | The model writes a Python program; the solver does the arithmetic; the answer is graded by re-solving. | about 80 s |
+| 5 | `just lab1-agent` | Lab 1's task given to the model, printed next to the lab's own bisection result. | about 60 s |
+| 6 | `just eval smoke --enforce` | 20 tasks graded by re-solving, with the guard on. | about 3 min 40 s (rehearsal: 20 of 20 passed, 0 untraced numbers) |
 | 7 | `just pi` | The pi coding agent wired to the model and its tools. Interactive. | open-ended |
 | 8 | `just down` | Stop; the model stays cached. | 1 s |
 
-`just demo` runs steps 1 to 6 in order, with a banner before each. It does not run `pi`.
+`just demo` runs steps 1 to 6 in order, with a banner before each. It does not run `pi`. A full rehearsal from a clean machine, pulling every image from GHCR, exited 0 in 705 s (about 12 minutes), measured once on a GB10 with `WATTSON_GPU_UTIL=0.26`.
+
+Talking point for step 5: Lab 1 may answer 0.9000 or 0.925; both are valid because the check is the physics (the voltage and the residual within tolerance), not a particular number.
 
 The question for step 4 (from the shipped smoke suite; the reference answer is `s = 1.0625`, and any `s` within the tolerance is correct):
 > Using the power flow solver, find the scale factor s in [0.9, 1.1] applied to the active-power dispatch of generator 2 on case 'snem-sa-2000' such that the loading of transformer 4 equals 0.184093 percent (within 0.0006941900815668939 percent). Return only the scale factor.
