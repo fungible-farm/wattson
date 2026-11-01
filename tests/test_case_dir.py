@@ -35,6 +35,7 @@ def test_case_dir_override_reaches_the_loader_and_the_fetch_status(tmp_path: Pat
 
 @needs_case
 def test_lab1_passes_with_the_case_file_somewhere_else(tmp_path: Path) -> None:
+    pytest.importorskip("matplotlib", reason="lab 1 draws charts; install the labs extra (uv sync --extra labs)")
     shutil.copy(SOURCE, tmp_path / "snemSA.m")
     env = {**os.environ, fetch.CASE_DIR_ENV: str(tmp_path)}
     result = subprocess.run([sys.executable, str(REPO / "benchmarks/lab01-simple-loadflow-fit/run.py"), "--step", "check"],
@@ -43,6 +44,7 @@ def test_lab1_passes_with_the_case_file_somewhere_else(tmp_path: Path) -> None:
 
 
 def test_a_missing_case_file_says_how_to_get_it(tmp_path: Path) -> None:
+    pytest.importorskip("matplotlib", reason="lab 1 draws charts; install the labs extra (uv sync --extra labs)")
     env = {**os.environ, fetch.CASE_DIR_ENV: str(tmp_path)}
     result = subprocess.run([sys.executable, str(REPO / "benchmarks/lab01-simple-loadflow-fit/run.py"), "--step", "check"],
                             capture_output=True, text=True, env=env, cwd=tmp_path)
