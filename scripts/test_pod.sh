@@ -24,6 +24,10 @@ trap cleanup EXIT
 
 mkdir -p "$WORK/out"
 
+# 0. the pod needs Podman 5 or newer (the keep-id user mapping that makes /work writable); say so first, not as a confusing later failure
+PODMAN_MAJOR="$(podman version --format '{{.Client.Version}}' 2>/dev/null | cut -d. -f1)"
+if [ "${PODMAN_MAJOR:-0}" -ge 5 ]; then pass "podman $(podman version --format '{{.Client.Version}}') is 5 or newer"; else fail "podman ${PODMAN_MAJOR:-?}.x is older than the required 5 (see docs/install.md)"; fi
+
 # 1. every @PLACEHOLDER@ in the template is filled by the justfile (otherwise `just up` would play a broken pod)
 for placeholder in $(grep -o '@[A-Z_]*@' "$HERE/kube/wattson.yaml" | sort -u); do
   if grep -q -- "s|$placeholder|" "$HERE/justfile"; then pass "justfile fills $placeholder"; else fail "justfile does not fill $placeholder"; fi

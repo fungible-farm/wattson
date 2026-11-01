@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        runner: [ubuntu-26.04, ubuntu-26.04-arm]  # Podman 5 or newer is required (the pod's keep-id mapping); 24.04 ships 4.9
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
