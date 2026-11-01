@@ -212,6 +212,11 @@ def score_answer(task: dict, answer: str) -> tuple[bool, dict, list[str]]:
         from wattson.distillation.filter import _check_fit
 
         return _check_fit(task, {"scale_factor": scale})
+    if task["subfamily"] == "pf-derived":
+        # A sum, difference, mean or ranking over several solver results, graded by value, whatever the wording.
+        from wattson.datasets.derived import grade as grade_derived
+
+        return grade_derived(task, answer)
     return (
         compare(task["subfamily"], answer, task["expected"]["answer"]),
         {"verification": "solver-generated reference matching"},

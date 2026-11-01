@@ -10,7 +10,7 @@ intentions.** If a rule matters, a program checks it, and the check can be re-ru
 
 | Rule | Enforced by |
 |---|---|
-| The model never does arithmetic | a restricted Python shell with a solver; `arithmetic_exposure` counts any number the model wrote that no prompt, tool reply or program output gave it |
+| The model never does arithmetic | a restricted Python shell with a solver; `arithmetic_exposure` counts any number the model wrote that no prompt, tool reply or program output gave it; the optional runtime guard (`--enforce`) refuses an emitted answer containing such a number |
 | Every number in an answer is traceable | the provenance gate in the scorer rejects an answer containing an untraced number |
 | An answer is right because the physics says so | the scorer re-solves the network at the answered value; it never compares text |
 | A task that cannot be solved is refused, not guessed | `solver.exists()` is called first; the unsolvable suite scores refusals |
@@ -19,6 +19,8 @@ intentions.** If a rule matters, a program checks it, and the check can be re-ru
 | Held-out means held out | frozen suites with recorded hashes; the harness audits tasks against the training rows |
 | A result is not claimed after the fact | the rule for "the shell beats plain tools" was written down before any seed finished (below) |
 | The model is not trusted to round | reports are copied from `report_text`, printed by the tool at the required decimals |
+
+The guard enforces what is *emitted*, not what the model thinks: it cannot see a model's private reasoning. "The model never computes a number itself" is therefore a trained tendency that we measure, plus an enforced guarantee about its answers.
 
 None of these depends on a model's judgement, and none uses a model to measure a model. A step is "complete" only if its outcome is an
 observation a program can produce again.

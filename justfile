@@ -74,13 +74,13 @@ ps:
 doctor:
     podman exec wattson-harness bash -lc "just --justfile /app/justfile doctor"
 
-# One question through the real tool harness.
-ask question:
-    podman exec wattson-harness bash -lc 'just --justfile /app/justfile ask "$1"' _ "{{question}}"
+# One question through the real tool harness. Add --enforce to refuse any answer containing a number no tool produced (docs/evaluation.md).
+ask question *flags:
+    podman exec wattson-harness bash -lc 'just --justfile /app/justfile ask "$1" $2' _ "{{question}}" "{{flags}}"
 
-# Run a frozen suite: smoke | heldout | judgement | unsolvable | planning | derived
-eval suite="smoke":
-    podman exec wattson-harness bash -lc "just --justfile /app/justfile eval {{suite}}"
+# Run a frozen suite: smoke | heldout | judgement | unsolvable | planning | derived. Add --enforce for the runtime provenance guard.
+eval suite="smoke" *flags:
+    podman exec wattson-harness bash -lc "just --justfile /app/justfile eval {{suite}} {{flags}}"
 
 # Interactive pi agent, wired to the model server and the WattsOn tools.
 pi:

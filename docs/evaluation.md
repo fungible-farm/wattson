@@ -41,6 +41,30 @@ Output goes to `out/eval-<suite>-<time>/` in the directory you started from: a `
 model message and tool reply. A journal is enough to re-score an attempt on another machine without a model; the smoke check does this
 for 20 recorded attempts.
 
+## Runtime guard: refusing an unverified number
+
+Training makes a model compute with the shell; it does not make it certain. `--enforce` (`just eval derived --enforce`,
+`just ask "..." --enforce`) adds a runtime check to the harness. Before a final answer is accepted, every number in it is traced with the
+scorer's own provenance rule. If any number came from no tool and not from the prompt, the model is sent back with a message naming the
+numbers and telling it to compute them with `run_python`, at most twice. If it still gives an untraced number, the attempt ends as
+`guard_refused` and **no answer is emitted**. The run manifest records `enforce_provenance`, so a guarded run is never mistaken for an
+unguarded one, and the default is off, so every number in [results](results.md) describes the unguarded harness.
+
+**What it guarantees, and what it does not.** It guarantees that no emitted answer contains a number nothing verified. It does not stop a
+model computing in its private reasoning or inside the code it writes, and it cannot make a wrong answer right. Measured on the derived suite
+with the untrained Qwen3.5-4B (one greedy run each):
+
+| | Unguarded | Guarded |
+|---|---|---|
+| passes (of 40) | 32 | 33 |
+| answers emitted containing an untraced number | 13 of 37 | 0 of 38 |
+| attempts sent back by the guard | - | 12 |
+| attempts refused | - | 0 |
+| any untraced number written anywhere, reasoning included | 23 | 22 |
+
+In the unguarded run the model often added three tool results in its head and wrote the total. The guard turned those into shell
+computations. Its private reasoning still contains numbers, which is why the last row barely moved.
+
 ## Reading the results
 
 [results.md](results.md) has the tables. Read the seeds, not just the means: the unsolvable suite moves by up to 9 tasks between seeds of the

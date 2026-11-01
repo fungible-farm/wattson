@@ -1,4 +1,4 @@
-"""OpenAI-compatible inference client for the NEM PowerCoder mission.
+"""OpenAI-compatible inference client for the NEM WattsOn mission.
 
 Wraps the llama-swap gateway at http://127.0.0.1:8000, providing typed methods for
 chat completion, tool calling, and model enumeration.

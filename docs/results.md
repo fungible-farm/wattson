@@ -48,6 +48,13 @@ Smoke (20 tasks) is at ceiling for every Python arm (20 of 20) and 19 for plain 
   the shell's advantage over plain on derived accuracy is not established, while its advantage in untraced numbers
   (0 against 5-18 of 40) and on the held-out suite (88-90 against 69-76) is.
 
+## Runtime guard
+
+With `--enforce` the harness refuses a final answer containing a number no tool produced (see [evaluation](evaluation.md)). One greedy run
+each of the untrained Qwen3.5-4B with the shell on the derived suite: 32 of 40 unguarded and 33 of 40 guarded; answers with an untraced number
+13 of 37 unguarded and 0 of 38 guarded; 12 attempts sent back, none refused. The guard polices emitted answers only: numbers written anywhere,
+reasoning included, went from 23 to 22 attempts. It was not run on the trained students, where the unguarded rate is already 0 to 3 of 40.
+
 ## Known limits
 
 - The Python shell is **not a security boundary** (a restricted `python -I` child with a module allowlist, a wall timeout and a

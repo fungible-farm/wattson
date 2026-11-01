@@ -114,7 +114,8 @@ def cmd_eval(a: argparse.Namespace) -> int:
     tasks = root / "suites" / SUITES[a.suite] / "examples.jsonl"
     out = Path(a.out) if a.out else Path(os.environ.get("WATTSON_OUT", "out")) / f"eval-{a.suite}-{time.strftime('%Y%m%d-%H%M%S')}"
     command = [sys.executable, "-m", "wattson.inference.evaluate_agent", "--base-url", server_root(a.base_url), "--model", a.model, "--tasks", str(tasks),
-               "--exclude", str(root / TRAIN_ROWS), "--out", str(out), "--concurrency", str(a.concurrency), *TOOL_FLAGS]
+               "--exclude", str(root / TRAIN_ROWS), "--out", str(out), "--concurrency", str(a.concurrency), *TOOL_FLAGS,
+               *(["--enforce-provenance"] if a.enforce else [])]
     _LOG.info("eval.start", extra={"suite": a.suite, "tasks": str(tasks), "out": str(out)})
     return _stream(command, "eval")
 
@@ -126,7 +127,7 @@ def cmd_ask(a: argparse.Namespace) -> int:
     with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False) as prompt:
         prompt.write(a.question)
     command = [sys.executable, "-m", "wattson.inference.tool_probe", "--base-url", server_root(a.base_url), "--model", a.model, "--prompt", prompt.name,
-               "--study-tools", "--journal", str(journal), *TOOL_FLAGS]
+               "--study-tools", "--journal", str(journal), *TOOL_FLAGS, *(["--enforce-provenance"] if a.enforce else [])]
     code = _stream(command, "ask")
     _LOG.info("ask.journal", extra={"path": str(journal)})
     answer, calls = final_answer(journal)
@@ -142,6 +143,8 @@ def final_answer(journal: Path) -> tuple[str | None, int]:
         return None, 0
     for line in journal.read_text().splitlines():
         event = json.loads(line)
+        if event["kind"] == "terminal" and event["payload"].get("state") == "guard_refused":
+            return None, calls  # the guard rejected the model's last answer; do not echo the number it refused
         if event["kind"] == "model_response":
             message = event["payload"]["choices"][0]["message"]
             calls += len(message.get("tool_calls") or [])
@@ -227,9 +230,11 @@ def build_parser() -> argparse.ArgumentParser:
     ev = sub.add_parser("eval", help="evaluate a model on a frozen suite")
     ev.add_argument("suite", choices=sorted(SUITES)), ev.add_argument("--base-url", required=True), ev.add_argument("--model", required=True)
     ev.add_argument("--concurrency", type=int, default=DEFAULT_CONCURRENCY), ev.add_argument("--out")
+    ev.add_argument("--enforce", action="store_true", help="runtime guard: refuse an answer containing a number no tool produced (a separate arm)")
     ev.set_defaults(run=cmd_eval)
     ask = sub.add_parser("ask", help="one question through the tool harness")
     ask.add_argument("question"), ask.add_argument("--base-url", required=True), ask.add_argument("--model", required=True)
+    ask.add_argument("--enforce", action="store_true", help="runtime guard: refuse an answer containing a number no tool produced")
     ask.set_defaults(run=cmd_ask)
     pi = sub.add_parser("pi-setup", help="configure the pi agent")
     pi.add_argument("--base-url", required=True), pi.add_argument("--model", required=True), pi.add_argument("--context", type=int, default=32768)

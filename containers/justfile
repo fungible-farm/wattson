@@ -26,14 +26,14 @@ labs:
     just --justfile /app/justfile lab 3
 
 # One question through the real tool harness against the model server; prints the answer and the journal path.
-ask question:
+ask question *flags:
     wattson fetch-data
-    wattson ask "{{question}}" --base-url {{base}} --model {{model}}
+    wattson ask "{{question}}" --base-url {{base}} --model {{model}} {{flags}}
 
 # Run a frozen suite (smoke | heldout | judgement | unsolvable | planning | derived) and grade it by re-solving.
-eval suite="smoke":
+eval suite="smoke" *flags:
     wattson fetch-data
-    wattson eval {{suite}} --base-url {{base}} --model {{model}}
+    wattson eval {{suite}} --base-url {{base}} --model {{model}} {{flags}}
 
 # The pi coding agent, run the way the students were trained: only the WattsOn tools (declared directly), the trained system prompt,
 # no built-in bash/edit/write. pi's defaults make these models invent commands and numbers; see docs/pi.md. Extra arguments go to pi,

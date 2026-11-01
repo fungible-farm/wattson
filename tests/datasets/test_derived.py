@@ -56,3 +56,24 @@ def test_the_frozen_suite_is_unchanged_and_its_expected_answers_pass_their_own_g
         kind = row["task"]["inputs"]["kind"]
         answer = f"Line {structured['line']}, min bus voltage = {structured['value']} pu" if kind == "min_voltage_outage" else row["expected"]["answer"]
         assert derived.grade(row, answer)[0], row["example_id"]
+
+
+def test_the_live_evaluator_grades_every_derived_kind_by_value() -> None:
+    """Regression: wattson/training/unsloth/evaluate.score_answer, which evaluate_agent.grade calls, had no pf-derived branch, so every
+    sum and ranking answer was scored wrong in a live `wattson eval derived` run even when the model was exactly right."""
+    import json
+    from pathlib import Path
+
+    from wattson.training.unsloth.evaluate import score_answer
+
+    suite = Path(__file__).resolve().parents[2] / "data" / "suites" / "derived-heldout-20261030" / "examples.jsonl"
+    rows = [json.loads(line) for line in suite.read_text().splitlines() if line.strip()]
+    kinds = set()
+    for row in rows:
+        s, kind = row["expected"]["structured"], row["task"]["inputs"]["kind"]
+        right = f"Line {s['line']}, min bus voltage = {s['value']} pu" if kind == "min_voltage_outage" else f"The result is {s['value']}."
+        wrong = f"Line {s.get('line', 0) + 1}, min bus voltage = 0.5 pu" if kind == "min_voltage_outage" else "The result is 424242."
+        assert score_answer(row, right)[0], (kind, right)
+        assert not score_answer(row, wrong)[0], (kind, wrong)
+        kinds.add(kind)
+    assert kinds == {"sum_violations", "loading_difference", "mean_loading", "min_voltage_outage"}

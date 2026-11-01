@@ -121,3 +121,19 @@ def test_pi_is_launched_the_way_the_students_were_trained() -> None:
     command = cli.pi_command("wattson", ["--print", "hello"])
     assert "--no-builtin-tools" in command, "no bash: offered bash, the students fabricate a command"
     assert command[command.index("--system-prompt") + 1] == SYSTEM_PROMPT and command[-2:] == ["--print", "hello"]
+
+
+def test_a_guard_refusal_is_not_echoed_as_an_answer(tmp_path: Path) -> None:
+    journal = tmp_path / "j.jsonl"
+    events = [{"kind": "model_response", "payload": {"choices": [{"message": {"content": "The scale is 0.987654."}}]}},
+              {"kind": "guard", "payload": {"action": "refused", "attempt": 2, "untraced": ["0.987654"]}},
+              {"kind": "terminal", "payload": {"state": "guard_refused", "actual_tool_calls": 0}}]
+    journal.write_text("\n".join(json.dumps(e) for e in events))
+    assert cli.final_answer(journal) == (None, 0)
+
+
+def test_enforce_reaches_the_evaluator_and_the_probe_command_lines() -> None:
+    parser = cli.build_parser()
+    assert parser.parse_args(["eval", "smoke", "--base-url", "u", "--model", "m", "--enforce"]).enforce is True
+    assert parser.parse_args(["eval", "smoke", "--base-url", "u", "--model", "m"]).enforce is False
+    assert parser.parse_args(["ask", "q", "--base-url", "u", "--model", "m", "--enforce"]).enforce is True

@@ -169,7 +169,8 @@ async def attempt(args: argparse.Namespace, task: dict[str, Any], grading: async
                                  first_turn_tool_choice=args.first_turn_tool_choice,
                                  namespace_tools=getattr(args, "namespace_tools", False),
                                  python_tools=getattr(args, "python_tools", False),
-                                 python_report_fields=getattr(args, "python_report_fields", False))
+                                 python_report_fields=getattr(args, "python_report_fields", False),
+                                 enforce_provenance=getattr(args, "enforce_provenance", False))
     with journal.open("x") as stream:
         try:
             await probe(options, stream)
@@ -212,6 +213,8 @@ async def evaluate(args: argparse.Namespace) -> None:
         "tool_set": (TOOL_SET_PYTHON2 if getattr(args, "python_report_fields", False)
                      else TOOL_SET_PYTHON if getattr(args, "python_tools", False)
                      else TOOL_SET_NAMESPACE if getattr(args, "namespace_tools", False) else TOOL_SET_STUDY),
+        # Whether the runtime provenance guard was on: a guarded result is a different arm and must never be read as an unguarded one.
+        "enforce_provenance": bool(getattr(args, "enforce_provenance", False)),
     }
     (args.out / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
     (args.out / "prompts").mkdir()
@@ -261,6 +264,8 @@ def main() -> None:
                         help="Backlog 0041: serve run_python (a Python shell with a solver); run_study_trial keeps reports only")
     parser.add_argument("--python-report-fields", action="store_true",
                         help="With --python-tools: the v2 shell (trial replies carry the report numbers)")
+    parser.add_argument("--enforce-provenance", action="store_true",
+                        help="Runtime guard: refuse a final answer containing a number no tool produced (a separate arm; recorded in the summary)")
     parser.add_argument("--concurrency", type=int, default=DEFAULT_CONCURRENCY,
                         help="Attempts in flight at once; match the server's --max-num-seqs")
     args = parser.parse_args()

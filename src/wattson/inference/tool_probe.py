@@ -20,6 +20,7 @@ from mcp.client.stdio import stdio_client
 
 import httpx
 
+from wattson.inference import provenance
 from wattson.mcp_env import server_environment
 from wattson.inference.client import InferenceClient
 
@@ -66,6 +67,20 @@ SYSTEM_PROMPT: str = ("Use the available tools to solve the task. Report only re
                       "tool responses. Convergence and physical validity are different.")
 # vLLM's 400 text when prompt + max_tokens exceeds --max-model-len.
 CONTEXT_OVERFLOW: str = "maximum context length"
+
+
+# Runtime enforcement of "the model never does arithmetic" (opt-in, so published results describe the unguarded harness). A final answer
+# is checked with the scorer's own provenance rule; a number no tool produced sends the model back to compute it, at most this many times,
+# after which the attempt ends as ``guard_refused`` and no answer is emitted.
+MAX_GUARD_RETRIES: int = 2
+GUARD_MESSAGE: str = ("Your answer contains numbers that no tool produced: {numbers}. Do not work numbers out yourself. "
+                      "Use the run_python tool to compute any value you need from solver results, then answer again using only numbers "
+                      "that a tool printed or returned.")
+
+
+def untraced_numbers(answer: str, events: list[dict[str, Any]], prompt: str) -> list[str]:
+    """The numbers in ``answer`` that neither the prompt nor any tool reply so far contains (the scorer's rule, applied live)."""
+    return provenance.check(answer, events, prompt)["untraced"]
 
 
 def record(stream: TextIO, kind: str, payload: Any) -> None:
@@ -115,6 +130,9 @@ async def probe(args: argparse.Namespace, journal: TextIO) -> int:
         record(journal, "tools", tools)
         calls = 0
         ids: set[str] = set()
+        events: list[dict[str, Any]] = []  # tool responses so far, in the journal's shape, for the guard
+        guard_attempts = 0
+        enforce = bool(getattr(args, "enforce_provenance", False))
         with InferenceClient(args.base_url, timeout=INFERENCE_TIMEOUT_S) as client:
             for turn in range(MAX_TURNS):
                 try:
@@ -144,6 +162,17 @@ async def probe(args: argparse.Namespace, journal: TextIO) -> int:
                 requested = message.get("tool_calls") or []
                 if not requested:
                     success = choice["finish_reason"] == "stop" and bool(message.get("content"))
+                    if enforce and success:
+                        untraced = untraced_numbers(message["content"], events, messages[1]["content"])
+                        if untraced and guard_attempts < MAX_GUARD_RETRIES:
+                            guard_attempts += 1
+                            record(journal, "guard", {"action": "retry", "attempt": guard_attempts, "untraced": untraced})
+                            messages.append({"role": "user", "content": GUARD_MESSAGE.format(numbers=", ".join(untraced))})
+                            continue
+                        if untraced:
+                            record(journal, "guard", {"action": "refused", "attempt": guard_attempts, "untraced": untraced})
+                            record(journal, "terminal", {"state": "guard_refused", "actual_tool_calls": calls, "accuracy_claim": False})
+                            return 1
                     record(journal, "terminal", {
                         "state": "answered" if success else "incomplete_generation",
                         "actual_tool_calls": calls, "accuracy_claim": False,
@@ -167,6 +196,7 @@ async def probe(args: argparse.Namespace, journal: TextIO) -> int:
                     # wall-clock time never reaches the model (FM-3). The error ledger costs it (PC-REQ-4).
                     record(journal, "tool_response", {"tool_call_id": call["id"], "result": observed,
                                                       "tool_seconds": time.monotonic() - started})
+                    events.append({"kind": "tool_response", "payload": {"tool_call_id": call["id"], "result": observed}})
                     calls += 1
                     messages.append({"role": "tool", "tool_call_id": call["id"],
                                      "content": json.dumps(observed, allow_nan=False)})
@@ -185,6 +215,8 @@ def main() -> int:
     # The Python shell the v11 students were trained on; the evaluator passes the same flags (backlog 0041).
     parser.add_argument("--python-tools", action="store_true", help="expose run_python; run_study_trial then answers reports only")
     parser.add_argument("--python-report-fields", action="store_true", help="with --python-tools: the v2 shell (report numbers in trial replies)")
+    parser.add_argument("--enforce-provenance", action="store_true",
+                        help="refuse a final answer containing a number no tool produced: send the model back to compute it (see MAX_GUARD_RETRIES)")
     args = parser.parse_args()
     args.journal.parent.mkdir(parents=True, exist_ok=True)
     with args.journal.open("x") as journal:
