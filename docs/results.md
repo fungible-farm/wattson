@@ -10,7 +10,7 @@ of the same recipe on the same data; with 3 seeds or fewer, differences smaller 
 
 | Arm | Held-out 90: attempts with an untraced number | Derived 40: attempts with an untraced number |
 |---|---|---|
-| Plain tools, trained (4 runs: 3 on older data, 1 on the final data) | 86, 85, 86, 87 | 7, 5, 18 (3 runs) |
+| Plain tools, trained (4 runs: 3 on older data, 1 on the final data) | 86, 85, 86, 87 | 7, 5, 5, 18 |
 | Untrained Qwen3.5-4B + shell (1 run) | not run | 21 |
 | Python shell, non-thinking (Qwen3.5-4B, 3 seeds) | 0, 0, 0 | 0, 0, 0 |
 | Python shell, thinking (Qwen3.5-4B, 3 seeds) | 0, 0, 0 | 1, 3, 1 |
@@ -21,7 +21,7 @@ of the same recipe on the same data; with 3 seeds or fewer, differences smaller 
 | Arm | Held-out (90) | Judgement (40) | Unsolvable (28) | Planning (40) | Derived (40) |
 |---|---|---|---|---|---|
 | Plain tools, trained, final data (1 seed) | 75 | 38 | 25 | 40 | 31 |
-| Plain tools, trained, older data (2 seeds, derived only) | - | - | - | - | 23, 20 |
+| Plain tools, trained, older data (3 seeds) | 76, 69, 74 | 29, 23, 27 | 28, 28, 28 | - | 23, 20, 23 |
 | Python shell, non-thinking (3 seeds) | 89, 88, 90 | 40, 40, 40 | 27, 18, 20 | 40, 40, 40 | 31, 30, 27 |
 | Python shell, thinking (3 seeds) | 90, 89, 85 | 40, 40, 40 | 26, 19, 26 | 40, 40, 40 | 39, 29, 38 |
 | Untrained Qwen3.5-4B + shell (1 run) | - | - | - | - | 35 |
@@ -43,8 +43,8 @@ Smoke (20 tasks) is at ceiling for every Python arm (20 of 20) and 19 for plain 
   fine-tune costs accuracy, and thinking recovers it. One untrained run has no variance estimate.
 
 - Granite 4.2 8B with the shell has the best derived score measured (37 of 40, one untraced-number attempt in 40), ahead of
-  Qwen thinking (mean 35.3). One seed, so no variance estimate. The two plain-tool controls trained on older data (23, 20) score
-  below every Python-shell run; the plain control on the final data (31) sits inside the non-thinking Python range (27-31), so
+  Qwen thinking (mean 35.3). One seed, so no variance estimate. The three plain-tool controls trained on older data (23, 20, 23)
+  score below every Python-shell run; the plain control on the final data (31) sits inside the non-thinking Python range (27-31), so
   the shell's advantage over plain on derived accuracy is not established, while its advantage in untraced numbers
   (0 against 5-18 of 40) and on the held-out suite (88-90 against 69-76) is.
 
