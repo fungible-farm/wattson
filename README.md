@@ -64,6 +64,10 @@ a model that adds in its head gets it wrong. See [evaluation](docs/evaluation.md
 
 - **Scope:** AC power flow on a handful of networks (the CSIRO synthetic NEM cases, IEEE 39, others from pandapower). One tool
   protocol. Not a general agent.
+- **"No arithmetic" means this, exactly:** a shell student writes the computation as Python and reports what the program printed. That is a
+  trained behaviour that we measure (`arithmetic_exposure`), plus an enforced guarantee about *answers*: with `--enforce`, an answer
+  containing a number no tool produced is refused. It does not police a model's private reasoning or the constants in its code. See
+  [evaluation](docs/evaluation.md#runtime-guard-refusing-an-unverified-number) for the measured numbers.
 - **Security:** the Python shell is a restricted interpreter with resource limits. It is **not a security boundary**; do not run
   it on untrusted input. Containment is out of scope for this release.
 - **`pi` needs special configuration** or these models invent commands and numbers; `just pi` and `wattson pi` apply it
