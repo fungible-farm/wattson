@@ -1,0 +1,43 @@
+# Granite 4.2 8B is Apache-2.0 (IBM model card):
+# https://huggingface.co/ibm-granite/granite-4.2-8b
+# Download pinned to b3791992239dce12d0038f1f54a8adb7b02d59ab.
+# Keep the original Qwen experiment's training split and hyperparameters;
+# this is a separate student, never an overwrite of the Qwen adapter.
+model:
+  name: training/unsloth/out/granite-4.2-8b-base
+  source_hf_id: ibm-granite/granite-4.2-8b
+  source_revision: b3791992239dce12d0038f1f54a8adb7b02d59ab
+  dtype: bfloat16
+  use_4bit: false
+lora:
+  # Match config.yaml's original Qwen LoRA experiment.
+  r: 32
+  alpha: 64
+  dropout: 0.0
+  target_modules: all-linear
+  bias: none
+dataset:
+  examples: data/suites/smoke/examples.jsonl
+  split: data/suites/smoke/splits/train.jsonl
+  system_prompt: >-
+    You are a power-systems engineer with access to an AC power flow solver and
+    the PowerMCP tools. Solve the task exactly as stated and report the result
+    in the same format as the reference solution.
+training:
+  # All values match config.yaml so the base-model change is explicit.
+  seq_len: 1024
+  max_steps: 100
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 2
+  warmup_steps: 10
+  learning_rate: 2.0e-5
+  logging_steps: 10
+  save_steps: 100
+  optim: adamw_8bit
+  weight_decay: 0.01
+  lr_scheduler_type: cosine
+  seed: 42
+  gradient_checkpointing: true
+output:
+  dir: training/unsloth/out/granite42-sft-r1
+  adapter_name: granite42-8b-lora

@@ -1,0 +1,18 @@
+# G3 GRPO pilot (backlog 0017): the r7 Qwen student's base, updated by training/grpo.py.
+# The model block is config.qwen35-4b.r7.yaml's, so rollouts and updates share one base.
+model:
+  name: /hub/models--Qwen--Qwen3.5-4B/snapshots/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a
+  source_hf_id: Qwen/Qwen3.5-4B
+  source_revision: 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a
+  verify: hub_snapshot
+  loader: image-text-to-text
+training:
+  # 8192 is the SFT seq_len; a turn longer than it is skipped and counted, never truncated.
+  seq_len: 8192
+  # A tenth of the SFT rate: an update from a converged SFT policy, chosen, not tuned.
+  learning_rate: 1.0e-5
+  weight_decay: 0.0
+  # 8 task groups per optimizer step: 64 tasks per iteration -> 8 steps.
+  groups_per_step: 8
+  max_grad_norm: 1.0
+  seed: 42
