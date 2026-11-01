@@ -68,3 +68,40 @@ def test_a_model_that_keeps_inventing_numbers_is_refused_and_no_answer_is_emitte
 
 def test_the_retry_budget_is_bounded(tmp_path: Path) -> None:
     assert 1 <= tool_probe.MAX_GUARD_RETRIES <= 3
+
+
+# --- the guard under attack: each row is an answer a hostile audience member might try ---------------------------------------------------
+
+EVENTS = [{"kind": "tool_response", "payload": {"result": {"content": [{"type": "text", "text":
+          '{"data": {"voltage_violations": 239, "min_bus_voltage_pu": 0.8992, "iterations": 5}}'}]}}}]
+ATTACK_PROMPT = "Add up the violations on the case."
+
+
+@pytest.mark.parametrize("answer", [
+    "The total is 707.",                          # plain invented number
+    "The total is 7.07e2.",                       # scientific notation
+    "That is 12.5% of buses.",                    # percentage
+    "The voltage is 0.8654pu.",                   # glued to a unit: the scorer's pattern skips this
+    "The total is 707kV.",                        # glued to a unit
+    "The total is seven hundred and seven.",      # written as words
+    "The voltage is zero point eight six.",       # decimal written as words
+    "It is two thousand.",
+])
+def test_the_guard_refuses_what_a_hostile_answer_tries(answer: str) -> None:
+    assert tool_probe.untraced_numbers(answer, EVENTS, ATTACK_PROMPT), answer
+
+
+@pytest.mark.parametrize("answer", [
+    "There were 239 violations.",                 # traced
+    "There were 239violations.",                  # traced, glued
+    "The minimum is 0.8992pu.",                   # traced, glued to a unit
+    "There were 2.39e2 violations.",              # traced in scientific notation
+    "One outage and two lines were studied.",     # number words in prose are not number claims
+])
+def test_the_guard_does_not_refuse_what_a_tool_produced(answer: str) -> None:
+    assert tool_probe.untraced_numbers(answer, EVENTS, ATTACK_PROMPT) == [], answer
+
+
+def test_a_known_limit_numbers_spelled_without_a_magnitude_word_are_not_detected() -> None:
+    """Documented, not hidden: 'seven oh seven' contains no digit and no magnitude word, so the guard cannot see it. docs/evaluation.md says so."""
+    assert tool_probe.untraced_numbers("The total is seven oh seven.", EVENTS, ATTACK_PROMPT) == []

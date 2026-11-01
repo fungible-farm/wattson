@@ -78,9 +78,13 @@ def source_numbers(events: list[dict[str, Any]], prompt: str) -> list[float]:
     return numbers
 
 
-def check(answer: str, events: list[dict[str, Any]], prompt: str) -> Provenance:
-    """Trace each number in ``answer`` to the attempt's own tool responses or prompt."""
-    printed = ANSWER_NUMBER.findall(answer)
+def check(answer: str, events: list[dict[str, Any]], prompt: str, pattern: re.Pattern[str] = ANSWER_NUMBER) -> Provenance:
+    """Trace each number in ``answer`` to the attempt's own tool responses or prompt.
+
+    ``pattern`` finds the numbers (one capture group). The default is the scorer's and must not change, or published scores stop being
+    comparable; the runtime guard passes a stricter one.
+    """
+    printed = pattern.findall(answer)
     sources = source_numbers(events, prompt)
     untraced = []
     for text in printed:

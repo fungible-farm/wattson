@@ -101,6 +101,23 @@ pi:
 shell:
     podman exec -it wattson-harness bash -l
 
+# --- the demo --------------------------------------------------------------------------------------------------------------
+
+# The whole demo, in order, with a banner before each step (docs/demo.md). Needs a GPU. Does not run pi (interactive).
+demo model="granite":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    banner() { printf '\n\n==================== %s ====================\n' "$1"; }
+    banner "1/6  labs 1-3, in a container (no GPU, no model)"; just labs
+    banner "2/6  start the pod: model puller, CSIRO fetcher, model server, harness"; just up {{model}}
+    echo "waiting for the model server..."; until curl -sf "http://127.0.0.1:{{host_port}}/health" >/dev/null 2>&1; do sleep 5; done
+    banner "3/6  diagnostics, including one real completion"; just doctor
+    banner "4/6  one question through the tool harness"
+    just ask "Using the power flow solver, find the scale factor s in [0.9, 1.1] applied to the active-power dispatch of generator 2 on case 'snem-sa-2000' such that the loading of transformer 4 equals 0.184093 percent (within 0.0006941900815668939 percent). Return only the scale factor."
+    banner "5/6  lab 1's task given to the model, next to the lab's own bisection result"; just lab1-agent --enforce
+    banner "6/6  20 tasks graded by re-solving, with the guard on"; just eval smoke --enforce
+    banner "done. 'just pi' for the interactive agent, 'just down' to stop"
+
 # --- build and publish locally (CI does this for the registry) -----------------------------------------------------------
 
 # Build all four images from this checkout.

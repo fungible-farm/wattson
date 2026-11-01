@@ -10,6 +10,7 @@ import argparse
 import asyncio
 import json
 import os
+import re
 import sys
 import time
 from pathlib import Path
@@ -78,9 +79,18 @@ GUARD_MESSAGE: str = ("Your answer contains numbers that no tool produced: {numb
                       "that a tool printed or returned.")
 
 
+# The guard is stricter than the scorer on purpose: over-strict costs a retry, over-lenient breaks the guarantee. It reads a number glued to
+# letters ("0.8654pu", "707kV", which the scorer's pattern skips) and refuses numbers written as words ("seven hundred and seven",
+# "zero point eight"): those cannot be traced to a tool reply by value. A bare "two" or "one" in prose is not a number claim and is left alone.
+GUARD_NUMBER: re.Pattern[str] = re.compile(r"(?<![\d.])(\d+(?:\.\d+)?(?:[eE][-+]?\d+)?)")
+_DIGIT_WORDS: str = "zero|one|two|three|four|five|six|seven|eight|nine"
+WORDED_NUMBER: re.Pattern[str] = re.compile(rf"\b(?:hundred|thousand|million|billion)\b|\bpoint\s+(?:{_DIGIT_WORDS})\b", re.IGNORECASE)
+
+
 def untraced_numbers(answer: str, events: list[dict[str, Any]], prompt: str) -> list[str]:
-    """The numbers in ``answer`` that neither the prompt nor any tool reply so far contains (the scorer's rule, applied live)."""
-    return provenance.check(answer, events, prompt)["untraced"]
+    """The numbers in ``answer`` that neither the prompt nor any tool reply so far contains, including numbers glued to units or written as words."""
+    digits = provenance.check(answer, events, prompt, pattern=GUARD_NUMBER)["untraced"]
+    return digits + [match.group(0) for match in WORDED_NUMBER.finditer(answer)]
 
 
 def record(stream: TextIO, kind: str, payload: Any) -> None:

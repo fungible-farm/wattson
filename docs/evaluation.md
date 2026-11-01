@@ -50,6 +50,15 @@ numbers and telling it to compute them with `run_python`, at most twice. If it s
 `guard_refused` and **no answer is emitted**. The run manifest records `enforce_provenance`, so a guarded run is never mistaken for an
 unguarded one, and the default is off, so every number in [results](results.md) describes the unguarded harness.
 
+**What the guard detects.** Digits, including a number glued to a unit (`0.8654pu`, `707kV`), scientific notation (`7.07e2`), percentages, and
+numbers written with a magnitude word (`seven hundred and seven`) or as a decimal in words (`zero point eight six`). A number counts as
+traced when its value matches a number in the prompt or in a tool reply to the precision printed. Signs are ignored: the guard checks that a
+magnitude came from a tool, and the scorer separately checks that the answer is right. **Known limit:** a number spelled with no digit and no magnitude
+word (`seven oh seven`) is not seen, and a bare `one` or `two` in prose is deliberately not treated as a number. The guard is stricter than
+the scorer's own pattern on purpose (over-strict costs a retry; over-lenient breaks the guarantee), and on 156 recorded final answers from
+four real runs it flagged exactly the same answers the scorer's rule did, so it caused no new refusals. `tests/inference/test_tool_probe_guard.py`
+holds the attack table.
+
 **What it guarantees, and what it does not.** It guarantees that no emitted answer contains a number nothing verified. It does not stop a
 model computing in its private reasoning or inside the code it writes, and it cannot make a wrong answer right. Measured on the derived suite,
 one greedy run each, through the pod:
