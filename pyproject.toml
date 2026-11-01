@@ -31,11 +31,16 @@ dependencies = [
 # Training and the train/serve parity check (GPU stages; not part of the CPU smoke check).
 train = ["torch", "transformers", "peft", "datasets"]
 # The labs in benchmarks/ draw charts; matplotlib is pinned to the version the lab repository locked.
+# huggingface_hub downloads the released students (`wattson models pull`); the container installs it.
+hub = ["huggingface_hub==2.1.1"]
 labs = [
     "matplotlib==3.11.1",
     # The second-engine cross-checks in labs 2 and 3; no aarch64 wheel exists, so those tests skip there.
     "pypowsybl>=1.16.1; sys_platform != 'linux' or platform_machine != 'aarch64'",
 ]
+
+[project.scripts]
+wattson = "wattson.cli:main"
 
 [dependency-groups]
 dev = ["pytest>=8.0"]

@@ -1,0 +1,9 @@
+.git
+.venv
+__pycache__
+*.pyc
+out/
+dist/
+data/*.m
+.pytest_cache
+benchmarks/power-agent-bench-lite/

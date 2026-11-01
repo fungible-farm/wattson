@@ -40,6 +40,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -50,8 +51,17 @@ from typing import Any
 import pandapower as pp
 
 # Repo root = two levels up from this file (wattson/inference/ -> repo root).
-# Case files live in data/ (gitignored, fetched by scripts/fetch_csiro_nem_data.py).
+# Case files live in data/ (gitignored, fetched by scripts/fetch_csiro_nem_data.py). WATTSON_CASE_DIR moves them: the container
+# fetches them into a mounted volume on first use instead of shipping a copy of the CSIRO files in the image.
 REPO_ROOT: Path = Path(__file__).resolve().parents[3]
+CASE_DIR_ENV: str = "WATTSON_CASE_DIR"
+
+
+def case_path(network_id: str) -> Path:
+    """Where the case file for ``network_id`` is expected (it may not exist yet)."""
+    directory = os.environ.get(CASE_DIR_ENV)
+    name = Path(CASE_FILES[network_id]).name
+    return Path(directory) / name if directory else REPO_ROOT / CASE_FILES[network_id]
 
 # Voltage screening band, per-unit. Source: ANSI C84.1 / IEEE 399 "A" range
 # (0.95-1.05 pu), the standard screening band for bus-voltage compliance and
@@ -272,7 +282,7 @@ def _load_network_object(network_id: str) -> tuple[pp.pandapowerNet, str]:
         ValueError: for an unknown network_id.
     """
     if network_id in CASE_FILES:
-        path = REPO_ROOT / CASE_FILES[network_id]
+        path = case_path(network_id)
         if not path.exists():
             raise FileNotFoundError(
                 f"Case file {path} not found -- run scripts/fetch_csiro_nem_data.py"
@@ -280,13 +290,7 @@ def _load_network_object(network_id: str) -> tuple[pp.pandapowerNet, str]:
         import powerio
 
         powerio.parse_file(str(path))
-        # gridfit.load_case is the repo's canonical powerio -> pandapower
-        # loader (labs/_shared/gridfit.py); reuse it rather than re-deriving.
-        import sys
-
-        labs_shared = REPO_ROOT / "labs" / "_shared"
-        if str(labs_shared) not in sys.path:
-            sys.path.insert(0, str(labs_shared))
+        # gridfit.load_case is the repo's canonical powerio -> pandapower loader; reuse it rather than re-deriving.
         from wattson.gridfit import load_case
 
         net, _notes = load_case(str(path))

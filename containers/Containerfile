@@ -1,0 +1,84 @@
+# WattsOn container image, built in layers so a code change does not re-download the numerical stack.
+#
+#   base     OS libraries + uv                             changes rarely
+#   deps     the locked Python environment (uv.lock)       changes when dependencies change
+#   wattson  the package, labs, and the shipped data       changes with every commit        -> ghcr.io/fungible-farm/wattson
+#   harness  wattson + Node + the pi agent + just          the interactive harness image    -> ghcr.io/fungible-farm/wattson-harness
+#
+# Build from the repository root:
+#   podman build -f containers/Containerfile --target wattson -t wattson:local .
+#   podman build -f containers/Containerfile --target harness -t wattson-harness:local .
+#
+# Model weights are NOT in any layer: Hugging Face has no OCI endpoint, so `wattson models pull` downloads a released student into a
+# volume (see kube/wattson.yaml). The CSIRO case files are likewise fetched into a volume on first use, not baked in.
+
+ARG PYTHON_IMAGE=docker.io/library/python:3.14-slim
+ARG NODE_IMAGE=docker.io/library/node:24-slim
+ARG UV_IMAGE=ghcr.io/astral-sh/uv:0.12.23
+
+FROM ${UV_IMAGE} AS uv
+
+# ---- base ------------------------------------------------------------------------------------------------------------------
+FROM ${PYTHON_IMAGE} AS base
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends ca-certificates libexpat1 libglib2.0-0 libstdc++6 \
+ && rm -rf /var/lib/apt/lists/*
+COPY --from=uv /uv /uvx /usr/local/bin/
+ENV UV_PYTHON_DOWNLOADS=never UV_LINK_MODE=copy UV_COMPILE_BYTECODE=1 PYTHONUNBUFFERED=1
+RUN useradd --create-home --uid 1000 wattson \
+ && mkdir -p /app /models /cases /work && chown -R wattson:wattson /app /models /cases /work
+WORKDIR /app
+
+# ---- deps ------------------------------------------------------------------------------------------------------------------
+FROM base AS deps
+COPY pyproject.toml uv.lock README.md LICENSE-MIT LICENSE-APACHE ./
+RUN uv sync --frozen --no-install-project --extra labs --extra hub
+
+# ---- wattson ---------------------------------------------------------------------------------------------------------------
+FROM deps AS wattson
+COPY src ./src
+COPY benchmarks ./benchmarks
+COPY data ./data
+COPY scripts ./scripts
+COPY fixtures ./fixtures
+RUN uv sync --frozen --extra labs --extra hub && chown -R wattson:wattson /app \
+ && ln -s /app/.venv/bin/wattson /usr/local/bin/wattson
+USER wattson
+ENV PATH=/app/.venv/bin:$PATH \
+    WATTSON_DATA=/app/data WATTSON_CASE_DIR=/cases WATTSON_OUT=/work/out HF_HOME=/models/.hf
+VOLUME ["/models", "/cases", "/work"]
+ENTRYPOINT ["wattson"]
+CMD ["doctor"]
+
+# ---- pi (Node build stage; only the installed agent is copied forward) ------------------------------------------------------
+FROM ${NODE_IMAGE} AS pi
+ARG PI_VERSION=1.4.0
+RUN npm install --global --prefix /opt/pi "@earendil-works/pi-coding-agent@${PI_VERSION}"
+
+# ---- harness ---------------------------------------------------------------------------------------------------------------
+FROM wattson AS harness
+ARG JUST_VERSION=1.58.0
+ARG TARGETARCH
+USER root
+COPY --from=pi /usr/local/bin/node /usr/local/bin/node
+COPY --from=pi /opt/pi /opt/pi
+RUN ln -s /opt/pi/bin/pi /usr/local/bin/pi
+# just: pinned release tarball, verified against the SHA-256 recorded here (computed when this file was written).
+RUN set -eu; \
+    case "${TARGETARCH}" in \
+      amd64) arch=x86_64;  sum=4a5cc2f53e6f0f8c59092a6cc38291eb729d46a7dd95d3ae582008881b84931d ;; \
+      arm64) arch=aarch64; sum=748237128c4c40cbdabc65e841d05ceba13cc23a91eaba395495894c1d9764df ;; \
+      *) echo "unsupported TARGETARCH=${TARGETARCH}" >&2; exit 1 ;; \
+    esac; \
+    file="just-${JUST_VERSION}-${arch}-unknown-linux-musl.tar.gz"; \
+    python -c "import urllib.request,sys; urllib.request.urlretrieve(sys.argv[1], '/tmp/just.tgz')" \
+      "https://github.com/casey/just/releases/download/${JUST_VERSION}/${file}"; \
+    echo "${sum}  /tmp/just.tgz" | sha256sum -c -; \
+    tar -xzf /tmp/just.tgz -C /usr/local/bin just; rm /tmp/just.tgz
+COPY containers/justfile /app/justfile
+RUN chown wattson:wattson /app/justfile
+USER wattson
+ENV PI_CODING_AGENT_DIR=/work/.pi/agent
+WORKDIR /work
+ENTRYPOINT ["/bin/bash", "-lc"]
+CMD ["wattson doctor && echo && just --list --justfile /app/justfile"]

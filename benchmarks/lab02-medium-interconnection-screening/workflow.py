@@ -47,10 +47,11 @@ import matplotlib.pyplot as plt
 
 
 import pandapower as pp
+from wattson import fetch  # noqa: E402
 from wattson.gridfit import load_case
 
 LAB_DIR = Path(__file__).resolve().parent
-DATA_FILE = LAB_DIR.parent.parent / "data" / "snem1803.m"
+DATA_FILE = fetch.case_dir() / "snem1803.m"
 EXPECTED_FILE = LAB_DIR / "expected_contingency_table.json"
 
 # Bus 175 is a real bus ID from snem1803.m: 132 kV, graph degree 11 (11

@@ -1,0 +1,115 @@
+name: containers
+# Publish multi-arch images to the GitHub Container Registry:
+#   ghcr.io/fungible-farm/wattson          the package, labs and data               (CPU; runs the labs)
+#   ghcr.io/fungible-farm/wattson-harness  the above plus Node, the pi agent, just  (the interactive harness)
+# Each architecture is built natively (no emulation) and pushed by digest; a final job joins the digests into one manifest list.
+# Nothing is published unless container-smoke passes. Model weights are never in an image: they come from Hugging Face.
+on:
+  push:
+    branches: [main]
+    paths:
+      - containers/**
+      - kube/**
+      - src/**
+      - benchmarks/**
+      - data/**
+      - scripts/**
+      - justfile
+      - pyproject.toml
+      - uv.lock
+      - .github/workflows/containers.yml
+      - .github/workflows/container-smoke.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  smoke:
+    uses: ./.github/workflows/container-smoke.yml
+
+  build:
+    needs: smoke
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [wattson, harness]
+        include:
+          - {platform: linux/amd64, runner: ubuntu-24.04, arch: amd64}
+          - {platform: linux/arm64, runner: ubuntu-24.04-arm, arch: arm64}
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Image name
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          if [ "${{ matrix.target }}" = harness ]; then name=wattson-harness; else name=wattson; fi
+          echo "IMAGE=${REGISTRY}/${owner}/${name}" >> "$GITHUB_ENV"
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: containers/Containerfile
+          target: ${{ matrix.target }}
+          platforms: ${{ matrix.platform }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.description=WattsOn ${{ matrix.target }} image
+            org.opencontainers.image.licenses=MIT OR Apache-2.0
+            org.opencontainers.image.revision=${{ github.sha }}
+          outputs: type=image,name=${{ env.IMAGE }},push-by-digest=true,name-canonical=true,push=true
+          cache-from: type=gha,scope=${{ matrix.target }}-${{ matrix.arch }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.target }}-${{ matrix.arch }}
+      - name: Export digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ matrix.target }}-${{ matrix.arch }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  merge:
+    needs: build
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        target: [wattson, harness]
+    steps:
+      - name: Image name
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          if [ "${{ matrix.target }}" = harness ]; then name=wattson-harness; else name=wattson; fi
+          echo "IMAGE=${REGISTRY}/${owner}/${name}" >> "$GITHUB_ENV"
+      - uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests
+          pattern: digests-${{ matrix.target }}-*
+          merge-multiple: true
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create the multi-arch manifest and tag it
+        working-directory: /tmp/digests
+        run: |
+          short="${GITHUB_SHA::7}"
+          docker buildx imagetools create -t "${IMAGE}:latest" -t "${IMAGE}:sha-${short}" $(printf "${IMAGE}@sha256:%s " *)
+      - name: Show what was published
+        run: docker buildx imagetools inspect "${IMAGE}:latest"

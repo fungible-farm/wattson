@@ -1,0 +1,43 @@
+# Recipes that run INSIDE the harness container (`just --justfile /app/justfile ...`, or `just shell` from the host).
+# The model server is a separate container in the same pod, reachable at 127.0.0.1:8000.
+
+set shell := ["bash", "-euo", "pipefail", "-c"]
+
+base  := env("WATTSON_BASE_URL", "http://127.0.0.1:8000/v1")
+model := env("WATTSON_SERVED_MODEL", "wattson")
+dir   := env("WATTSON_MODEL_DIR", "/models/wattson")
+
+default:
+    @just --justfile /app/justfile --list
+
+# Check this environment and, if a model server is up, the server too.
+doctor:
+    wattson doctor --base-url {{base}} --model-dir {{dir}} --deep
+
+# Run a lab's self-check: deterministic, CPU only, no model needed.
+lab n:
+    wattson fetch-data
+    wattson lab {{n}}
+
+# Labs 1 to 3 in turn.
+labs:
+    just --justfile /app/justfile lab 1
+    just --justfile /app/justfile lab 2
+    just --justfile /app/justfile lab 3
+
+# One question through the real tool harness against the model server; prints the answer and the journal path.
+ask question:
+    wattson fetch-data
+    wattson ask "{{question}}" --base-url {{base}} --model {{model}}
+
+# Run a frozen suite (smoke | heldout | judgement | unsolvable | planning | derived) and grade it by re-solving.
+eval suite="smoke":
+    wattson fetch-data
+    wattson eval {{suite}} --base-url {{base}} --model {{model}}
+
+# The pi coding agent, run the way the students were trained: only the WattsOn tools (declared directly), the trained system prompt,
+# no built-in bash/edit/write. pi's defaults make these models invent commands and numbers; see docs/pi.md. Extra arguments go to pi,
+# e.g.  just pi --print "What is the base-case minimum voltage on ieee39?"
+pi *args:
+    wattson fetch-data
+    exec wattson pi --base-url {{base}} --model {{model}} {{args}}

@@ -49,6 +49,7 @@ import pandapower as pp  # noqa: E402
 import pandapower.plotting as ppl  # noqa: E402
 
 
+from wattson import fetch  # noqa: E402
 from wattson.gridfit import bisection_fit, load_case, scale_loads  # noqa: E402
 
 
@@ -67,7 +68,7 @@ class FitStepResult(TypedDict):
     tolerance_pu: float
 
 LAB_DIR = Path(__file__).resolve().parent
-DATA_FILE = LAB_DIR.parent.parent / "data" / "snemSA.m"
+DATA_FILE = fetch.case_dir() / "snemSA.m"
 EXPECTED_FILE = LAB_DIR / "expected_results.json"
 
 # Bus 2008 is a real bus ID from snemSA.m (11 kV, load 50.0 MW). Chosen (by

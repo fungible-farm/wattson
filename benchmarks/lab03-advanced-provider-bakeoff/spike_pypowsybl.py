@@ -37,9 +37,10 @@ import pandapower as pp
 import pypowsybl.loadflow as lf
 
 LAB_DIR: Final[Path] = Path(__file__).resolve().parent
+from wattson import fetch  # noqa: E402
 from wattson.gridfit import load_case, to_pypowsybl_network  # noqa: E402  (needs sys.path insert above)
 
-DATA_FILE: Final[Path] = LAB_DIR.parent.parent / "data" / "snem1803.m"  # same case orchestrator.py uses
+DATA_FILE: Final[Path] = fetch.case_dir() / "snem1803.m"  # same case orchestrator.py uses
 SPIKE_OUTPUT_DIR: Final[Path] = LAB_DIR / "spike_output"
 MAT_FILE: Final[Path] = SPIKE_OUTPUT_DIR / "snem1803.mat"
 RESULT_FILE: Final[Path] = SPIKE_OUTPUT_DIR / "pypowsybl_comparison.json"

@@ -1,0 +1,93 @@
+# WattsOn quick-start pod for `podman kube play`. The justfile fills the markers written between two at-signs; you rarely edit this by hand.
+#
+#   init   pull-model   downloads a released student from Hugging Face into the wattson-models volume and verifies every hash
+#          fetch-cases  downloads the CSIRO case files into the wattson-cases volume (checksum-verified)
+#   main   vllm         the model server (upstream vllm/vllm-openai, GPU via CDI), its own container
+#          harness      the WattsOn tools + pi + just; shares the pod's network, so the server is at 127.0.0.1:8000
+#
+# Everything the harness writes goes to /work, which is the directory you ran `just up` from.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: wattson
+  labels:
+    app: wattson
+  annotations:
+    # Rootless Podman would otherwise map your user to root inside the container, and the image's unprivileged user (uid 1000) could not
+    # write to the directory you mounted at /work. keep-id makes your user uid 1000 in the pod, so files it writes are yours.
+    io.podman.annotations.userns: "keep-id:uid=1000,gid=1000"
+spec:
+  restartPolicy: Never
+  initContainers:
+    - name: pull-model
+      image: @IMAGE@
+      command: ["wattson", "models", "pull", "@MODEL_REPO@", "--dest", "/models/@MODEL_DIR@"]
+      env:
+        - {name: WATTSON_LOG_LEVEL, value: "@LOG_LEVEL@"}
+      volumeMounts:
+        - {name: models, mountPath: /models}
+    - name: fetch-cases
+      image: @IMAGE@
+      command: ["wattson", "fetch-data"]
+      volumeMounts:
+        - {name: cases, mountPath: /cases}
+  containers:
+    - name: vllm
+      image: @VLLM_IMAGE@
+      command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
+      # The same flags the students were evaluated with (bfloat16, 32k context, eager, auto tool choice); see docs/serving.md.
+      args:
+        - --model=/models/@MODEL_DIR@
+        - --served-model-name=wattson
+        - --host=0.0.0.0
+        - --port=8000
+        - --dtype=bfloat16
+        - --max-model-len=@MAX_LEN@
+        - --max-num-seqs=8
+        - --gpu-memory-utilization=@GPU_UTIL@
+        - --enforce-eager
+        - --enable-auto-tool-choice
+        - --tool-call-parser=qwen3_coder
+        - --reasoning-parser=@REASONING@
+        - --generation-config=vllm
+        - --limit-mm-per-prompt={"image":0,"video":0}
+      env:
+        - {name: HF_HUB_OFFLINE, value: "1"}
+        - {name: TRANSFORMERS_OFFLINE, value: "1"}
+      resources:
+        limits:
+          # The key must be the full CDI device name. Plain `nvidia.com/gpu: 1` attaches NO device under podman kube play
+          # (vLLM then dies with "Failed to infer device type"). Needs the CDI spec: `nvidia-ctk cdi generate`.
+          nvidia.com/gpu=all: 1
+      ports:
+        - {containerPort: 8000, hostPort: @HOST_PORT@, hostIP: 127.0.0.1}
+      readinessProbe:
+        httpGet: {path: /health, port: 8000}
+        periodSeconds: 10
+        failureThreshold: 90
+      volumeMounts:
+        - {name: models, mountPath: /models, readOnly: true}
+        - {name: shm, mountPath: /dev/shm}
+    - name: harness
+      image: @IMAGE@
+      command: ["sleep", "infinity"]
+      workingDir: /work
+      env:
+        - {name: WATTSON_BASE_URL, value: "http://127.0.0.1:8000/v1"}
+        - {name: WATTSON_SERVED_MODEL, value: wattson}
+        - {name: WATTSON_MODEL_DIR, value: "/models/@MODEL_DIR@"}
+        - {name: WATTSON_LOG_LEVEL, value: "@LOG_LEVEL@"}
+        - {name: WATTSON_LOG_FILE, value: /work/out/wattson.log}
+      volumeMounts:
+        - {name: models, mountPath: /models, readOnly: true}
+        - {name: cases, mountPath: /cases}
+        - {name: work, mountPath: /work}
+  volumes:
+    - name: models
+      persistentVolumeClaim: {claimName: wattson-models}
+    - name: cases
+      persistentVolumeClaim: {claimName: wattson-cases}
+    - name: work
+      hostPath: {path: "@WORK@", type: Directory}
+    - name: shm
+      emptyDir: {medium: Memory, sizeLimit: 1Gi}

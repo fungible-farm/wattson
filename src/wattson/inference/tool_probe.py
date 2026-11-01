@@ -20,6 +20,7 @@ from mcp.client.stdio import stdio_client
 
 import httpx
 
+from wattson.mcp_env import server_environment
 from wattson.inference.client import InferenceClient
 
 # Qualification budgets, not release benchmark parameters.
@@ -82,6 +83,7 @@ async def probe(args: argparse.Namespace, journal: TextIO) -> int:
         + (["--python-tools"] if getattr(args, "python_tools", False) else [])
         + (["--python-report-fields"] if getattr(args, "python_report_fields", False) else []),
         cwd=str(Path(__file__).resolve().parents[3]),
+        env=server_environment(),
     )
     first_choice = getattr(args, "first_turn_tool_choice", "auto")
     # Evaluation is greedy (0.0). G3's GRPO rollouts sample (training/grpo.py) and ask vLLM for
@@ -180,6 +182,9 @@ def main() -> int:
     parser.add_argument("--prompt", type=Path, required=True)
     parser.add_argument("--journal", type=Path, required=True)
     parser.add_argument("--study-tools", action="store_true")
+    # The Python shell the v11 students were trained on; the evaluator passes the same flags (backlog 0041).
+    parser.add_argument("--python-tools", action="store_true", help="expose run_python; run_study_trial then answers reports only")
+    parser.add_argument("--python-report-fields", action="store_true", help="with --python-tools: the v2 shell (report numbers in trial replies)")
     args = parser.parse_args()
     args.journal.parent.mkdir(parents=True, exist_ok=True)
     with args.journal.open("x") as journal:
