@@ -55,3 +55,18 @@ The same steps run in CI (`.github/workflows/container-smoke.yml`) and can be ru
 `.github/workflows/containers.yml` runs on pushes to `main` that touch the container inputs. It runs the smoke workflow first, builds each
 image on a native runner per architecture, pushes by digest, and joins the digests into one multi-architecture manifest tagged
 `latest` and `sha-<short commit>`. It needs only the repository's own `GITHUB_TOKEN`.
+
+## Maintainers: after the first publish
+
+GitHub creates a new container package **private**, even from a public repository, and there is no API to change that. Once, in the
+GitHub UI, for each of `wattson` and `wattson-harness`: Package settings, then Danger Zone, then Change visibility, then Public. Check with an
+unauthenticated request:
+
+```bash
+tok=$(curl -s "https://ghcr.io/token?scope=repository:fungible-farm/wattson:pull" | python3 -c "import json,sys; print(json.load(sys.stdin)['token'])")
+curl -s -o /dev/null -w "%{http_code}\n" -H "Authorization: Bearer $tok" -H "Accept: application/vnd.oci.image.index.v1+json" \
+  https://ghcr.io/v2/fungible-farm/wattson/manifests/latest      # 200 when public, 403 while private
+```
+
+The publish job fails unless the manifest lists both `linux/amd64` and `linux/arm64` (`scripts/check_platforms.py`). That guard exists
+because a matrix mistake once published an arm64-only image under a green run.
