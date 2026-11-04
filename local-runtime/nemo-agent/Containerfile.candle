@@ -1,0 +1,16 @@
+# Candle-based downstream serving image. This is not an upstream Candle image.
+FROM docker.io/library/python:3.14-slim AS acquire
+COPY fetch.py /build/fetch.py
+RUN python /build/fetch.py mistralrs /opt/tools
+
+FROM docker.io/library/debian:trixie-slim
+# OS libraries stay inside the image. No CUDA packages/devices are included.
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates libssl3t64 libgomp1 libstdc++6 && rm -rf /var/lib/apt/lists/*
+COPY --from=acquire /opt/tools/mistralrs /usr/local/bin/mistralrs
+COPY --from=acquire /opt/tools/mistralrs-provenance.json /opt/provenance/
+ENV HF_HUB_OFFLINE=1 HF_HOME=/tmp/huggingface HOME=/tmp
+USER 65532
+EXPOSE 1234
+ENTRYPOINT ["mistralrs"]
+# Command is supplied by the host adapter after checking this release's CLI.
+CMD ["--help"]

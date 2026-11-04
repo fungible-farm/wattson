@@ -1,0 +1,9 @@
+# Build only from a previously verified, pinned HF snapshot. No shell or model runner.
+FROM scratch
+ARG MODEL_REPO
+ARG MODEL_REVISION
+LABEL org.opencontainers.image.source="https://huggingface.co/${MODEL_REPO}" \
+      org.opencontainers.image.revision="${MODEL_REVISION}" \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      ai.wattson.role="model-data"
+COPY . /models/

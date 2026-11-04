@@ -1,0 +1,14 @@
+{
+  "qwen": {
+    "repo_id": "PromptExecutionAU/wattson-qwen3.5-4b-pyt",
+    "revision": "d1826df681c97602c2c93ebfdafdfba03a2d1729",
+    "image": "localhost/wattson-model-qwen3.5-4b:d1826df681c9",
+    "license": "Apache-2.0"
+  },
+  "granite": {
+    "repo_id": "PromptExecutionAU/wattson-granite-4.2-8b-py",
+    "revision": "dd8af31440cd01c69c4fde173327b326810bec8a",
+    "image": "localhost/wattson-model-granite4.2-8b:dd8af31440cd",
+    "license": "Apache-2.0"
+  }
+}

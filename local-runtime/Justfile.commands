@@ -1,0 +1,23 @@
+# These recipes execute INSIDE the command container.
+# No container-engine socket, host shell, Kubernetes token, or AI is required.
+set shell := ["/bin/sh", "-eu", "-c"]
+
+# Start the example service; the control plane owns its lifetime.
+serve:
+    exec python /opt/wattson/ipc.py serve
+
+# Make a real request to a different container through the shared Unix socket.
+hello:
+    python /opt/wattson/ipc.py hello
+
+# Check socket and FIFO round trips against the committed protocol fixture.
+check:
+    python /opt/wattson/ipc.py check
+
+# Intentional failure: show the actual nonzero exit status in the control plane.
+fail:
+    python /opt/wattson/ipc.py fail
+
+# Record real commands with the recorder installed only in the developer image.
+record:
+    asciinema rec --overwrite --cols 100 --rows 30 --command 'sh /opt/wattson/tour.sh' /recordings/wattson.cast

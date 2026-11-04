@@ -1,0 +1,3 @@
+.wattson/
+__pycache__/
+**/target/
