@@ -140,3 +140,7 @@ dbt-mcp-check:
 # Start stdio MCP for an agent; do not allocate a terminal or mix stdout with logs.
 dbt-mcp-stdio:
     @integrations/dbt-mcp/run.sh serve
+
+# Baseline real build followed by injected build failure; require no stale success proof.
+dbt-mcp-regression:
+    integrations/dbt-mcp/run.sh regression

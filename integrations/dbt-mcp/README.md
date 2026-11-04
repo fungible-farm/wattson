@@ -14,6 +14,7 @@ From the repository root:
 ```sh
 just dbt-mcp-build
 just dbt-mcp-check
+just dbt-mcp-regression          # Real baseline followed by an injected build failure
 # Without just:
 integrations/dbt-mcp/run.sh build
 integrations/dbt-mcp/run.sh smoke
@@ -25,9 +26,14 @@ statuses, and queries the resulting DuckDB table. Expected rows are `sample_a,25
 `sample/` contains a deliberately tiny, deterministic, **illustrative** CSV fixture; it is not
 measured NEM data, a physics result, or a WattsOn benchmark.
 
-The named volume `wattson-dbt-mcp-output` holds `mcp-proof.json`, `target/manifest.json`,
-`target/run_results.json`, `target/compiled/`, `logs/dbt.log`, and `sample.duckdb`.
-The volume survives container exit; each smoke run rebuilds the same sample. Inspect using:
+The named volume `wattson-dbt-mcp-output` holds `mcp-proof.json`, which names the current
+`proof-<UUID>/` directory containing `target/manifest.json`, `target/run_results.json`,
+`target/compiled/`, `logs/dbt.log`, and `sample.duckdb`. Each check uses a fresh output directory
+and database, removes the old success marker immediately, removes compile results before build,
+and requires a fresh build invocation plus the exact expected seed/model/test results. This matters
+because upstream CLI failures can return text with MCP `isError=false`. Failed attempts retain
+their output directories for diagnosis and leave no success marker. The volume survives container
+exit; proof directories accumulate until you deliberately remove/archive them. Inspect using:
 
 ```sh
 podman volume inspect wattson-dbt-mcp-output
@@ -58,6 +64,12 @@ Stdout is reserved for MCP messages. Diagnostics go to stderr.
 ```
 
 An agent can call `list` with `{"resource_type":["model"]}`, then `build` with `{}`.
+The regression uses its own default volume `wattson-dbt-mcp-regression`: it first performs a
+real successful smoke build, then sets `DBT_PATH` to a wrapper that exits 42 only for `build`.
+The second check must exit nonzero and leave no `mcp-proof.json`, even after successful parse/list/compile.
+It writes `regression-baseline.log`, `regression-fault.log`, and `mcp-regression.json` on success.
+`integrations/dbt-mcp/run.sh regression` is the equivalent command without just.
+
 No model or external agent is exercised by the smoke check: it proves the actual server/tool/CLI
 integration directly. Run one server per output volume: separate MCP processes do not coordinate
 DuckDB writes or dbt target files. Do not attach an agent to the smoke volume during a smoke run.
@@ -69,7 +81,8 @@ is read-only, with bounded temporary space at `/tmp` and the separate writable `
 **Read-only source does not mean a read-only database:** `build` seeds/materializes tables and
 runs tests. dbt also writes compiled SQL, manifests, partial-parse state and logs; these go to
 `DBT_TARGET_PATH=/output/target`, `DBT_LOG_PATH=/output/logs`, and the profile's database
-`/output/sample.duckdb`. There is no package-install/deps or codegen tool exposed.
+`/output/sample.duckdb` (overridden through `DBT_DUCKDB_PATH` to the isolated directory during
+smoke checks). There is no package-install/deps or codegen tool exposed.
 
 To use your own local DuckDB project and profiles, supply absolute directories:
 
@@ -118,3 +131,7 @@ The check observed exactly four allowed tools, successful seed and model builds,
 dbt data tests, and the expected two query rows. The artifact records package versions separately
 from MCP `serverInfo.version`, which upstream reports as the MCP SDK version (`1.30.0`).
 Other host architectures and real user projects have not been exercised.
+
+The corrected `just dbt-mcp-regression` also passed on that host: its real baseline exited 0,
+the build-only exit-42 injection made the next smoke exit 1, and `/output/mcp-proof.json` was
+absent afterward. A compile result or an earlier DuckDB database cannot satisfy this gate.

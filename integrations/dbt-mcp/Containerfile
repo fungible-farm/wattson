@@ -25,5 +25,5 @@ ENV PATH="/opt/dbt/.venv/bin:$PATH" \
     DISABLE_MCP_SERVER_METADATA=true \
     DISABLE_MCP_APPS=true \
     MCP_TRANSPORT=stdio
-COPY smoke.py /opt/dbt/smoke.py
+COPY smoke.py regression.py /opt/dbt/
 ENTRYPOINT ["dbt-mcp"]
