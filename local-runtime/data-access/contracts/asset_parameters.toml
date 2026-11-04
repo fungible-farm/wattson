@@ -1,0 +1,21 @@
+# An explicitly invented tutorial layout, not inferred client metadata.
+# A human reviews changes to this contract and its query registry in Git.
+version = 1
+id = "asset_parameters"
+sheet_pattern = 'Asset Parameters(?: [0-9]{4})?'
+header_row = 3
+
+[[columns]]
+name = "asset_id"
+header_pattern = 'Asset ID'
+kind = "string"
+
+[[columns]]
+name = "region"
+header_pattern = 'Region'
+kind = "string"
+
+[[columns]]
+name = "rating_mw"
+header_pattern = 'Rating \(MW\)'
+kind = "number"

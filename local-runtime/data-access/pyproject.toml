@@ -1,0 +1,14 @@
+[project]
+name = "wattson-data-pilot"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "duckdb==1.4.1", # MIT; in-memory engine, Parquet output, no persistent .db.
+    "mcp==1.12.2", # MIT; official protocol SDK, no hand-written MCP transport.
+]
+
+[dependency-groups]
+analyst = ["marimo==0.17.7"] # Apache-2.0; optional developer notebook, not query authorization.
+
+[tool.uv]
+package = false
