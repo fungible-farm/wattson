@@ -1,0 +1,53 @@
+# Unsloth SFT container recipe for GB10 (aarch64, CUDA 13.0, sm_121).
+# Image digests and transitive package versions still require a qualified lock.
+#
+# GPU access idiom (verified on this node, 2026-10-19):
+#   podman run --rm --device nvidia.com/gpu=all <image>
+# The CDI spec /var/run/cdi/nvidia.yaml (kind: nvidia.com/gpu) injects the
+# device nodes + driver libs. Verified: torch 2.13.0+cu130 sees "NVIDIA GB10",
+# capability (12,1), 130.7 GiB unified memory, GPU matmul PASS.
+#
+# Python 3.13 is required: torch 2.13.0+cu130 aarch64 wheels exist only for
+# cp313/cp314 (the host python is 3.12). Unsloth 2026.10.7 requires
+# torch>=2.4,<2.15 (satisfied), transformers<=5.17, peft>=0.18, accelerate>=0.34.1,
+# datasets<5, triton>=3.0 (aarch64 cp313 available). xformers is x86_64-only and
+# is NOT installed (Unsloth falls back to standard attention on aarch64).
+FROM docker.io/library/python:3.13-slim
+
+COPY --from=ghcr.io/astral-sh/uv:0.12.23 /uv /usr/local/bin/uv
+
+ENV PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    HF_HOME=/models \
+    TOKENIZERS_PARALLELISM=false
+
+# torch + torchvision for GB10 (aarch64, CUDA 13.0). Pinned to the exact wheel
+# that the PyTorch cu130 index serves for aarch64.
+RUN uv pip install --system --no-cache \
+    torch==2.13.0 torchvision \
+    --index-url https://download.pytorch.org/whl/cu130
+
+# Unsloth + training stack, pinned.
+RUN uv pip install --system --no-cache \
+    "unsloth==2026.10.7" \
+    "transformers>=4.52.4,<=5.17.0" \
+    "peft>=0.18.0" \
+    "accelerate>=0.34.1" \
+    "datasets>=3.4.1,<5.0.0" \
+    "triton>=3.0.0" \
+    "bitsandbytes>=0.45.5"
+
+# Evaluation independently re-solves model-proposed scales. Keep its solver
+# versions aligned with the M04 dataset; do not silently skip numerical checks.
+RUN uv pip install --system --no-cache \
+    "pandapower==3.5.4" "powerio==0.7.2" "scipy>=1.11" "pyyaml>=6.0.3"
+
+# Triton JIT-compiles its CUDA driver (driver.c) on first use, which needs a C
+# compiler. python:3.13-slim ships none, so install build-essential (gcc/g++).
+# Placed AFTER the pip layers so the large cached pip layers are not invalidated.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY train.py export.py evaluate.py runtime.py /opt/
+WORKDIR /workspace

@@ -1,0 +1,55 @@
+# M06 Unsloth SFT configuration.
+# BF16 LoRA fine-tune of Qwen3.5-4B on the 500-example solver-verified dataset.
+#
+# The 500 examples are solver-verified (M04/M05): every `expected.answer` was
+# produced by a real pandapower / PowerMCP execution, so the SFT target is
+# objective, not a teacher's guess. The train split (273) is used for training;
+# validation (59), test (58) and benchmark (110) are held out (no leakage).
+
+model:
+  # M06 smoke-test target. Qwen/Qwen3.5-4B (HTTP 200 on HF, verified 2026-10-19).
+  name: Qwen/Qwen3.5-4B
+  # Load in bfloat16 (GB10 has 130.7 GiB unified memory; a 4B model fits easily).
+  dtype: bfloat16
+  use_4bit: false
+
+lora:
+  r: 32
+  alpha: 64
+  dropout: 0.0
+  target_modules: all-linear
+  bias: none
+
+dataset:
+  # The 500-example dataset (M04). Only the train split is used for training.
+  examples: powercoder/datasets/smoke/examples.jsonl
+  split: powercoder/datasets/smoke/splits/train.jsonl
+  # Chat roles: system (fixed), user = task.prompt, assistant = expected.answer.
+  system_prompt: >-
+    You are a power-systems engineer with access to an AC power flow solver and
+    the PowerMCP tools. Solve the task exactly as stated and report the result
+    in the same format as the reference solution.
+
+training:
+  # 100 steps x (batch 2 x grad_accum 2) = 400 example-steps ~= 1.5 epochs of the
+  # 273 train split. Measured ~24s/example on GB10 (incl. one-time Triton JIT),
+  # so this is ~2h wall. seq_len 1024 covers the longest prompt. Logging every
+  # 10 steps gives a readable loss curve; save at the end (step 100).
+  seq_len: 1024
+  max_steps: 100
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 2
+  warmup_steps: 10
+  learning_rate: 2.0e-5
+  logging_steps: 10
+  save_steps: 100
+  optim: adamw_8bit
+  weight_decay: 0.01
+  lr_scheduler_type: cosine
+  seed: 42
+  # GB10: single GPU, no DDP.
+  gradient_checkpointing: true
+
+output:
+  dir: training/unsloth/out
+  adapter_name: qwen3.5-4b-lora

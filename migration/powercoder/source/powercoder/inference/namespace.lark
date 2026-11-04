@@ -1,0 +1,19 @@
+// PowerCoder's walkable path namespace (backlog 0026). Context-free, in the subset where
+// Lark, GBNF and PEG agree: no lookahead, and alternatives that cannot overlap.
+// powercoder/inference/namespace.py resolves exactly these paths;
+// test_namespace.py checks that this grammar and the resolver accept the same set.
+
+start: "/" tree?
+
+tree: case_tree | env_tree
+
+case_tree: "case" ("/" NETWORK ("/" KIND ("/" ID ("/" ATTRIBUTE)?)?)?)?
+
+// Reserved for time-indexed data (weather, forecasts; backlog 0027). Parsed, answers "no data".
+env_tree: "env" ("/" "as_of=" TIMESTAMP)?
+
+NETWORK: /[a-z0-9]+(-[a-z0-9]+)*/
+KIND: "bus" | "line" | "trafo" | "gen" | "load" | "shunt"
+ID: /0|[1-9][0-9]*/
+ATTRIBUTE: /[a-z][a-z0-9_]*/
+TIMESTAMP: /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}Z/

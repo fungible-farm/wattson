@@ -1,0 +1,35 @@
+# M06 second student: same 273 examples and rank-32 experiment, pinned base.
+model:
+  name: Qwen/Qwen2.5-Coder-1.5B
+  dtype: bfloat16
+  use_4bit: false
+  revision: df3ce67c0e24480f20468b6ef2894622d69eb73b
+lora:
+  r: 32
+  alpha: 64
+  dropout: 0.0
+  target_modules: all-linear
+  bias: none
+dataset:
+  examples: powercoder/datasets/smoke/examples.jsonl
+  split: powercoder/datasets/smoke/splits/train.jsonl
+  system_prompt: You are a power-systems engineer with access to an AC power flow
+    solver and the PowerMCP tools. Solve the task exactly as stated and report the
+    result in the same format as the reference solution.
+training:
+  seq_len: 1024
+  max_steps: 100
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 2
+  warmup_steps: 10
+  learning_rate: 2.0e-05
+  logging_steps: 10
+  save_steps: 100
+  optim: adamw_8bit
+  weight_decay: 0.01
+  lr_scheduler_type: cosine
+  seed: 42
+  gradient_checkpointing: true
+output:
+  dir: training/unsloth/out/edge-r32
+  adapter_name: qwen2.5-coder-1.5b-lora

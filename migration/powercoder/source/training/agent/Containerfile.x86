@@ -1,0 +1,13 @@
+# x86-64 training image for G3's GRPO pilot on sm3lly's RTX 3090 (user approval 2026-10-24).
+# The GB10 image (Containerfile, arm64) cannot run there. This pins the same versions of every
+# package the trainers import, as frozen from that image
+# (c890642db1726a2f21c39444bda33d7399f8bb8c485fddf7e7ed541378084d9c): Python 3.13, torch 2.13.0
+# for CUDA 13.0 (sm3lly's driver 580.167 supports it), and flash-linear-attention 0.5.2 for
+# Qwen3.5's Gated DeltaNet layers.
+FROM docker.io/library/python:3.13-slim
+RUN pip install --no-cache-dir torch==2.13.0 torchvision==0.28.0 --index-url https://download.pytorch.org/whl/cu130 \
+ && pip install --no-cache-dir transformers==5.17.0 peft==0.21.2 trl==1.15.0 datasets==4.8.5 accelerate==1.15.0 \
+      bitsandbytes==0.50.2 flash-linear-attention==0.5.2 fla-core==0.5.2 triton==3.7.1 safetensors==0.8.0 \
+      tokenizers==0.23.3 huggingface_hub==1.33.0 PyYAML==6.0.3 numpy==2.4.6 einops==0.8.2 sentencepiece==0.2.2 \
+      protobuf==7.36.2 Jinja2==3.1.6 pillow==12.3.0 \
+ && pip freeze > /installed.txt

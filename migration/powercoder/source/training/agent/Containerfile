@@ -1,0 +1,12 @@
+# Add flash-linear-attention (MIT) to the pinned training image for
+# training/agent_sft.py. Without it, transformers runs Qwen3.5's Gated DeltaNet
+# layers through its reference PyTorch chunk loop: the first Qwen run measured
+# ~125 s per 8-sequence step (~213 tokens/s), ~12.7 h for 365 steps.
+# Every package already in the image is held at its installed version, so only
+# the new kernels change; record the resolved image ID with each run.
+ARG BASE_IMAGE=74feb3e2e84cfde5d1d2d21c34213d60114d7eb7a80bb1f9352ff2dda15c00ff
+FROM ${BASE_IMAGE}
+RUN python -m pip freeze --exclude-editable > /tmp/installed.txt \
+ && uv pip install --system --no-cache -c /tmp/installed.txt "flash-linear-attention==0.5.2" \
+ && python -m pip freeze --exclude-editable > /tmp/after.txt \
+ && diff /tmp/installed.txt /tmp/after.txt | grep '^[<>]' || true

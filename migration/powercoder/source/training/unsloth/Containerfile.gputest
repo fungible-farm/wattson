@@ -1,0 +1,8 @@
+# Minimal GB10 GPU smoke-test: Python 3.13 + torch 2.13.0+cu130 (aarch64)
+FROM docker.io/library/python:3.13-slim
+ENV PIP_NO_CACHE_DIR=1 PIP_DISABLE_PIP_VERSION_CHECK=1
+RUN pip install --no-cache-dir \
+    torch==2.13.0 torchvision \
+    --index-url https://download.pytorch.org/whl/cu130
+COPY gputest.py /gputest.py
+CMD ["python", "/gputest.py"]
