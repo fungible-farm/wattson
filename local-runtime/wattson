@@ -153,7 +153,12 @@ case "$ACTION" in
         need_image "$IMAGE"
         need_image "$DEV_IMAGE"
         need_image "$INFRA_IMAGE"
-        podman save --multi-image-archive --output "$STATE/wattson-images.tar" "$IMAGE" "$DEV_IMAGE" "$INFRA_IMAGE"
+        # Podman cannot overwrite an existing docker archive. Publish a fresh
+        # completed archive atomically so a failed export preserves the old one.
+        EXPORT_DIR=$(mktemp -d "$STATE/export-XXXXXXXX")
+        podman save --multi-image-archive --output "$EXPORT_DIR/wattson-images.tar" "$IMAGE" "$DEV_IMAGE" "$INFRA_IMAGE"
+        mv "$EXPORT_DIR/wattson-images.tar" "$STATE/wattson-images.tar"
+        rmdir "$EXPORT_DIR"
         echo "Transfer $STATE/wattson-images.tar and this directory to the isolated machine."
         ;;
     manifest)
@@ -173,7 +178,7 @@ case "$ACTION" in
             --entrypoint asciinema "$DEV_IMAGE" play /recordings/wattson.cast
         ;;
     help)
-        echo 'Usage: ./wattson {build|install|package|hello|check|fail|status|inspect|logs|record|play|stop|down|export|manifest [openshift]}'
+        echo 'Usage: ./wattson {build|install|install-ipc|package|hello|check|fail|status|inspect|logs|record|play|stop|down|export|manifest [openshift]}'
         ;;
     *) echo "Unknown action: $ACTION" >&2; exit 2 ;;
 esac
