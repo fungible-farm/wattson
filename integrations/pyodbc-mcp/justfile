@@ -1,3 +1,4 @@
+set positional-arguments := true
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
 # Build the independent upstream MCP image, capped for shared hosts.
@@ -10,7 +11,7 @@ proof: build
 
 # Run stdio against a private, explicitly mounted DSN directory.
 run config dsn:
-    ./run.sh '{{config}}' '{{dsn}}'
+    ./run.sh "$1" "$2"
 
 # Re-resolve dependencies deliberately; normal builds use --frozen.
 lock:

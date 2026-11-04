@@ -70,6 +70,11 @@ Agent MCP configuration (replace the absolute paths):
 }
 ```
 
+The just recipe passes configuration and DSN values as quoted positional arguments.
+`uv run --no-project python integrations/pyodbc-mcp/check_arguments.py` runs the host
+argument regression (requires just and uv); literal apostrophes and `$(touch ...)` payloads
+must remain inert for both arguments.
+
 The agent launches Podman with `-i` and no TTY so stdout remains MCP traffic. Server logs and
 startup banners go to stderr. Query text, server names and returned data can appear in upstream
 errors/logs; treat agent transcripts as sensitive. The wrapper exposes no HTTP endpoint.
