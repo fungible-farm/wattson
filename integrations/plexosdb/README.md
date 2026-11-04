@@ -27,10 +27,15 @@ logs may appear on stderr. The image contains the public proof fixture, never
 client data. Its build context excludes everything except enumerated source,
 lock and fixture files.
 
-Default run limits are one CPU and 1 GiB RAM; builds are capped at 1 GiB RAM.
+Default run limits are one CPU, 1 GiB RAM and 128 processes. Builds use one CPU
+(CFS quota), 1 GiB RAM and an `nproc` limit of 128; this Podman version does not
+support a build `--pids-limit`.
 For larger trusted inputs, deliberately set `PLEXOSDB_MEMORY=4g` and/or
-`PLEXOSDB_CPUS=2`. XML is parsed into memory, so this small example is not a
-streaming importer. A killed process or rejected XML fails the command rather
+`PLEXOSDB_CPUS=2`. XML is copied once to immutable bytes, hashed, and imported from a private
+read-only snapshot in tmpfs. Counts and hashes therefore describe the same bytes
+even if the host edits the mounted source during parsing. Snapshot size is also
+bounded by the 256 MiB tmpfs; larger inputs need a deliberate recipe change.
+XML is parsed into memory, so this small example is not a streaming importer. A killed process or rejected XML fails the command rather
 than supplying an invented inventory. The upstream library offers many mutation
 APIs; this wrapper exposes only a fixed inventory query. Normal input inspection
 never exports or writes a model.
@@ -44,6 +49,8 @@ using PLEXOSdb 1.7.0. It checks the source SHA-256 against
 `113_316_1` and `1133161` against actual database query results, exports to tmpfs,
 and imports that export again. It also verifies the `/input` mount's kernel
 read-only flag, rejects a write descriptor, and checks the original hash again.
+A deterministic source-edit regression mutates the original after the real
+parser finishes, and requires the original snapshot hash alongside its counts.
 An unexpected result exits nonzero. The fixture is a small public regression
 input, not an operational power-system model.
 

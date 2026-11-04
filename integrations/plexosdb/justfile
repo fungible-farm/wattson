@@ -5,6 +5,11 @@ image := env("PLEXOSDB_IMAGE", "localhost/wattson-plexosdb:1.7.0")
 # CPU/memory limits bound this example on shared hosts; large models need deliberate overrides.
 memory := env("PLEXOSDB_MEMORY", "1g")
 cpus := env("PLEXOSDB_CPUS", "1")
+# Runtime cgroup process cap; build uses nproc because this Podman has no build --pids-limit.
+pids := "128"
+# One build CPU: a 100 ms quota per 100 ms CFS period.
+build_cpu_period := "100000"
+build_cpu_quota := "100000"
 az_image := env("AZ_CLI_IMAGE", "mcr.microsoft.com/azure-cli:azurelinux3.0@sha256:36c0a3203ec83e44521a2d456e47bc007edd3d6edc0280faaef521812cf407f2")
 
 # Show available commands.
@@ -13,11 +18,11 @@ default:
 
 # Build only the isolated pinned integration; never copy client data into the image.
 build:
-    podman build --memory {{memory}} -f Containerfile -t {{image}} .
+    podman build --memory {{memory}} --cpu-period {{build_cpu_period}} --cpu-quota {{build_cpu_quota}} --ulimit nproc={{pids}}:{{pids}} -f Containerfile -t {{image}} .
 
 # Actual upstream import/export plus an OS-level read-only mount check; no network or account.
 proof:
-    podman run --rm --memory {{memory}} --cpus {{cpus}} --network none --read-only --cap-drop all --security-opt no-new-privileges --tmpfs /tmp:rw,size=256m -v "$PWD/fixtures:/input:ro" --entrypoint /app/.venv/bin/python {{image}} /app/proof.py
+    podman run --rm --memory {{memory}} --cpus {{cpus}} --pids-limit {{pids}} --network none --read-only --cap-drop all --security-opt no-new-privileges --tmpfs /tmp:rw,size=256m -v "$PWD/fixtures:/input:ro" --entrypoint /app/.venv/bin/python {{image}} /app/proof.py
 
 # Inspect a local input directory read-only. Filename may refer to a nested XML file.
 inspect input filename="model.xml":
@@ -25,21 +30,21 @@ inspect input filename="model.xml":
     set -euo pipefail
     input_dir=$(realpath -- "$1")
     test -d "$input_dir"
-    podman run --rm --memory {{memory}} --cpus {{cpus}} --network none --read-only --cap-drop all --security-opt no-new-privileges --tmpfs /tmp:rw,size=256m -v "$input_dir:/input:ro" {{image}} "/input/$2"
+    podman run --rm --memory {{memory}} --cpus {{cpus}} --pids-limit {{pids}} --network none --read-only --cap-drop all --security-opt no-new-privileges --tmpfs /tmp:rw,size=256m -v "$input_dir:/input:ro" {{image}} "/input/$2"
 
 # Log in interactively in a dedicated credential volume; never mount the host's whole home.
 az-login:
     @podman volume exists wattson-plexos-az-auth || podman volume create wattson-plexos-az-auth >/dev/null
-    podman run --rm -it --memory {{memory}} --cpus {{cpus}} -e AZURE_CONFIG_DIR=/auth -v wattson-plexos-az-auth:/auth {{az_image}} az login --use-device-code --output none
+    podman run --rm -it --memory {{memory}} --cpus {{cpus}} --pids-limit {{pids}} -e AZURE_CONFIG_DIR=/auth -v wattson-plexos-az-auth:/auth {{az_image}} az login --use-device-code --output none
 
 # Stage ONE blob up to 256 MiB and 10 minutes, with ETag consistency and no overwrite.
 # Storage Blob Data Reader is enough; auth-mode login avoids account keys.
 az-stage account container blob:
     @podman volume exists wattson-plexos-input || podman volume create wattson-plexos-input >/dev/null
     @podman volume exists wattson-plexos-az-auth
-    podman run --rm --timeout 600 --memory {{memory}} --cpus {{cpus}} -e AZURE_CONFIG_DIR=/auth -v wattson-plexos-az-auth:/auth -v wattson-plexos-input:/stage -v "$PWD/stage_blob.sh:/stage_blob.sh:ro" {{az_image}} bash /stage_blob.sh "$1" "$2" "$3"
+    podman run --rm --timeout 600 --memory {{memory}} --cpus {{cpus}} --pids-limit {{pids}} -e AZURE_CONFIG_DIR=/auth -v wattson-plexos-az-auth:/auth -v wattson-plexos-input:/stage -v "$PWD/stage_blob.sh:/stage_blob.sh:ro" {{az_image}} bash /stage_blob.sh "$1" "$2" "$3"
 
 # Query the downloaded volume offline/read-only; this container receives no Azure identity.
 az-inspect:
     @podman volume exists wattson-plexos-input
-    podman run --rm --memory {{memory}} --cpus {{cpus}} --network none --read-only --cap-drop all --security-opt no-new-privileges --tmpfs /tmp:rw,size=256m -v wattson-plexos-input:/input:ro {{image}}
+    podman run --rm --memory {{memory}} --cpus {{cpus}} --pids-limit {{pids}} --network none --read-only --cap-drop all --security-opt no-new-privileges --tmpfs /tmp:rw,size=256m -v wattson-plexos-input:/input:ro {{image}}

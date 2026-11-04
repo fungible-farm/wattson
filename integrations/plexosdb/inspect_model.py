@@ -5,9 +5,13 @@ import hashlib
 import json
 from importlib.metadata import version
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import TypedDict
 
 from plexosdb import PlexosDB
+
+# Private parser snapshot: owner may read, and no identity receives write mode bits.
+SNAPSHOT_MODE: int = 0o400
 
 
 class Summary(TypedDict):
@@ -25,18 +29,25 @@ def inspect_model(source: Path) -> Summary:
     Args:
         source: Readable XML file; related CSV data are not opened or evaluated.
     Returns:
-        Counts obtained from upstream PlexosDB, with a hash of the exact input.
+        Counts and hash from the same private snapshot. Host edits after the
+        snapshot is read cannot pair old database results with a new file hash.
     Raises:
         OSError: The input cannot be read.
         Exception: Upstream rejects the XML or its database schema.
     """
-    database = PlexosDB.from_xml(source)
+    # Immutable bytes bind the digest and parser input, even if the host edits
+    # the source behind its read-only container mount during import.
+    data = source.read_bytes()
+    checksum = hashlib.sha256(data).hexdigest()
+    with TemporaryDirectory(prefix="plexosdb-") as temporary:
+        snapshot = Path(temporary) / "model.xml"
+        snapshot.write_bytes(data)
+        snapshot.chmod(SNAPSHOT_MODE)
+        database = PlexosDB.from_xml(snapshot)
     counts = database.query(
         "SELECT c.name, COUNT(*) FROM t_object o "
         "JOIN t_class c ON c.class_id = o.class_id GROUP BY c.name ORDER BY c.name"
     )
-    with source.open("rb") as stream:
-        checksum = hashlib.file_digest(stream, "sha256").hexdigest()
     return {
         "plexosdb_version": version("plexosdb"),
         "input_sha256": checksum,
