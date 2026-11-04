@@ -47,7 +47,7 @@ From the repository root:
 
 ```sh
 # Enter the example; all following files are in this directory.
-cd powercoder/local-runtime
+cd local-runtime
 
 # Connected preparation: build missing images, create the private pod, start
 # the helper service, and run the committed socket + FIFO check.

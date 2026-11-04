@@ -43,6 +43,7 @@ lists every failure we hit while building this.
 | `benchmarks/` | labs 1-3, deterministic power-system tasks with committed expected results |
 | `data/` | every task set, frozen evaluation suite and oracle trajectory used to train and score the released models, with a SHA-256 manifest |
 | `containers/`, `kube/`, `justfile` | the layered images, the pod definition, and the commands above |
+| [`local-runtime/`](local-runtime/HANDOFF-2026-11-04.md) | experimental IPC/MCP/HF model packaging profile; full model, SBOM and offline restore acceptance is unfinished |
 | `model-cards/` | the cards published with each model |
 
 ## Use it, and what may flow back

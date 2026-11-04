@@ -15,3 +15,4 @@ Start with the [README quick start](../README.md#quick-start). Then:
 | [training.md](training.md) | reproduce a student, and see what is not yet reproducible from this repository |
 | [results.md](results.md) | read the measured results, with seeds and limits |
 | [troubleshooting.md](troubleshooting.md) | fix what went wrong; every entry is something that actually went wrong |
+| [Experimental local runtime handoff](../local-runtime/HANDOFF-2026-11-04.md) | review the separate IPC/MCP/HF container prototype, actual evidence, and unfinished offline acceptance gates |
