@@ -1,0 +1,7 @@
+wattson_dbt_sample:
+  target: local
+  outputs:
+    local:
+      type: duckdb
+      path: /output/sample.duckdb
+      threads: 1

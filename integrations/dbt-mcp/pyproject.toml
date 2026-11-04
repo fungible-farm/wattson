@@ -1,0 +1,6 @@
+[project]
+name = "wattson-dbt-mcp-integration"
+version = "0.1.0"
+requires-python = ">=3.14,<3.15"
+# Independently locked: these never enter WattsOn's runtime environment.
+dependencies = ["dbt-mcp==2.10.1", "dbt-duckdb==1.11.1"]
