@@ -1,0 +1,8 @@
+*
+!Containerfile
+!pyproject.toml
+!uv.lock
+!inspect_model.py
+!proof.py
+!fixtures/
+!fixtures/**
