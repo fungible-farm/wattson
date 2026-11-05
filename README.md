@@ -8,21 +8,7 @@ maths. Every number comes from a specialist tool running in its own container, a
 
 ## How it works
 
-```mermaid
-flowchart LR
-  Q["Your question<br/>in plain words"] --> P["Planner<br/>a small AI model<br/>picks the tool and the steps"]
-  P --> R["Recipe<br/>a plain text file in git<br/>lists what is allowed"]
-  subgraph pod["One pod on your machine (podman kube play)"]
-    R --> T1["Power flow solver"]
-    R --> T2["Excel workbook reader"]
-    R --> T3["SQL / dbt models"]
-    R --> T4["PLEXOS inputs"]
-  end
-  T1 --> A["Checked answer<br/>+ a log of every step"]
-  T2 --> A
-  T3 --> A
-  T4 --> A
-```
+![Your question goes to a planner, then a recipe, then specialist tools in one pod, and comes back as a checked answer with a log](docs/diagrams/ecosystem.svg)
 
 - **The AI only plans.** It picks the tool and the order of steps. It does not calculate.
 - **Recipes are plain text, kept in git.** A recipe lists exactly what is allowed to run. Review it like any other file.
@@ -50,6 +36,7 @@ To run the AI model as well (needs an NVIDIA GPU): `just up granite`, then `just
 | See how it is wired together | [interfaces](docs/interfaces.md) and [concepts](docs/concepts.md) |
 | Know the limits and how answers are scored | [reference](docs/reference.md) |
 | Know what you may reuse | [policy](docs/policy.md) |
+| Draw the pod, tools and recipes as diagrams | [diagrams](docs/diagrams/README.md), rendered with our sibling project [kr0ki](https://github.com/promptexecution/kr0ki) (beta) |
 
 **Status:** v0.1.0. The AI models are on Hugging Face under Apache-2.0
 ([granite](https://huggingface.co/PromptExecutionAU/wattson-granite-4.2-8b-py),

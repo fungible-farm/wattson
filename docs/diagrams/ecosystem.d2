@@ -1,0 +1,24 @@
+direction: right
+
+q: "Your question\nin plain words"
+p: "Planner\na small AI model picks\nthe tool and the steps"
+r: "Recipe\na plain text file in git\nlists what is allowed"
+
+pod: "One pod on your machine (podman kube play)" {
+  t1: "Power flow solver"
+  t2: "Excel workbook reader"
+  t3: "SQL / dbt models"
+  t4: "PLEXOS inputs"
+}
+
+a: "Checked answer\n+ a log of every step"
+
+q -> p -> r
+r -> pod.t1
+r -> pod.t2
+r -> pod.t3
+r -> pod.t4
+pod.t1 -> a
+pod.t2 -> a
+pod.t3 -> a
+pod.t4 -> a
