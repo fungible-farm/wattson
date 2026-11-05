@@ -169,3 +169,11 @@ service name action *args:
 # Package the experimental offline runtime (see its separate acceptance gates).
 package:
     ./wattson package
+
+# --- Excel/XLSM read (deterministic, read-only, no network; every layer logged to stderr) -------------------------------------
+# e.g.  just excel-read ~/isp.xlsm "Approval sheet" A2:A2        just excel-read ~/isp.xlsm "Approval sheet" A1:C3 --mode formulas
+excel-read workbook sheet range *flags:
+    python3 scripts/excel_read.py "$1" "$2" "$3" "${@:4}"
+
+excel-build:
+    integrations/excel-mcp/run.sh build
