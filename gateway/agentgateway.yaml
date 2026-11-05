@@ -23,6 +23,20 @@ routes:
   backends:
   - host: 169.254.1.2:8000
 
+- name: embeddings
+  matches:
+  - path:
+      exact: /v1/embeddings
+  backends:
+  - host: 169.254.1.2:8081
+
+- name: rerank
+  matches:
+  - path:
+      exact: /v1/rerank
+  backends:
+  - host: 169.254.1.2:8082
+
 llm:
   gateways: default
   discovery: disabled

@@ -1,0 +1,16 @@
+# procedural-chart
+# State chart: the embedding and reranker servers (Auto Ontology's EMBED and RERANK roles). Each transition = the command + the observation.
+direction: down
+title: "Retrieval servers lifecycle" {shape: text}
+
+down_s: Down {shape: oval}
+verified: Models present (pinned revision, sha256 verified)
+admitted: Admitted (memory guard passed)
+serving: Serving (embeddings :8081, rerank :8082, loopback)
+
+down_s -> verified: "cmd: just retrieval-up | pass: prints '<file> ... sha256 verified' for both models; a hash mismatch exits 1 and installs nothing"
+verified -> admitted: "cmd: just model-guard .models/FILE | pass: line starts PASS, exit 0 (a FAIL or ERROR stops retrieval-up before any container starts)"
+admitted -> serving: "cmd: just retrieval-up | pass: prints 'retrieval-up: both servers healthy' (both /health return 200 within 40 s)"
+serving -> serving: "cmd: just retrieval-status | pass: both lines read 'http 200'"
+serving -> serving: "cmd: just gateway-up, then POST 127.0.0.1:4000/v1/embeddings | pass: HTTP 200 and a vector of 768 numbers, identical on repeat"
+serving -> down_s: "cmd: just retrieval-down | pass: podman ps -a lists neither container and ports 8081 and 8082 are free"
