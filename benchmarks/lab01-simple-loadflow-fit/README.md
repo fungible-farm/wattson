@@ -5,7 +5,7 @@ engineering: you have a grid model, you have one real reading from the field (a 
 they don't quite agree — so you adjust a parameter until they do. This lab does the smallest
 possible version of that.
 
-*New to power flow / pu voltage? See the root [README's Concepts section](../../README.md#concepts-in-plain-terms).*
+*New to power flow / pu voltage? See the [concepts guide](../../docs/concepts.md).*
 
 ## See it run
 

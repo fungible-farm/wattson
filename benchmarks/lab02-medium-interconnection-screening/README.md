@@ -5,7 +5,7 @@ break anything — including if a line or another generator drops out unexpected
 This lab runs that check for real: a candidate 250 MW generator, a full N-1 contingency screen, and
 a human approval gate before anything is called final.
 
-*New to N-1 contingency screening or pu voltage? See the root [README's Concepts section](../../README.md#concepts-in-plain-terms).*
+*New to N-1 contingency screening or pu voltage? See the [concepts guide](../../docs/concepts.md).*
 
 ## See it run
 

@@ -1,6 +1,6 @@
 # WattsOn documentation
 
-Start with the [README quick start](../README.md#quick-start). Then:
+Start with the [README](../README.md). The detailed reference (container tools, scoring, limits, licence) is in [reference.md](reference.md). Then:
 
 | Page | Read it to |
 |---|---|

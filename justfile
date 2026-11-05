@@ -182,3 +182,15 @@ excel-read workbook sheet range *flags:
 
 excel-build:
     integrations/excel-mcp/run.sh build
+
+# --- Diagrams (beta): render docs/diagrams/*.mmd to SVG through a LOCAL Kroki; diagram text never leaves your machine -------------
+# Start Kroki once from the kr0ki checkout:  (cd ~/promptexecution/kr0ki && just dev-kroki-up)   -> http://127.0.0.1:8010
+diagrams:
+    #!/usr/bin/env bash
+    url="${WATTSON_KROKI_URL:-http://127.0.0.1:8010}"
+    curl -fsS "$url/health" >/dev/null || { echo "no Kroki at $url - start it: (cd ~/promptexecution/kr0ki && just dev-kroki-up)" >&2; exit 1; }
+    for f in docs/diagrams/*.mmd; do
+        echo "[diagrams] render source=$f kroki=$url" >&2
+        curl -fsS -H 'Content-Type: text/plain' --data-binary @"$f" "$url/mermaid/svg" -o "${f%.mmd}.svg"
+        echo "[diagrams] wrote ${f%.mmd}.svg bytes=$(wc -c < "${f%.mmd}.svg")" >&2
+    done
