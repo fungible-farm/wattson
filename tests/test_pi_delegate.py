@@ -91,6 +91,14 @@ def test_output_cap_bounds_evidence_bytes(tmp_path: Path) -> None:
     assert (tmp_path / "evidence/events.jsonl").stat().st_size <= 128
 
 
+def process_running(pid: int) -> bool:
+    """True while the process can still run. It may be reaped between any two /proc accesses, so read once and treat a vanished entry as dead."""
+    try:
+        return Path(f"/proc/{pid}/stat").read_text().split()[2] != "Z"
+    except (FileNotFoundError, ProcessLookupError):
+        return False
+
+
 def test_deadline_cleans_up_a_descendant_ignoring_sigterm(tmp_path: Path) -> None:
     pidfile = tmp_path / "descendant.pid"
     child = "import signal,time; signal.signal(signal.SIGTERM,signal.SIG_IGN); time.sleep(30)"
@@ -100,8 +108,7 @@ def test_deadline_cleans_up_a_descendant_ignoring_sigterm(tmp_path: Path) -> Non
     pid = int(pidfile.read_text())
     # A briefly unreaped zombie is dead; it cannot run or retain model/tool work.
     for _ in range(20):
-        state = Path(f"/proc/{pid}/stat")
-        if not state.exists() or state.read_text().split()[2] == "Z":
+        if not process_running(pid):
             break
         time.sleep(0.05)
     else:
