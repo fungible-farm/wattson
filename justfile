@@ -182,3 +182,22 @@ excel-read workbook sheet range *flags:
 
 excel-build:
     integrations/excel-mcp/run.sh build
+
+# --- Diagrams (beta): render docs/diagrams/*.d2 (also .dot) to SVG through a Kroki server; the text goes only to the server you name -----
+# Needs a Kroki at WATTSON_KROKI_URL (default http://127.0.0.1:8010). Our sibling project kr0ki (github.com/promptexecution/kr0ki) runs one
+# (x86_64 only for now, see kr0ki#150); on arm64 point WATTSON_KROKI_URL at an x86_64 peer. Mermaid needs a Kroki companion, so use .d2 or .dot.
+diagrams:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    url="${WATTSON_KROKI_URL:-http://127.0.0.1:8010}"
+    curl -fsS "$url/health" >/dev/null || { echo "no Kroki at $url - set WATTSON_KROKI_URL, or run one from github.com/promptexecution/kr0ki (just dev-kroki-up)" >&2; exit 1; }
+    shopt -s nullglob
+    for f in docs/diagrams/*.d2 docs/diagrams/*.dot; do
+        case "$f" in *.d2) kind=d2 ;; *.dot) kind=graphviz ;; esac
+        out="${f%.*}.svg"; tmp="$(mktemp)"
+        echo "[diagrams] render source=$f kind=$kind kroki=$url" >&2
+        curl -fsS -H 'Content-Type: text/plain' --data-binary @"$f" "$url/$kind/svg" -o "$tmp"
+        grep -q '<svg' "$tmp" || { echo "[diagrams] FAIL $f: reply is not an SVG" >&2; rm -f "$tmp"; exit 1; }
+        mv "$tmp" "$out"
+        echo "[diagrams] wrote $out bytes=$(wc -c < "$out")" >&2
+    done
