@@ -1,6 +1,7 @@
 # Model gateway
 
-One local door for model calls. [agentgateway](https://github.com/agentgateway/agentgateway) (Apache-2.0, pinned to v1.7.0)
+One local door for model calls. [agentgateway](https://github.com/agentgateway/agentgateway) (Apache-2.0, pinned to v1.7.0 by
+image digest, so the bytes are reproducible; the justfile keeps the tag only for reading)
 listens on `127.0.0.1:4000`, speaks the OpenAI API, and forwards to llama-swap on `127.0.0.1:8000`.
 Clients point at `http://127.0.0.1:4000/v1` instead of llama-swap; model names pass through unchanged.
 No code here: just `agentgateway.yaml`.
@@ -11,6 +12,12 @@ No code here: just `agentgateway.yaml`.
     just gateway-status    # container state and a probe of /v1/models
     just gateway-logs      # the request log
     just gateway-down      # stop and remove
+
+## Restart behaviour
+
+- A crash of the gateway process is recovered: the container runs with `--restart=on-failure:3` (3 retries).
+- Stopped by hand stays stopped: `just gateway-down`, `podman stop`, `podman kill` bypass the policy.
+- A host reboot does NOT bring it back; for that enable `podman-restart.service` or use a systemd user unit.
 
 ## Add a backend or a model rule
 
