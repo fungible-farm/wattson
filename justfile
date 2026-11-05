@@ -470,3 +470,7 @@ retrieval-status:
     @podman ps -a --filter name=wattson-embed --filter name=wattson-rerank --format '{{"{{.Names}}  {{.Status}}  {{.Ports}}"}}'
     @curl -sS -o /dev/null -w 'embed /health -> http %{http_code}\n' --max-time 3 http://127.0.0.1:8081/health || true
     @curl -sS -o /dev/null -w 'rerank /health -> http %{http_code}\n' --max-time 3 http://127.0.0.1:8082/health || true
+
+# Log verified evaluation run directories to an MLflow tracking server (loopback by default). e.g. just mlflow-log --tracking-url http://127.0.0.1:5001 --experiment wattson-evals --arm NAME RUN_DIR...
+mlflow-log *args:
+    python3 scripts/mlflow_log.py "$@"
