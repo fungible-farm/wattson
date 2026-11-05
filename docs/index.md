@@ -19,3 +19,5 @@ Start with the [README quick start](../README.md#quick-start). Then:
 | [PowerCoder consolidation staging](../migration/powercoder/README.md) | inspect preserved local training/tests/source, canonical ownership mappings, and the unfinished repository cutover |
 
 [PowerCoder port handoff and remaining release gates](POWERCODER_PORT_HANDOFF_2026-11-05.md).
+
+[Shared launch, service and IDE interfaces](interfaces.md).

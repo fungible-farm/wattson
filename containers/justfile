@@ -1,6 +1,8 @@
 # Recipes that run INSIDE the harness container (`just --justfile /app/justfile ...`, or `just shell` from the host).
 # The model server is a separate container in the same pod, reachable at 127.0.0.1:8000.
 
+set positional-arguments := true
+
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
 base  := env("WATTSON_BASE_URL", "http://127.0.0.1:8000/v1")
@@ -12,12 +14,12 @@ default:
 
 # Check this environment and, if a model server is up, the server too.
 doctor:
-    wattson doctor --base-url {{base}} --model-dir {{dir}} --deep
+    wattson doctor --base-url {{quote(base)}} --model-dir {{quote(dir)}} --deep
 
 # Run a lab's self-check: deterministic, CPU only, no model needed.
 lab n:
     wattson fetch-data
-    wattson lab {{n}}
+    wattson lab "$1"
 
 # Labs 1 to 3 in turn.
 labs:
@@ -28,21 +30,21 @@ labs:
 # One question through the real tool harness against the model server; prints the answer and the journal path.
 ask question *flags:
     wattson fetch-data
-    wattson ask "{{question}}" --base-url {{base}} --model {{model}} {{flags}}
+    wattson ask "$@" --base-url {{quote(base)}} --model {{quote(model)}}
 
 # Lab 1's task given to the served model through the tool harness, graded by re-solving, printed next to the lab's committed bisection result.
 lab1-agent *flags:
     wattson fetch-data
-    wattson lab 1 --agent --base-url {{base}} --model {{model}} {{flags}}
+    wattson lab 1 --agent --base-url {{quote(base)}} --model {{quote(model)}} "$@"
 
 # Run a frozen suite (smoke | heldout | judgement | unsolvable | planning | derived) and grade it by re-solving.
 eval suite="smoke" *flags:
     wattson fetch-data
-    wattson eval {{suite}} --base-url {{base}} --model {{model}} {{flags}}
+    wattson eval "$@" --base-url {{quote(base)}} --model {{quote(model)}}
 
 # The pi coding agent, run the way the students were trained: only the WattsOn tools (declared directly), the trained system prompt,
 # no built-in bash/edit/write. pi's defaults make these models invent commands and numbers; see docs/pi.md. Extra arguments go to pi,
 # e.g.  just pi --print "What is the base-case minimum voltage on ieee39?"
 pi *args:
     wattson fetch-data
-    exec wattson pi --base-url {{base}} --model {{model}} {{args}}
+    exec wattson pi --base-url {{quote(base)}} --model {{quote(model)}} -- "$@"

@@ -22,6 +22,17 @@ def test_the_fixture_covers_every_command() -> None:
 
 @pytest.mark.parametrize("request_", ROWS, ids=[r["command"] for r in ROWS])
 def test_each_request_executes(request_: dict[str, Any]) -> None:
+    if request_["command"] == "OPTIMIZE":
+        from wattson.engineering.cases import CASES, REPO_ROOT
+
+        record = CASES.get(request_["args"]["case"])
+        if record and not (REPO_ROOT / record["path"]).is_file():
+            pytest.skip("operator engineering artifact absent; stage configs/external-data.json inputs")
+    if request_["command"] in {"RECALL", "FORECAST", "HINDCAST"}:
+        from wattson.forecasting.hindcast import CACHE, TABLE_GLOB
+
+        if not list(CACHE.glob(TABLE_GLOB)):
+            pytest.skip("operator demand artifact absent; stage configs/external-data.json inputs")
     result = execute(request_)
     args, command = request_["args"], request_["command"]
     if command in {"SOLVE", "SIMULATE"}:

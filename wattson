@@ -1,0 +1,122 @@
+#!/bin/sh
+# Repository control plane. Requires a POSIX shell and provisioned rootless Podman.
+# All scientific/application dependencies remain in the selected container images.
+set -eu
+ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+REGISTRY=${WATTSON_REGISTRY:-ghcr.io/fungible-farm}
+TAG=${WATTSON_TAG:-latest}
+ACTION=${1:-help}
+if [ "$#" -gt 0 ]; then shift; fi
+
+components() {
+    cat <<'EOF'
+Host contract: Linux, rootless Podman 5+, user namespaces and delegated cgroup v2;
+POSIX shell plus core utilities. Installation acquires images; no OS packages installed.
+core: Python 3.14, uv-locked solver/MCP, labs, HF downloader, CSIRO fetcher,
+      Node/pi and just. GPU, model weights and external databases are optional.
+developer: core plus Rust-built IR checker, semantic, engineering, forecasting extras.
+plexosdb: isolated PLEXOS XML reader; optional Azure CLI is a connected staging task.
+pyodbc-mcp: isolated upstream MCP + ODBC; bring DSN and database-enforced read-only grants.
+dbt-mcp: isolated local dbt/DuckDB MCP; image redistribution held pending license review.
+excel-mcp: workbook reader profile (available when its integration is installed).
+models: pinned HF CLI/MCP and model-data OCI preparation (~27.4 GB downloads).
+ipc: small observable socket/FIFO teaching profile, no model required.
+package: experimental local-runtime offline bundle/SBOM; not full-app release proof.
+Connected preparation needs registries/package sources; execution network policy
+depends on the profile (ODBC needs its database; offline proofs use network=none).
+EOF
+}
+
+build_core() {
+    # 4 GiB and two CPUs bound preparation; images never receive the host engine socket.
+    for target in wattson harness; do
+        name=wattson
+        [ "$target" != harness ] || name=wattson-harness
+        podman build --memory=4g --cpu-period=100000 --cpu-quota=200000 \
+            -f "$ROOT/containers/Containerfile" --target "$target" \
+            -t "$REGISTRY/$name:$TAG" "$ROOT"
+    done
+    for target in hf csiro; do
+        podman build --memory=2g --cpu-period=100000 --cpu-quota=200000 \
+            -f "$ROOT/containers/$target/Containerfile" \
+            -t "$REGISTRY/wattson-$target:$TAG" "$ROOT"
+    done
+}
+
+service() {
+    name=${1:?Supply service name}; shift
+    action=${1:?Supply build, check or stdio}; shift
+    case "$name" in
+        power-mcp)
+            case "$action" in
+                stdio)
+                    exec podman run --rm -i --pull=never --network=none --read-only \
+                        --memory=2g --memory-swap=2g --cpus=2 --pids-limit=256 \
+                        --tmpfs /tmp:rw,size=256m -e NUMBA_CACHE_DIR=/tmp/numba \
+                        -v wattson-cases:/cases:ro --entrypoint python \
+                        "$REGISTRY/wattson:$TAG" -m wattson.inference.mcp_server \
+                        --study-tools --python-tools --python-report-fields ;;
+                *) echo 'power-mcp supports stdio; use install core/check for preparation.' >&2; exit 2 ;;
+            esac ;;
+        plexosdb) exec "$ROOT/integrations/plexosdb/run.sh" "$action" "$@" ;;
+        dbt-mcp)
+            case "$action" in check) action=smoke ;; stdio) action=serve ;; esac
+            exec "$ROOT/integrations/dbt-mcp/run.sh" "$action" "$@" ;;
+        pyodbc-mcp)
+            case "$action" in
+                build) exec "$ROOT/integrations/pyodbc-mcp/bootstrap.sh" "$@" ;;
+                check) exec "$ROOT/integrations/pyodbc-mcp/proof.sh" "$@" ;;
+                stdio) exec "$ROOT/integrations/pyodbc-mcp/run.sh" "$@" ;;
+            esac ;;
+        excel-mcp)
+            if [ -x "$ROOT/integrations/excel-mcp/run.sh" ]; then
+                exec "$ROOT/integrations/excel-mcp/run.sh" "$action" "$@"
+            fi
+            echo 'Excel MCP profile is not present in this checkout.' >&2; exit 2 ;;
+    esac
+    echo "Unsupported service/action: $name $action" >&2; exit 2
+}
+
+case "$ACTION" in
+    components) components ;;
+    service) service "$@" ;;
+    mcp-config)
+        exec podman run --rm --pull=never --network=none --read-only \
+            --memory=256m --memory-swap=256m --cpus=1 --pids-limit=64 \
+            -e WATTSON_REGISTRY="$REGISTRY" -e WATTSON_TAG="$TAG" \
+            -e DBT_MCP_IMAGE -e EXCEL_MCP_IMAGE \
+            --tmpfs /tmp:rw,size=32m "$REGISTRY/wattson:$TAG" \
+            mcp-config "$@" --launcher "$ROOT/wattson" ;;
+    cases)
+        podman volume exists wattson-cases || podman volume create wattson-cases >/dev/null
+        exec podman run --rm --memory=512m --memory-swap=512m --cpus=1 --pids-limit=128 \
+            -v wattson-cases:/cases "$REGISTRY/wattson-csiro:$TAG" fetch ;;
+    install)
+        components
+        command -v podman >/dev/null || { echo 'Provision Podman before installation.' >&2; exit 1; }
+        profile=${1:-core}
+        printf '\nPreparing selected profile: %s\n' "$profile"
+        case "$profile" in
+            core) build_core ;;
+            developer)
+                podman build --memory=4g --cpu-period=100000 --cpu-quota=200000 \
+                    -f "$ROOT/containers/Containerfile" --target developer \
+                    -t localhost/wattson-developer:port "$ROOT" ;;
+            plexosdb|pyodbc-mcp|dbt-mcp|excel-mcp) service "$profile" build ;;
+            models) exec sh "$ROOT/local-runtime/huggingface/environment.sh" install ;;
+            ipc) exec sh "$ROOT/local-runtime/wattson" install-ipc ;;
+            *) echo "Unknown profile: $profile" >&2; exit 2 ;;
+        esac ;;
+    check)
+        exec podman run --rm --pull=never --network=none --read-only \
+            --memory=2g --memory-swap=2g --cpus=2 --pids-limit=256 \
+            --tmpfs /tmp:rw,size=256m -e NUMBA_CACHE_DIR=/tmp/numba \
+            -v wattson-cases:/cases:ro "$REGISTRY/wattson:$TAG" doctor ;;
+    package) exec sh "$ROOT/local-runtime/nemo-agent/environment.sh" package "$@" ;;
+    help|--help|-h)
+        printf '%s\n' './wattson components' './wattson install [core|developer|SERVICE|models|ipc]' \
+            './wattson check' './wattson service NAME build|check|stdio [ARGS...]' \
+            './wattson cases' './wattson mcp-config SERVICE [--client vscode] [--workbook /path/file.xlsm]' \
+            './wattson package  # experimental offline runtime profile' ;;
+    *) echo "Unknown action: $ACTION (use --help)" >&2; exit 2 ;;
+esac

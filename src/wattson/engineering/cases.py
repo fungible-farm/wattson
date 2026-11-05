@@ -65,9 +65,9 @@ def load_case(case_id: str) -> pp.pandapowerNet:
 
     Raises:
         KeyError: for an id not in CASES.
-        FileNotFoundError: if its checkout is not fetched (``just lab10-fetch``).
+        FileNotFoundError: if the approved external case artifact has not been staged.
     """
     path = REPO_ROOT / CASES[case_id]["path"]
     if not path.exists():
-        raise FileNotFoundError(f"{path} not found; run `just lab10-fetch`")
+        raise FileNotFoundError(f"{path} not found; stage configs/external-data.json with scripts/import_external_data.py")
     return pp.from_json(str(path))

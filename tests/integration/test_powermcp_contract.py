@@ -11,6 +11,7 @@ persistence to disk.
 """
 
 import json
+import os
 import pytest
 
 from wattson.inference.client import InferenceClient
@@ -184,6 +185,10 @@ def client():
     c.close()
 
 
+@pytest.mark.skipif(
+    os.environ.get("WATTSON_TEACHER_INTEGRATION") != "1",
+    reason="live teacher service: opt in with WATTSON_TEACHER_INTEGRATION=1",
+)
 def test_teacher_calls_powermcp_tools(client, powermcp):
     """Teacher model can discover and call PowerMCP tools."""
     schemas = powermcp.get_tool_schemas()
