@@ -1,0 +1,12 @@
+# procedural-chart
+# State chart: the exclusive GPU lease (Studio D, #29). One engine at a time, whatever its purpose.
+direction: down
+title: "GPU lease" {shape: text}
+
+free: Lease free {shape: oval}
+held: Held by one engine (purpose:start:pid recorded in gpu.lock)
+refused: Second engine refused
+
+free -> held: "cmd: uv run pytest tests/inference/test_gpu_lease.py -q | pass: test_lock_file_is_not_unlinked_on_release and test_context_manager_releases pass (acquire returns True, holder() names the purpose)"
+held -> refused: "cmd: uv run pytest tests/inference/test_gpu_lease.py -q | pass: test_second_exclusive_engine_with_a_different_purpose_is_refused and test_a_second_process_is_refused_while_this_one_holds_the_lease pass (acquire returns False, other process exits 3)"
+held -> free: "cmd: uv run pytest tests/inference/test_gpu_lease.py -q | pass: test_lease_is_free_again_after_release passes"
