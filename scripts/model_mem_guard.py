@@ -3,10 +3,12 @@
     python scripts/model_mem_guard.py 233GB
     python scripts/model_mem_guard.py /path/to/model-00001-of-00009.gguf
     python scripts/model_mem_guard.py --fraction 0.75 /path/to/model-dir
+    python scripts/model_mem_guard.py --kit-ref ghcr.io/example/m:v1
 
 Accepts file paths (sharded GGUF sets are summed), directory paths (all
-.gguF/.safetensors/.bin files are summed), or size literals (121GiB, 233GB).
-Decimal GB vs binary GiB are distinct. Default fraction 0.60 of MemAvailable.
+.gguF/.safetensors/.bin files are summed), size literals (121GiB, 233GB),
+or remote kit references (--kit-ref). Decimal GB vs binary GiB are distinct.
+Default fraction 0.60 of MemAvailable.
 
 Exit 0 = PASS, 1 = FAIL (exceeds limit), 2 = error (bad input, unreadable file).
 """
@@ -15,8 +17,10 @@ from __future__ import annotations
 
 import argparse
 import glob
+import json
 import os
 import re
+import subprocess
 import sys
 from decimal import Decimal
 
@@ -106,16 +110,80 @@ def get_mem_available(meminfo_path: str) -> int:
     raise RuntimeError(f"MemAvailable not found in {meminfo_path}")
 
 
+def find_layers(obj):
+    """Recursively find the 'layers' list from kit inspect JSON."""
+    if isinstance(obj, dict):
+        if 'layers' in obj and isinstance(obj['layers'], list):
+            return obj['layers']
+        for v in obj.values():
+            found = find_layers(v)
+            if found is not None:
+                return found
+    elif isinstance(obj, list):
+        for item in obj:
+            found = find_layers(item)
+            if found is not None:
+                return found
+    return None
+
+
+def kit_inspect_size(kit_path: str, ref: str, plain_http: bool) -> int:
+    """Run kit inspect --remote and sum layer sizes from the manifest."""
+    cmd = [kit_path, 'inspect', '--remote', ref]
+    if plain_http:
+        cmd.append('--plain-http')
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+    except FileNotFoundError:
+        raise RuntimeError(f"kit not found at {kit_path}")
+    except subprocess.TimeoutExpired:
+        raise RuntimeError(f"kit inspect timed out for {ref}")
+    if result.returncode != 0:
+        raise RuntimeError(f"kit inspect failed (exit {result.returncode}) for {ref}: {result.stderr.strip()}")
+    try:
+        data = json.loads(result.stdout)
+    except json.JSONDecodeError as e:
+        raise RuntimeError(f"invalid JSON from kit inspect for {ref}: {e}")
+    layers = find_layers(data)
+    if layers is None:
+        raise RuntimeError(f"no layers found in kit inspect output for {ref}")
+    total = 0
+    for i, layer in enumerate(layers):
+        if not isinstance(layer, dict):
+            raise RuntimeError(f"layer {i} in {ref} is not an object")
+        size = layer.get('size')
+        if not isinstance(size, int):
+            raise RuntimeError(f"layer {i} in {ref} has no integer size")
+        total += size
+    return total
+
+
 def main():
     parser = argparse.ArgumentParser(description='Check model size vs available memory')
-    parser.add_argument('paths', nargs='+', help='Model files, directories, or size literals')
+    parser.add_argument('paths', nargs='*', help='Model files, directories, or size literals')
     parser.add_argument('--fraction', type=float, default=0.60, help='Fraction of MemAvailable to use (default 0.60)')
     parser.add_argument('--meminfo', default='/proc/meminfo', help='Path to meminfo file')
+    parser.add_argument('--kit-ref', action='append', dest='kit_refs', default=[], help='Remote kit reference to inspect (repeatable)')
+    parser.add_argument('--kit', default='kit', help='Path to kit executable (default: kit on PATH)')
+    parser.add_argument('--plain-http', action='store_true', help='Use plain HTTP for kit inspect')
     args = parser.parse_args()
+
+    if not args.paths and not args.kit_refs:
+        parser.error('at least one path or --kit-ref is required')
 
     # Determine total model size
     total = 0
     on_disk: list[str] = []
+
+    # Handle kit refs
+    for ref in args.kit_refs:
+        try:
+            total += kit_inspect_size(args.kit, ref, args.plain_http)
+        except RuntimeError as e:
+            print(f"ERROR {e}", file=sys.stderr)
+            return 2
+
+    # Handle paths
     for p in args.paths:
         # Try as size literal first
         try:
