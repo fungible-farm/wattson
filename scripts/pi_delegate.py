@@ -30,7 +30,7 @@ DEFAULT_MAX_TURNS: int = 6
 DEFAULT_MAX_TOOLS: int = 12
 DEFAULT_MAX_BYTES: int = 8 * 1024 * 1024
 DEFAULT_MAX_TOKENS: int = 2048
-CONTEXT_TOKENS: int = 32768
+CONTEXT_TOKENS: int = int(os.environ.get("WATTSON_DELEGATE_CONTEXT", "32768"))
 MAX_TASK_BYTES: int = 65536
 IO_CHUNK_BYTES: int = 65536
 POLL_SECONDS: float = 0.1
@@ -89,9 +89,11 @@ def arguments(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--allow-actions", action="store_true", help="authorize bash/edit/write in --action-workdir")
     parser.add_argument("--out-dir", required=True, type=Path, help="new private evidence directory; must not exist")
     parser.add_argument("--pi", default=shutil.which("pi") or str(Path.home() / ".local/bin/pi"))
-    parser.add_argument("--base-url", type=local_url, default=DEFAULT_URL)
-    parser.add_argument("--model", default=DEFAULT_MODEL)
-    parser.add_argument("--timeout", type=positive, default=DEFAULT_TIMEOUT_SECONDS, help="whole-run wall seconds")
+    parser.add_argument("--base-url", type=local_url,
+                        default=os.environ.get("WATTSON_DELEGATE_URL", DEFAULT_URL))
+    parser.add_argument("--model", default=os.environ.get("WATTSON_DELEGATE_MODEL", DEFAULT_MODEL))
+    parser.add_argument("--timeout", type=positive, default=None,
+                        help="whole-run wall seconds")
     parser.add_argument("--max-turns", type=positive, default=DEFAULT_MAX_TURNS)
     parser.add_argument("--max-tool-calls", type=positive, default=DEFAULT_MAX_TOOLS)
     parser.add_argument("--max-output-bytes", type=positive, default=DEFAULT_MAX_BYTES)
@@ -119,6 +121,12 @@ def arguments(argv: list[str] | None = None) -> argparse.Namespace:
         parser.error("task file must be UTF-8 text")
     if not args.prompt.strip():
         parser.error("task must not be empty")
+    if args.timeout is None:
+        try:
+            args.timeout = positive(os.environ.get("WATTSON_DELEGATE_TIMEOUT", str(DEFAULT_TIMEOUT_SECONDS)))
+        except (ValueError, argparse.ArgumentTypeError):
+            parser.error("WATTSON_DELEGATE_TIMEOUT must be a positive integer")
+
     args.pi = str(Path(shutil.which(args.pi) or args.pi).absolute())
     if not Path(args.pi).is_file() or not os.access(args.pi, os.X_OK):
         parser.error("pi executable was not found; install it explicitly before delegation")
@@ -248,7 +256,8 @@ def stop_group(process: subprocess.Popen[bytes]) -> None:
 def run(args: argparse.Namespace) -> dict[str, Any]:
     """Consume bounded JSONL/stderr streams until complete, interrupted or budget-limited."""
     output = args.out_dir.absolute()
-    output.mkdir(parents=True, mode=0o700)  # refuse stale/reused evidence directories
+    # FileExistsError is the intended refusal if the caller reuses an evidence directory.
+    output.mkdir(parents=True, mode=0o700)
     command, environment = configure(args, output)
     (output / "task.txt").write_text(args.prompt)
     evidence = Evidence(ACTION_TOOLS if args.allow_actions else READ_TOOLS, args.max_turns, args.max_tool_calls)

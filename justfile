@@ -158,6 +158,11 @@ dbt-mcp-regression:
 components:
     @./wattson components
 
+# Delegate a bounded read-only task to local pi using the harness image.
+# Override URL/model/timeout: WATTSON_DELEGATE_URL=http://host:8002/v1 WATTSON_DELEGATE_MODEL=neo-coder WATTSON_DELEGATE_TIMEOUT=300 just delegate task.txt output-dir
+delegate task output:
+    @./wattson delegate "$@"
+
 # Prepare core images without host Python/Rust/Node; select optional profiles explicitly.
 install profile="core":
     ./wattson install "$@"
