@@ -1,12 +1,15 @@
 """Tests for scripts/diagram_check.py and scripts/justfile_diagram.py."""
 
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
-PYTHON = "/home/brianh/promptexecution/aemo/wattson/.venv/bin/python"
+import pytest
+
+PYTHON = sys.executable
 SCRIPTS = Path(__file__).parent.parent / "scripts"
 DIAGRAM_CHECK = SCRIPTS / "diagram_check.py"
 JUSTFILE_DIAGRAM = SCRIPTS / "justfile_diagram.py"
@@ -215,6 +218,7 @@ class TestDiagramCheck:
         assert result.returncode == 2
 
 
+@pytest.mark.skipif(shutil.which("just") is None, reason="just is not installed; the recipe-graph generator needs it (CI has none)")
 class TestJustfileDiagram:
     """Tests for justfile_diagram.py."""
 
