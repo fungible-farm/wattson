@@ -163,6 +163,14 @@ components:
 delegate task output:
     @./wattson delegate "$@"
 
+# Install the kit CLI binary (downloads, verifies checksum, installs to .tools/kit).
+kit-install:
+    python3 scripts/install_kit.py
+
+# Guarded pack check: walk a directory and reject anything not explicitly allowed.
+kit-pack-check dir allow:
+    python3 scripts/kit_pack_check.py "$1" --allow-file "$2"
+
 # Prepare core images without host Python/Rust/Node; select optional profiles explicitly.
 install profile="core":
     ./wattson install "$@"
@@ -241,5 +249,5 @@ model-guard *args:
 
 # Check that every command named in the hand-written state charts exists, that every transition names a command and a pass observation, and that the generated recipe graph is current.
 diagrams-check:
-    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2
+    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2 docs/diagrams/kit-lifecycle.d2
     python3 scripts/justfile_diagram.py --check docs/diagrams/recipes.d2

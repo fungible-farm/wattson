@@ -1,0 +1,19 @@
+# procedural-chart
+# State chart: from no tooling to a published, size-checked ModelKit. Each transition = the command + the observation that proves it.
+direction: down
+title: "ModelKit lifecycle" {shape: text}
+
+absent: kit not installed {shape: oval}
+installed: kit installed (checksum verified)
+checked: Directory checked (nothing forbidden, everything listed)
+refused: Refused (not packed)
+packed: Packed (local ModelKit)
+published: Published to a registry
+sized: Size known before download
+
+absent -> installed: "cmd: just kit-install | pass: prints 'installed ... version=Version: 1.16.0' (or 'already installed'); a checksum mismatch exits 1 and installs nothing"
+installed -> checked: "cmd: just kit-pack-check DIR ALLOWFILE | pass: prints 'PASS files=N', exit 0"
+installed -> refused: "cmd: just kit-pack-check DIR ALLOWFILE | pass: prints 'FAIL denied=D unlisted=U', exit 1; nothing is packed"
+checked -> packed: "cmd: .tools/kit/kit pack DIR -t REF | pass: prints 'Model saved: sha256:<digest>', exit 0"
+packed -> published: "cmd: .tools/kit/kit push REF | pass: prints 'Pushed sha256:<digest>' with the same digest as pack"
+published -> sized: "cmd: just model-guard --kit-ref REF | pass: one line PASS or FAIL with total= avail= limit=; exit 2 means refuse"

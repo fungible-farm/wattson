@@ -1,4 +1,5 @@
 .venv/
+.tools/
 __pycache__/
 *.pyc
 # data/ is tracked; only the CSIRO case files that scripts/fetch_csiro_nem_data.py downloads are ignored
