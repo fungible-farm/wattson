@@ -52,6 +52,7 @@ from wattson.datasets.audit import audit_rows, load_rows
 from wattson.datasets.trajectories import Conversation, fit, report
 from wattson.inference.evaluate_agent import TaskResult, frozen_task_count, grade
 from wattson.inference.tool_probe import INFERENCE_TIMEOUT_S, MAX_TOKENS, MAX_TOOL_CALLS, MAX_TURNS, SYSTEM_PROMPT, record
+from wattson.mcp_env import server_environment
 
 # The run's "model" and "agent" names; compare_agents reports ``model`` as the
 # compared side's name.
@@ -138,7 +139,7 @@ async def attempt(out: Path, row: dict[str, Any], grading: asyncio.Lock) -> Task
     journal = out / f"{row['example_id']}.jsonl"
     parameters = StdioServerParameters(command=sys.executable,
                                        args=["-m", "wattson.inference.mcp_server", "--study-tools"],
-                                       cwd=str(common.REPO_ROOT))
+                                       cwd=str(common.REPO_ROOT), env=server_environment())
     messages = [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": row["task"]["prompt"]}]
     with journal.open("x") as stream:
         record(stream, "start", {"model": AGENT_NAME, "agent": AGENT_NAME, "base_url": None, "messages": list(messages),

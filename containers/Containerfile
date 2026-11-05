@@ -63,11 +63,15 @@ FROM wattson AS developer
 USER root
 COPY --from=command-ir-build /build/rust/target/release/lift /usr/local/bin/wattson-ir-lift
 COPY tests ./tests
+COPY rust/command-ir/tests ./rust/command-ir/tests
 COPY configs ./configs
 COPY containers ./containers
 COPY kube ./kube
 COPY justfile ./justfile
-RUN uv sync --frozen --extra labs --extra hub --extra engineering --extra semantic --extra forecasting \
+COPY wattson ./wattson
+COPY integrations ./integrations
+RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/* \
+ && uv sync --frozen --extra labs --extra hub --extra engineering --extra semantic --extra forecasting \
  && chown -R wattson:wattson /app
 ENV NUMBA_CACHE_DIR=/tmp/numba
 USER wattson
