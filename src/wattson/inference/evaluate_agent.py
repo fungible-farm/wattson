@@ -173,7 +173,8 @@ async def attempt(args: argparse.Namespace, task: dict[str, Any], grading: async
                                  python_report_fields=getattr(args, "python_report_fields", False),
                                  enforce_provenance=getattr(args, "enforce_provenance", False),
                                  api_key_env=getattr(args, "api_key_env", None),
-                                 extra_body=getattr(args, "extra_body", None))
+                                 extra_body=getattr(args, "extra_body", None),
+                                 max_retries=getattr(args, "max_retries", 0))
     with journal.open("x") as stream:
         try:
             await probe(options, stream)
@@ -209,6 +210,7 @@ async def evaluate(args: argparse.Namespace) -> None:
         "inference_timeout_s": INFERENCE_TIMEOUT_S,
         "temperature": 0.0, "attempts_per_task": 1, "concurrency": args.concurrency,
         "first_turn_tool_choice": args.first_turn_tool_choice,
+        "max_retries": getattr(args, "max_retries", 0),
         # The serving side of the condition, as the caller started the server
         # (vLLM --tool-strict-level); recorded so compare_agents can refuse mixes.
         "server_tool_strict_level": args.server_tool_strict_level,
@@ -278,6 +280,8 @@ def main() -> None:
                         help="JSON object to merge into the chat request body (e.g. {\"reasoning_effort\":\"high\"})")
     parser.add_argument("--concurrency", type=int, default=DEFAULT_CONCURRENCY,
                         help="Attempts in flight at once; match the server's --max-num-seqs")
+    parser.add_argument("--max-retries", type=int, default=0,
+                        help="Retry transient errors (429/5xx) up to N times with exponential backoff")
     args = parser.parse_args()
     if args.extra_body is not None:
         try:

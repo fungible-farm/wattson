@@ -148,7 +148,8 @@ async def probe(args: argparse.Namespace, journal: TextIO) -> int:
         events: list[dict[str, Any]] = []  # tool responses so far, in the journal's shape, for the guard
         guard_attempts = 0
         enforce = bool(getattr(args, "enforce_provenance", False))
-        with InferenceClient(args.base_url, timeout=INFERENCE_TIMEOUT_S, api_key_env=getattr(args, "api_key_env", None)) as client:
+        with InferenceClient(args.base_url, timeout=INFERENCE_TIMEOUT_S, api_key_env=getattr(args, "api_key_env", None),
+                             max_retries=getattr(args, "max_retries", 0)) as client:
             for turn in range(MAX_TURNS):
                 try:
                     result = await asyncio.to_thread(
@@ -171,6 +172,8 @@ async def probe(args: argparse.Namespace, journal: TextIO) -> int:
                                                  "timeout_s": INFERENCE_TIMEOUT_S, "error": type(error).__name__})
                     return 1
                 record(journal, "model_response", result)
+                if "retries" in result:
+                    record(journal, "retries", result["retries"])
                 choice = result["choices"][0]
                 message = choice["message"]
                 messages.append({k: message[k] for k in ("role", "content", "tool_calls") if k in message})
@@ -236,6 +239,8 @@ def main() -> int:
     parser.add_argument("--python-report-fields", action="store_true", help="with --python-tools: the v2 shell (report numbers in trial replies)")
     parser.add_argument("--enforce-provenance", action="store_true",
                         help="refuse a final answer containing a number no tool produced: send the model back to compute it (see MAX_GUARD_RETRIES)")
+    parser.add_argument("--max-retries", type=int, default=0,
+                        help="Retry transient errors (429/5xx) up to N times with exponential backoff")
     args = parser.parse_args()
     if args.extra_body is not None:
         try:
