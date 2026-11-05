@@ -205,7 +205,9 @@ diagrams:
 # --- model gateway: agentgateway in front of llama-swap ---------------------------------------------------------------------
 # Config lives in gateway/agentgateway.yaml (git). The container reaches llama-swap's loopback-only port through pasta's host-loopback map.
 
-gw_image := env("WATTSON_GATEWAY_IMAGE", "ghcr.io/agentgateway/agentgateway:v1.7.0")
+# Content-pinned: the tag is for reading, the digest is what podman resolves (multi-arch INDEX digest).
+# Refresh both with:  skopeo inspect docker://ghcr.io/agentgateway/agentgateway | jq -r .Digest
+gw_image := env("WATTSON_GATEWAY_IMAGE", "ghcr.io/agentgateway/agentgateway:v1.7.0@sha256:60216aafb03d37f94e952ff3d51d2f630a65b10ecaebdc0a864882f92610c45b")
 gw_port  := env("WATTSON_GATEWAY_PORT", "4000")
 gw_name  := "wattson-gateway"
 
@@ -213,7 +215,7 @@ gw_name  := "wattson-gateway"
 gateway-up:
     @echo "gateway-up: starting {{gw_name}} ({{gw_image}}) on 127.0.0.1:{{gw_port}} -> llama-swap 127.0.0.1:8000"
     @podman rm -f {{gw_name}} >/dev/null 2>&1 || true
-    @podman run -d --name {{gw_name}} --pull=missing --read-only --cap-drop=all --security-opt=no-new-privileges --memory=512m --memory-swap=512m --cpus=1 --pids-limit=128 --network=pasta:--map-host-loopback,169.254.1.2 -p 127.0.0.1:{{gw_port}}:4000 -v "$PWD/gateway:/etc/agentgateway:ro,Z" {{gw_image}} -f /etc/agentgateway/agentgateway.yaml >/dev/null
+    @podman run -d --name {{gw_name}} --pull=missing --restart=on-failure:3 --read-only --cap-drop=all --security-opt=no-new-privileges --memory=512m --memory-swap=512m --cpus=1 --pids-limit=128 --network=pasta:--map-host-loopback,169.254.1.2 -p 127.0.0.1:{{gw_port}}:4000 -v "$PWD/gateway:/etc/agentgateway:ro,Z" {{gw_image}} -f /etc/agentgateway/agentgateway.yaml >/dev/null
     @for i in $(seq 1 20); do curl -fs -o /dev/null --max-time 2 http://127.0.0.1:{{gw_port}}/v1/models && { echo "gateway-up: ready"; exit 0; }; sleep 0.5; done; echo "gateway-up: not answering; see just gateway-logs" >&2; exit 1
 
 # Stop and remove the gateway container.
