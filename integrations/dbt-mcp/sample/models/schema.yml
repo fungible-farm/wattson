@@ -1,0 +1,8 @@
+version: 2
+models:
+  - name: region_loads
+    columns:
+      - name: region
+        data_tests: [not_null, unique]
+      - name: total_mw
+        data_tests: [not_null]

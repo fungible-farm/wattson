@@ -1,0 +1,29 @@
+FROM ghcr.io/astral-sh/uv:0.12.23 AS uv
+FROM docker.io/library/python:3.14-slim
+COPY --from=uv /uv /usr/local/bin/uv
+WORKDIR /opt/dbt
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev --no-install-project --no-cache
+ENV PATH="/opt/dbt/.venv/bin:$PATH" \
+    HOME=/tmp/home \
+    DBT_PROJECT_DIR=/project \
+    DBT_PROFILES_DIR=/profiles \
+    DBT_PATH=/opt/dbt/.venv/bin/dbt \
+    DBT_TARGET_PATH=/output/target \
+    DBT_LOG_PATH=/output/logs \
+    DBT_SEND_ANONYMOUS_USAGE_STATS=false \
+    DO_NOT_TRACK=1 \
+    DBT_MCP_ENABLE_TOOLS=parse,list,compile,build \
+    DISABLE_SEMANTIC_LAYER=true \
+    DISABLE_DISCOVERY=true \
+    DISABLE_REMOTE=true \
+    DISABLE_ADMIN_API=true \
+    DISABLE_SQL=true \
+    DISABLE_DBT_CODEGEN=true \
+    DISABLE_LSP=true \
+    DISABLE_PRODUCT_DOCS=true \
+    DISABLE_MCP_SERVER_METADATA=true \
+    DISABLE_MCP_APPS=true \
+    MCP_TRANSPORT=stdio
+COPY smoke.py regression.py /opt/dbt/
+ENTRYPOINT ["dbt-mcp"]

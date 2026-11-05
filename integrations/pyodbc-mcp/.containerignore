@@ -1,0 +1,6 @@
+*
+!Containerfile
+!pyproject.toml
+!uv.lock
+!server.py
+!proof.py

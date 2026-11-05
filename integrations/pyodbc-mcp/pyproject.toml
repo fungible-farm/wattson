@@ -1,0 +1,8 @@
+[project]
+name = "wattson-pyodbc-mcp-container"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = ["pyodbc-mcp-server==0.4.0", "fastmcp>=2,<3", "mcp>=1,<2"]
+
+[tool.uv]
+package = false

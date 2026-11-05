@@ -1,0 +1,18 @@
+set positional-arguments := true
+set shell := ["bash", "-euo", "pipefail", "-c"]
+
+# Build the independent upstream MCP image, capped for shared hosts.
+build:
+    podman build --memory=2g --cpu-period=100000 --cpu-quota=200000 -t localhost/wattson-pyodbc-mcp:0.4.0 .
+
+# Initialize MCP, list upstream tools, query actual ODBC bytes, prove write rejection.
+proof: build
+    ./proof.sh
+
+# Run stdio against a private, explicitly mounted DSN directory.
+run config dsn:
+    ./run.sh "$1" "$2"
+
+# Re-resolve dependencies deliberately; normal builds use --frozen.
+lock:
+    uv lock

@@ -1,0 +1,25 @@
+{
+  "upstream": "pyodbc-mcp-server==0.4.0",
+  "transport": "stdio",
+  "tools": [
+    "DescribeTable",
+    "GetTableRelationships",
+    "ListConstraints",
+    "ListFunctions",
+    "ListIndexes",
+    "ListStoredProcedures",
+    "ListTables",
+    "ListTriggers",
+    "ListViews",
+    "ReadData"
+  ],
+  "query_rows": [
+    {
+      "name": "fixture-a",
+      "mw": "42.5"
+    }
+  ],
+  "mcp_write_rejected": true,
+  "direct_odbc_write_denied": true,
+  "remote_sql_tested": false
+}

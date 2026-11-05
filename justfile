@@ -134,3 +134,20 @@ developer-build:
 # Run developer checks offline. Input artifacts must already be approved and staged.
 developer-test:
     podman run --rm --pull=never --network=none --memory=4g --memory-swap=4g --cpus=4 --pids-limit=256 --tmpfs /tmp -v "$PWD/.artifacts:/app/.artifacts:ro,z" -v "$PWD/data:/cases:ro,z" localhost/wattson-developer:port -m pytest -q -rs
+# --- independent dbt MCP integration (CPU, no model or cloud credentials) -------------------------------------------------
+
+# Build pinned upstream dbt MCP + dbt Core/DuckDB in an independent environment.
+dbt-mcp-build:
+    integrations/dbt-mcp/run.sh build
+
+# Prove stdio initialization, the tool allowlist, and a real offline DuckDB build.
+dbt-mcp-check:
+    integrations/dbt-mcp/run.sh smoke
+
+# Start stdio MCP for an agent; do not allocate a terminal or mix stdout with logs.
+dbt-mcp-stdio:
+    @integrations/dbt-mcp/run.sh serve
+
+# Baseline real build followed by injected build failure; require no stale success proof.
+dbt-mcp-regression:
+    integrations/dbt-mcp/run.sh regression

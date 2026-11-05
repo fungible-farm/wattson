@@ -1,0 +1,9 @@
+name: wattson_dbt_sample
+version: '1.0'
+config-version: 2
+profile: wattson_dbt_sample
+model-paths: [models]
+seed-paths: [seeds]
+models:
+  wattson_dbt_sample:
+    +materialized: table
