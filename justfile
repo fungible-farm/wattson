@@ -453,6 +453,22 @@ ao-status:
 ao-logs service="backend":
     podman logs --follow "auto-ontology-$1"
 
+# Seed the demo fixture database: create demo, orders table, and 5 rows (idempotent).
+ao-fixture:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "ao-fixture: seeding demo database"
+    podman exec auto-ontology-postgres psql -U postgres -v ON_ERROR_STOP=1 -c "CREATE DATABASE demo" 2>/dev/null || true
+    podman exec auto-ontology-postgres psql -U postgres -d demo -v ON_ERROR_STOP=1 -c "CREATE TABLE IF NOT EXISTS orders (id int PRIMARY KEY, customer text NOT NULL, amount numeric(12,2) NOT NULL, shipped date)"
+    podman exec auto-ontology-postgres psql -U postgres -d demo -v ON_ERROR_STOP=1 -c "INSERT INTO orders (id, customer, amount, shipped) VALUES (1,'acme',100.00,'2025-01-10'),(2,'globex',250.50,'2025-01-12'),(3,'initech',75.25,NULL),(4,'umbrella',500.00,'2025-01-15'),(5,'wayne',125.75,'2025-01-18') ON CONFLICT (id) DO NOTHING"
+    count=$(podman exec auto-ontology-postgres psql -U postgres -d demo -t -A -c "SELECT count(*) FROM orders;")
+    if [ "$count" = "5" ]; then
+        echo "ao-fixture: demo.orders rows=5"
+    else
+        echo "ao-fixture: ERROR expected 5 rows, got $count" >&2
+        exit 1
+    fi
+
 # Stop and remove the auto-ontology pod (keeps retrieval servers running).
 ao-down:
     @echo "ao-down: removing auto-ontology pod"
