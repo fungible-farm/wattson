@@ -80,6 +80,24 @@ service() {
 case "$ACTION" in
     components) components ;;
     service) service "$@" ;;
+    delegate)
+        [ "$#" -eq 2 ] || { echo 'delegate requires TASK_FILE NEW_OUTPUT_DIRECTORY' >&2; exit 2; }
+        task=$(CDPATH= cd -- "$(dirname -- "$1")" && pwd)/$(basename -- "$1")
+        [ -f "$task" ] || { echo 'Task file is missing.' >&2; exit 2; }
+        mkdir -p -- "$2"
+        output=$(CDPATH= cd -- "$2" && pwd)
+        # No engine socket, host credentials, or writable source is passed to pi.
+        # Networking reaches the explicitly selected local model; it is not offline.
+        exec podman run --rm --pull=never --read-only --cap-drop=all \
+            --security-opt=no-new-privileges --memory=2g --memory-swap=2g \
+            --cpus=2 --pids-limit=256 --userns=keep-id --user "$(id -u):$(id -g)" \
+            --tmpfs /tmp:rw,size=256m \
+            -v "$ROOT:/review:ro,Z" -v "$task:/task.txt:ro,Z" -v "$output:/evidence:rw,Z" \
+            --entrypoint python "$REGISTRY/wattson-harness:$TAG" /app/scripts/pi_delegate.py \
+            --workdir /review --task-file /task.txt --out-dir /evidence/run \
+            --base-url "${WATTSON_DELEGATE_URL:-http://192.168.1.137:8002/v1}" \
+            --model "${WATTSON_DELEGATE_MODEL:-neo-coder}" \
+            --timeout "${WATTSON_DELEGATE_TIMEOUT:-180}" ;;
     mcp-config)
         exec podman run --rm --pull=never --network=none --read-only \
             --memory=256m --memory-swap=256m --cpus=1 --pids-limit=64 \
@@ -115,6 +133,7 @@ case "$ACTION" in
     package) exec sh "$ROOT/local-runtime/nemo-agent/environment.sh" package "$@" ;;
     help|--help|-h)
         printf '%s\n' './wattson components' './wattson install [core|developer|SERVICE|models|ipc]' \
+            './wattson delegate TASK_FILE NEW_OUTPUT_DIRECTORY  # read-only local pi task' \
             './wattson check' './wattson service NAME build|check|stdio [ARGS...]' \
             './wattson cases' './wattson mcp-config SERVICE [--client vscode] [--workbook /path/file.xlsm]' \
             './wattson package  # experimental offline runtime profile' ;;

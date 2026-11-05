@@ -141,6 +141,30 @@ def test_actions_need_explicit_isolated_workdir(tmp_path: Path) -> None:
     assert delegate.run(args)["status"] == "complete"
 
 
+def test_literal_task_text_is_not_a_path(tmp_path: Path) -> None:
+    executable = stub(tmp_path, emitting(EVENTS))
+    args = options(tmp_path, executable, "--task", "literal text not a path")
+    assert args.prompt == "literal text not a path"
+
+
+def test_existing_output_directory_is_refused(tmp_path: Path) -> None:
+    executable = stub(tmp_path, emitting(EVENTS))
+    out = tmp_path / "evidence"
+    out.mkdir()
+    args = options(tmp_path, executable)
+    with pytest.raises(FileExistsError):
+        delegate.run(args)
+
+
+def test_invalid_timeout_env_gives_argparse_error(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("WATTSON_DELEGATE_TIMEOUT", "zero")
+    executable = stub(tmp_path, emitting(EVENTS))
+    with pytest.raises(SystemExit) as raised:
+        delegate.arguments(["--workdir", str(tmp_path), "--task", "read",
+                            "--out-dir", str(tmp_path / "evidence"), "--pi", str(executable)])
+    assert raised.value.code == 2
+
+
 def test_oversized_task_is_rejected_before_launch(tmp_path: Path) -> None:
     executable = stub(tmp_path, emitting(EVENTS))
     task = tmp_path / "large-task.txt"

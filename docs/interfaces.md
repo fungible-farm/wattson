@@ -69,6 +69,18 @@ the Excel skill describes the bounded workbook-reading contract. This is distinc
 from `wattson pi`, which intentionally restricts the trained engineering students
 to their study tools. Broader review tools belong in the delegation profile.
 
+For a read-only local review without installing host pi/Python, use
+`./wattson delegate /absolute/task.txt /absolute/new-evidence-dir`. It uses the
+prepared harness image, mounts source/task read-only and retains reports in
+`new-evidence-dir/run`. The selected local model must already be running. Model
+traffic uses the container network; task execution receives no engine socket.
+
+The model endpoint URL must be a literal host-reachable private IP address
+(e.g., `http://192.168.1.137:8002/v1`), not `127.0.0.1` or `localhost`, because
+inside the container `127.0.0.1` refers to the container's own loopback. Override
+the default URL, model, or timeout with environment variables:
+`WATTSON_DELEGATE_URL`, `WATTSON_DELEGATE_MODEL`, and `WATTSON_DELEGATE_TIMEOUT`.
+
 `local-runtime` remains an experimental IPC/GenCost/HF packaging profile.
 `./wattson package` delegates to its existing offline bundle/SBOM builder. It does
 not yet package every core/integration image, approved dataset and skill as one

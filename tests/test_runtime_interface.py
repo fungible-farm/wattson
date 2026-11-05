@@ -113,3 +113,73 @@ def test_power_mcp_uses_the_trained_report_protocol(
     args = json.loads(log.read_text().splitlines()[-1])
     assert set(TOOL_FLAGS) <= set(args)
     assert "--network=none" in args and "--read-only" in args
+
+
+def test_container_delegation_mounts_only_explicit_task_and_readonly_source(
+    tmp_path: Path, fake_tools: tuple[dict[str, str], Path],
+) -> None:
+    """The minimal-host review path must not require host pi or writable code."""
+    env, log = fake_tools
+    task = tmp_path / "task with spaces.txt"
+    task.write_text("Read wattson; report one concrete interface defect.")
+    output = tmp_path / "new evidence"
+    result = subprocess.run([str(ROOT / "wattson"), "delegate", str(task), str(output)],
+                            cwd=tmp_path, env=env, capture_output=True, text=True,
+                            timeout=TIMEOUT_SECONDS)
+    assert result.returncode == 0, result.stderr
+    args = json.loads(log.read_text().splitlines()[-1])
+    assert f"{ROOT}:/review:ro,Z" in args
+    assert f"{task}:/task.txt:ro,Z" in args and f"{output}:/evidence:rw,Z" in args
+    assert "--workdir" in args and "/review" in args
+    assert "--read-only" in args and "--memory-swap=2g" in args
+    assert "podman.sock" not in json.dumps(args)
+
+
+def test_delegate_passes_base_url_and_model_defaults(
+    tmp_path: Path, fake_tools: tuple[dict[str, str], Path],
+) -> None:
+    """Default URL and model are passed to the container command."""
+    env, log = fake_tools
+    task = tmp_path / "task.txt"
+    task.write_text("Read wattson; report one concrete interface defect.")
+    output = tmp_path / "evidence"
+    result = subprocess.run([str(ROOT / "wattson"), "delegate", str(task), str(output)],
+                            cwd=tmp_path, env=env, capture_output=True, text=True,
+                            timeout=TIMEOUT_SECONDS)
+    assert result.returncode == 0, result.stderr
+    args = json.loads(log.read_text().splitlines()[-1])
+    assert "--base-url" in args and "http://192.168.1.137:8002/v1" in args
+    assert "--model" in args and "neo-coder" in args
+
+
+def test_delegate_overrides_url_and_model_via_env(
+    tmp_path: Path, fake_tools: tuple[dict[str, str], Path],
+) -> None:
+    """WATTSON_DELEGATE_URL and WATTSON_DELEGATE_MODEL override defaults."""
+    env, log = fake_tools
+    env["WATTSON_DELEGATE_URL"] = "http://10.0.0.5:9000/v1"
+    env["WATTSON_DELEGATE_MODEL"] = "granite-4.2-8b"
+    task = tmp_path / "task.txt"
+    task.write_text("Read wattson; report one concrete interface defect.")
+    output = tmp_path / "evidence"
+    result = subprocess.run([str(ROOT / "wattson"), "delegate", str(task), str(output)],
+                            cwd=tmp_path, env=env, capture_output=True, text=True,
+                            timeout=TIMEOUT_SECONDS)
+    assert result.returncode == 0, result.stderr
+    args = json.loads(log.read_text().splitlines()[-1])
+    assert "--base-url" in args and "http://10.0.0.5:9000/v1" in args
+    assert "--model" in args and "granite-4.2-8b" in args
+
+
+def test_delegate_missing_task_file_fails_without_creating_output(
+    tmp_path: Path, fake_tools: tuple[dict[str, str], Path],
+) -> None:
+    """A missing task file must exit non-zero without creating the output directory."""
+    env, log = fake_tools
+    task = tmp_path / "missing.txt"
+    output = tmp_path / "evidence"
+    result = subprocess.run([str(ROOT / "wattson"), "delegate", str(task), str(output)],
+                            cwd=tmp_path, env=env, capture_output=True, text=True,
+                            timeout=TIMEOUT_SECONDS)
+    assert result.returncode != 0
+    assert not output.exists()
