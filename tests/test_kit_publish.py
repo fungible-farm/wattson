@@ -342,5 +342,40 @@ def test_evidence_dot_uses_the_resolved_directory_name(tmp_path):
     assert 'description: "evidence for myrun"' in (tmp_path / "Kitfile.txt").read_text()
 
 
+def test_agent_kitfile_lists_revision(tmp_path):
+    """Regression: REVISION was staged and gated but not named in the Kitfile, so kit pack left it out of the kit."""
+    repo = tmp_path / "repo"
+    make_agent_repo(repo)
+    result = run_agent(tmp_path, repo)
+    assert result.returncode == 0, result.stderr
+    assert "- path: REVISION" in (tmp_path / "Kitfile.txt").read_text()
+
+
+def _load_kit_publish():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("kit_publish_mod", SCRIPT)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_coverage_check_refuses_a_staged_file_the_kitfile_does_not_name(tmp_path):
+    mod = _load_kit_publish()
+    staging = tmp_path / "staging"
+    staging.mkdir()
+    (staging / "Kitfile").write_text("manifestVersion: 1.0.0\ncode:\n  - path: gateway\n")
+    with pytest.raises(SystemExit) as raised:
+        mod.assert_kitfile_covers(staging, ["gateway/a.yaml", "REVISION"])
+    assert raised.value.code == 1
+
+
+def test_coverage_check_accepts_files_under_listed_directories_and_quoted_paths(tmp_path):
+    mod = _load_kit_publish()
+    staging = tmp_path / "staging"
+    staging.mkdir()
+    (staging / "Kitfile").write_text('manifestVersion: 1.0.0\ncode:\n  - path: gateway\ndatasets:\n  - path: "my file.json"\n')
+    mod.assert_kitfile_covers(staging, ["gateway/a.yaml", "gateway/sub/b.yaml", "my file.json"])
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
