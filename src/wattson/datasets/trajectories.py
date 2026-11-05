@@ -77,6 +77,7 @@ from wattson.datasets import common
 from wattson.datasets.audit import load_rows
 from wattson.inference.evaluate_agent import grade
 from wattson.inference.tool_probe import MAX_TOOL_CALLS, MAX_TURNS, SYSTEM_PROMPT, record
+from wattson.mcp_env import server_environment
 
 # Iteration cap passed to every scripted trial; the reference generator's
 # solves converged in 5 iterations on snem-sa-2000, and studies.MAX_ITERATIONS is 100.
@@ -724,7 +725,7 @@ async def build(row: dict[str, Any], journals: Path, fault: str | None = None,
                                              *(["--namespace-tools"] if namespace else []),
                                              *(["--python-tools"] if python else []),
                                              *(["--python-report-fields"] if report_fields else [])],
-                                       cwd=str(common.REPO_ROOT))
+                                       cwd=str(common.REPO_ROOT), env=server_environment())
     messages = [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": row["task"]["prompt"]}]
     journal = journals / f"{row['example_id']}{'-' + fault if fault else ''}.jsonl"
     async with stdio_client(parameters) as (reader, writer), ClientSession(reader, writer) as session:

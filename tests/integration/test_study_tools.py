@@ -15,6 +15,7 @@ from mcp.client.stdio import stdio_client
 from wattson.datasets import generate
 from wattson.inference import powermcp as pm
 from wattson.inference.studies import run_study_trial
+from wattson.mcp_env import server_environment
 
 ROOT: Path = Path(__file__).resolve().parents[2]
 TRIALS: list[dict] = json.loads((Path(__file__).parent / "fixtures/study_trials.json").read_text())
@@ -94,7 +95,7 @@ def test_study_tool_available_only_when_enabled() -> None:
     async def check() -> None:
         params = StdioServerParameters(command=sys.executable, args=[
             "-m", "wattson.inference.mcp_server", "--study-tools",
-        ], cwd=str(ROOT))
+        ], cwd=str(ROOT), env=server_environment())
         async with (
             stdio_client(params) as (reader, writer),
             ClientSession(reader, writer) as session,
