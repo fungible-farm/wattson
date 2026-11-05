@@ -1,0 +1,10 @@
+# FreeTDS DSN. Driver registered by Debian tdsodbc; a DBA must grant SELECT only.
+# Configure authentication privately with your DBA. Do not commit passwords/keytabs.
+[readonly_sql]
+Driver = FreeTDS
+Server = sql.example.invalid
+Port = 1433
+Database = reporting
+TDS_Version = 7.4
+# ReadOnly is driver-dependent. ODBC readonly=True is also requested by server.py.
+ReadOnly = Yes
