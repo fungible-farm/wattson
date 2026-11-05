@@ -1,0 +1,16 @@
+# procedural-chart
+# State chart: before a model is loaded or downloaded, the memory guard decides. No inference in the path.
+direction: down
+title: "Model load gate" {shape: text}
+
+requested: Model requested {shape: oval}
+sized: Size known
+admitted: Admitted
+refused: Refused (skipped, not attempted)
+loaded: Loaded by llama-swap
+
+requested -> sized: "cmd: just model-guard SIZE_OR_PATH | pass: prints total= and avail= in bytes"
+sized -> admitted: "cmd: just model-guard SIZE_OR_PATH | pass: line starts PASS, exit 0 (total <= 60% of MemAvailable)"
+sized -> refused: "cmd: just model-guard SIZE_OR_PATH | pass: line starts FAIL, exit 1; nothing is downloaded or loaded"
+requested -> refused: "cmd: just model-guard SIZE_OR_PATH | pass: exit 2 (size unknown): refuse, never guess"
+admitted -> loaded: "cmd: just gateway-status | pass: model listed in GET /v1/models"

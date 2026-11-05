@@ -12,6 +12,7 @@ Small steps, always through a pull request, and the remote is never behind.
 7. **Close the issue only when its acceptance line has been observed**, and quote the output in the issue.
 
 ## Rules that keep it trustworthy
+- If you change a procedure (a `just` recipe, the pod, the gateway), change its state chart in `docs/diagrams/` in the same PR; `just diagrams-check` and CI fail when a chart names a command that no longer exists.
 - The author does not run the tests: CI or a separate agent does, and its output is what gets quoted.
 - A number that was not read from an instrument is labelled an estimate and is never a pass/fail gate.
 - Reuse an existing, packaged tool before writing one; if you must build, say in the issue why the existing one falls short.
