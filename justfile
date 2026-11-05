@@ -231,3 +231,7 @@ gateway-status:
 gateway-logs *args:
     @echo "gateway-logs: request records from {{gw_name}} (stdout access log)"
     @podman logs {{args}} {{gw_name}} 2>&1 | grep -E '\srequest\s' || true
+
+# Refuse a model that would not fit in memory BEFORE downloading or loading it. Args: file, directory or size literal (233GB, 121GiB); optional --fraction F.
+model-guard *args:
+    python3 scripts/model_mem_guard.py {{args}}
