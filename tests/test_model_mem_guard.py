@@ -217,3 +217,170 @@ def test_several_shard_arguments_are_not_double_counted(tmp_path):
         out = subprocess.run([sys.executable, str(script), "--meminfo", str(meminfo), *args], capture_output=True, text=True)
         assert out.returncode == 0, out.stdout + out.stderr
         assert "total=300000000 " in out.stdout, out.stdout
+
+
+# --- kit-ref tests (CI-safe: fake kit executable) ---
+
+import subprocess
+import sys
+import shutil
+import json as json_mod
+
+
+def make_fake_kit(tmp_path, output_json, exit_code=0, log_file=None):
+    """Create a fake kit executable that prints fixed JSON."""
+    kit_dir = tmp_path / "fake_kit"
+    kit_dir.mkdir()
+    kit_script = kit_dir / "kit"
+    script_content = f"""#!/usr/bin/env {sys.executable}
+import sys
+import json
+
+# Log args to file for test verification
+if {repr(str(log_file) if log_file else "")}:
+    with open({repr(str(log_file) if log_file else "")}, 'a') as f:
+        f.write(' '.join(sys.argv[1:]) + '\\n')
+
+output = {output_json}
+print(json.dumps(output))
+sys.exit({exit_code})
+"""
+    kit_script.write_text(script_content)
+    kit_script.chmod(0o755)
+    return kit_script
+
+
+def run_guard(tmp_path, *args, kit_path=None, meminfo_kb=1000000000):
+    """Run the guard script with given args."""
+    script = Path(__file__).resolve().parents[1] / "scripts" / "model_mem_guard.py"
+    meminfo = tmp_path / "meminfo"
+    meminfo.write_text(f"MemAvailable:   {meminfo_kb} kB\n")
+    cmd = [sys.executable, str(script), "--meminfo", str(meminfo)]
+    if kit_path:
+        cmd.extend(["--kit", str(kit_path)])
+    cmd.extend(args)
+    return subprocess.run(cmd, capture_output=True, text=True)
+
+
+def test_kit_ref_pass_excludes_config_size(tmp_path):
+    """kit inspect returns layers; config size is excluded. Total = 1050624 + 2560 = 1053184."""
+    kit_json = json_mod.dumps({
+        "digest": "sha256:abc",
+        "manifest": {
+            "config": {"size": 848, "digest": "sha256:cfg"},
+            "layers": [{"size": 1050624, "digest": "sha256:l1"}, {"size": 2560, "digest": "sha256:l2"}]
+        }
+    })
+    log = tmp_path / "kit_log.txt"
+    kit = make_fake_kit(tmp_path, kit_json, log_file=log)
+    result = run_guard(tmp_path, "--kit-ref", "example.com/m:v1", kit_path=kit)
+    assert result.returncode == 0, result.stderr
+    assert "PASS total=1053184" in result.stdout, result.stdout
+    # Verify kit was called with correct args
+    args_log = log.read_text().strip()
+    assert "inspect --remote example.com/m:v1" in args_log
+
+
+def test_kit_ref_fail_exceeds_limit(tmp_path):
+    """kit inspect size exceeds memory limit."""
+    kit_json = json_mod.dumps({
+        "manifest": {
+            "layers": [{"size": 50_000_000_000}]
+        }
+    })
+    kit = make_fake_kit(tmp_path, kit_json)
+    result = run_guard(tmp_path, "--kit-ref", "example.com/big:v1", kit_path=kit, meminfo_kb=100_000)
+    assert result.returncode == 1, result.stderr
+    assert "FAIL total=50000000000" in result.stdout, result.stdout
+
+
+def test_kit_ref_two_refs_summed(tmp_path):
+    """Two --kit-ref values are summed."""
+    # Use a smarter fake that returns different sizes per ref
+    kit_script = tmp_path / "kit_smart"
+    kit_script.write_text(f"""#!/usr/bin/env {sys.executable}
+import sys, json
+ref = sys.argv[3]
+if "m1" in ref:
+    print(json.dumps({{"manifest": {{"layers": [{{"size": 1000000}}]}}}}))
+else:
+    print(json.dumps({{"manifest": {{"layers": [{{"size": 2000000}}]}}}}))
+""")
+    kit_script.chmod(0o755)
+    result = run_guard(tmp_path, "--kit-ref", "example.com/m1:v1", "--kit-ref", "example.com/m2:v1", kit_path=kit_script, meminfo_kb=1000000000)
+    assert result.returncode == 0, result.stderr
+    assert "PASS total=3000000" in result.stdout, result.stdout
+
+
+def test_kit_ref_combined_with_size_literal(tmp_path):
+    """kit-ref size combined with a size literal."""
+    kit_json = json_mod.dumps({"manifest": {"layers": [{"size": 1000000}]}})
+    kit = make_fake_kit(tmp_path, kit_json)
+    result = run_guard(tmp_path, "--kit-ref", "example.com/m:v1", "1GB", kit_path=kit, meminfo_kb=1000000000)
+    assert result.returncode == 0, result.stderr
+    # 1GB = 1000000000 + 1000000 = 1001000000
+    assert "PASS total=1001000000" in result.stdout, result.stdout
+
+
+def test_kit_exit_nonzero(tmp_path):
+    """kit exits with non-zero code => exit 2 ERROR."""
+    kit = make_fake_kit(tmp_path, "{}", exit_code=1)
+    result = run_guard(tmp_path, "--kit-ref", "example.com/m:v1", kit_path=kit)
+    assert result.returncode == 2, result.stderr
+    assert "ERROR" in result.stderr
+
+
+def test_kit_invalid_json(tmp_path):
+    """kit outputs invalid JSON => exit 2 ERROR."""
+    kit_script = tmp_path / "kit_bad_json"
+    kit_script.write_text(f"""#!/usr/bin/env {sys.executable}
+print("not valid json")
+""")
+    kit_script.chmod(0o755)
+    result = run_guard(tmp_path, "--kit-ref", "example.com/m:v1", kit_path=kit_script)
+    assert result.returncode == 2, result.stderr
+    assert "ERROR" in result.stderr
+
+
+def test_kit_no_layers(tmp_path):
+    """kit output has no layers => exit 2 ERROR."""
+    kit_json = json_mod.dumps({"manifest": {"config": {"size": 100}}})
+    kit = make_fake_kit(tmp_path, kit_json)
+    result = run_guard(tmp_path, "--kit-ref", "example.com/m:v1", kit_path=kit)
+    assert result.returncode == 2, result.stderr
+    assert "ERROR" in result.stderr
+
+
+def test_kit_missing_path(tmp_path):
+    """kit executable not found => exit 2 ERROR."""
+    result = run_guard(tmp_path, "--kit-ref", "example.com/m:v1", kit_path=tmp_path / "nonexistent_kit")
+    assert result.returncode == 2, result.stderr
+    assert "ERROR" in result.stderr
+
+
+def test_kit_layer_missing_size(tmp_path):
+    """A layer without an integer size => exit 2 ERROR."""
+    kit_json = json_mod.dumps({"manifest": {"layers": [{"digest": "sha256:x"}]}})
+    kit = make_fake_kit(tmp_path, kit_json)
+    result = run_guard(tmp_path, "--kit-ref", "example.com/m:v1", kit_path=kit)
+    assert result.returncode == 2, result.stderr
+    assert "ERROR" in result.stderr
+
+
+def test_kit_plain_http_flag(tmp_path):
+    """--plain-http is passed through to kit."""
+    kit_json = json_mod.dumps({"manifest": {"layers": [{"size": 1000}]}})
+    log = tmp_path / "kit_log.txt"
+    kit = make_fake_kit(tmp_path, kit_json, log_file=log)
+    result = run_guard(tmp_path, "--kit-ref", "example.com/m:v1", "--plain-http", kit_path=kit)
+    assert result.returncode == 0, result.stderr
+    args_log = log.read_text().strip()
+    assert "--plain-http" in args_log
+
+
+def test_no_args_error(tmp_path):
+    """No paths and no --kit-ref => argparse error."""
+    script = Path(__file__).resolve().parents[1] / "scripts" / "model_mem_guard.py"
+    result = subprocess.run([sys.executable, str(script)], capture_output=True, text=True)
+    assert result.returncode == 2
+    assert "error" in result.stderr.lower() or "required" in result.stderr.lower()
