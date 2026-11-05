@@ -11,6 +11,7 @@ the pictures (`.svg`) are rendered from them.
 | [model-load](model-load.svg) | the memory gate before any model is loaded or downloaded |
 | [kit-lifecycle](kit-lifecycle.svg) | install `kit`, check a directory, pack, publish, size before download |
 | [retrieval-lifecycle](retrieval-lifecycle.svg) | the embedding and reranker servers: verified models, memory gate, serving, teardown |
+| [auto-ontology-lifecycle](auto-ontology-lifecycle.svg) | Auto Ontology as a pod: fetch the pinned source, build, bring up (migrated, loopback only), smoke, tear down |
 | [delivery-flow](delivery-flow.svg) | backlog issue to merged change, and local equals remote |
 | [recipes](recipes.svg) | every `just` recipe and what it depends on (generated, never hand-edited) |
 | [ecosystem](ecosystem.svg) | the picture in the README |
