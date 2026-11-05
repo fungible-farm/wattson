@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Backends Registry",
+  "type": "object",
+  "required": ["version", "entries"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "integer", "const": 1 },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "kind", "base_url"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "kind": { "type": "string", "enum": ["llama-swap", "candle", "vllm", "hosted"] },
+          "base_url": { "type": "string", "format": "uri" },
+          "key_file": { "type": "string", "description": "Path to key file, never a literal key" },
+          "spend_cap_usd": { "type": "number", "minimum": 0, "description": "Required when kind is hosted" }
+        }
+      }
+    }
+  }
+}

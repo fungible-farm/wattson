@@ -1,0 +1,15 @@
+# Prompts registry: prompt templates and recipes.
+# Validated by registries/schema/prompts.schema.json.
+version: 1
+entries:
+  - name: agent-granite
+    path: configs/agent/config.granite42-8b.g11py.yaml
+    writable_by:
+      - developer
+      - operator
+    description: Granite 4.2 8B agent configuration.
+  - name: agent-qwen
+    path: configs/agent/config.qwen35-4b.v11pyt.yaml
+    writable_by:
+      - developer
+    description: Qwen 3.5 4B agent configuration (thinking).

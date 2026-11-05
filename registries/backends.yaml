@@ -1,0 +1,15 @@
+# Backends registry: model serving endpoints exposed through the gateway.
+# Validated by registries/schema/backends.schema.json.
+version: 1
+entries:
+  - name: local-llama
+    kind: llama-swap
+    base_url: http://169.254.1.2:8000/v1
+  - name: hosted-vertex
+    kind: hosted
+    base_url: https://us-central1-aiplatform.googleapis.com/v1/projects/my-proj/locations/us-central1/publishers/google/models/gemini-2.0-flash:streamGenerateContent
+    key_file: .secrets/vertex-key.json
+    spend_cap_usd: 5.00
+  - name: local-vllm
+    kind: vllm
+    base_url: http://169.254.1.2:8100/v1
