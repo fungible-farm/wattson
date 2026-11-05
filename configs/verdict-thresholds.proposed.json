@@ -1,0 +1,17 @@
+{
+  "confirmed_by_owner": false,
+  "derived_total": 40,
+  "smoke_total": 20,
+  "contender": {
+    "derived_pass_min": 38,
+    "smoke_pass_all": true,
+    "provenance_failures_max_guard_off": 0,
+    "guard_refused_max_guard_on": 1,
+    "protocol_failures_max": 2
+  },
+  "noise_tasks": 2,
+  "not_contender": {
+    "derived_pass_max": 36,
+    "protocol_failure_rate_above": 0.1
+  }
+}
