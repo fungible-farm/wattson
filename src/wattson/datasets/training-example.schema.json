@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://promptexecution.dev/schemas/training-example.schema.json",
+  "title": "NEM PowerCoder Training Example",
+  "description": "One solver-verified, provenance-complete training example for the NEM PowerCoder mission (MISSION.md M04). Every numeric value in 'expected' must come from a real solver execution recorded in 'execution'. The lifecycle status tracks the M04 dataset lifecycle: proposed -> generated -> executed -> verified -> accepted/rejected -> versioned -> train/validation/test.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "example_id",
+    "family",
+    "subfamily",
+    "topology",
+    "seed",
+    "task",
+    "expected",
+    "execution",
+    "provenance",
+    "lifecycle"
+  ],
+  "properties": {
+    "example_id": {
+      "type": "string",
+      "description": "Deterministic content-addressed ID: 'ex_' + first 16 hex chars of sha256 over the canonical task definition (family, subfamily, topology, seed, task.inputs). Identical inputs -> identical ID.",
+      "pattern": "^ex_[0-9a-f]{16}$"
+    },
+    "family": {
+      "type": "string",
+      "description": "MISSION.md M04 dataset family.",
+      "enum": [
+        "power-flow-contingency",
+        "powermcp-trajectories"
+      ]
+    },
+    "subfamily": {
+      "type": "string",
+      "description": "Concrete task template within the family.",
+      "enum": [
+        "pf-report",
+        "pf-load-scale-fit",
+        "pf-line-rating-fit",
+        "pf-gen-dispatch-fit",
+        "mcp-trajectory"
+      ]
+    },
+    "topology": {
+      "type": "string",
+      "description": "Network topology identifier (case ID). Used to partition splits and prevent leakage between topologically-related examples.",
+      "minLength": 1
+    },
+    "seed": {
+      "type": "integer",
+      "description": "Deterministic per-example seed. Together with (family, subfamily, topology) it fully determines the task parameters.",
+      "minimum": 0
+    },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prompt", "inputs"],
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "description": "The user-facing task (conversational SFT user turn).",
+          "minLength": 1
+        },
+        "inputs": {
+          "type": "object",
+          "description": "The deterministic, seed-derived task parameters (case, element, target, metrics, ...). Canonical serialization of this object (with family/subfamily/topology/seed) is the example_id hash input."
+        }
+      }
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["answer", "structured", "validity"],
+      "properties": {
+        "answer": {
+          "type": "string",
+          "description": "The expected assistant response (conversational SFT assistant turn). For fit tasks, states the fitted scalar; for report/trajectory tasks, states the solver measurements."
+        },
+        "structured": {
+          "type": "object",
+          "description": "Machine-checkable expected values (the fitted scalar, reported metrics, trajectory tool results). Every number here is a real solver output."
+        },
+        "validity": {
+          "type": "string",
+          "description": "Physical validity of the expected operating point (MISSION.md invariant: convergence != physical validity).",
+          "enum": ["valid", "constraint_violation", "non_convergence", "execution_failure"]
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["case_id", "solver", "solver_version", "input_hash", "result_hash", "status"],
+      "properties": {
+        "case_id": { "type": "string", "minLength": 1 },
+        "solver": { "type": "string", "description": "e.g. 'pandapower'." },
+        "solver_version": { "type": "string" },
+        "input_hash": { "type": "string", "description": "sha256 of the case file bytes (or deterministic fixture descriptor)." },
+        "result_hash": { "type": "string", "description": "sha256 over the canonical (sorted-keys) JSON of the solver-derived payload. Identical solver output on the same pinned stack hashes identically." },
+        "status": {
+          "type": "string",
+          "enum": ["success", "non_convergence", "constraint_violation", "execution_failure"]
+        },
+        "iterations": { "type": ["integer", "null"] },
+        "execution_time_s": { "type": ["number", "null"] }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generator", "generator_version", "seed", "git_commit", "created_utc", "licence", "source_refs"],
+      "properties": {
+        "generator": { "type": "string", "description": "e.g. 'powercoder/datasets/generate.py'." },
+        "generator_version": { "type": "string" },
+        "seed": { "type": "integer", "description": "The base seed used for the generation run (distinct from the per-example 'seed' field, which is derived from it)." },
+        "git_commit": { "type": "string", "description": "Full 40-char git SHA of the repo at generation time." },
+        "created_utc": { "type": "string", "format": "date-time" },
+        "licence": { "type": "string", "description": "Licence of the underlying data + generated example." },
+        "source_refs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Provenance references: case file, element list artifact, discovery script, MISSION.md work package."
+        }
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["proposed", "generated", "executed", "verified", "accepted", "rejected", "quarantined"]
+        },
+        "split": {
+          "type": ["string", "null"],
+          "enum": ["train", "validation", "test", "benchmark", null],
+          "description": "Assigned by split.py. 'benchmark' examples are reserved and excluded from train/validation/test."
+        },
+        "rejection_reason": {
+          "type": ["string", "null"],
+          "description": "Set when status is rejected/quarantined (e.g. fit did not converge to tolerance -> retained for repair training)."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+# Separate Axolotl environment: reuse only the verified ARM64 PyTorch substrate.
+# Axolotl source is pinned independently of the Unsloth environment.
+FROM localhost/unsloth-gputest:local
+COPY --from=ghcr.io/astral-sh/uv:0.12.23 /uv /usr/local/bin/uv
+RUN apt-get update && apt-get install -y --no-install-recommends git build-essential \
+    && rm -rf /var/lib/apt/lists/*
+# Upstream pins zstandard 0.22.0, whose build pins cffi 1.16.0 and has no
+# CPython 3.13 ARM64 wheel. Explicitly use the CPython 3.13 wheel release.
+RUN printf '%s\n' 'zstandard==0.25.0' > /tmp/axolotl-overrides.txt
+RUN uv pip install --system --no-cache --overrides /tmp/axolotl-overrides.txt \
+    "axolotl @ git+https://github.com/axolotl-ai-cloud/axolotl.git@cc83a1c12e2d2010345806702d8ad3f794fad7f6"
+ENV HF_HOME=/models \
+    TOKENIZERS_PARALLELISM=false \
+    AXOLOTL_DO_NOT_TRACK=1 \
+    WANDB_DISABLED=true
+WORKDIR /workspace
+CMD ["axolotl", "train", "training/axolotl/sft-4b.yaml"]

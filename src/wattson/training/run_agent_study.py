@@ -79,7 +79,7 @@ PROMPTED_EVALUATOR: str = "wattson.inference.evaluate_prompted"
 FIRST_TURN_CHOICES: tuple[str, ...] = ("auto", "required")
 # Host memory sampling period; vLLM's load and each request last seconds or more.
 MEMORY_SAMPLE_S: float = 1.0
-RESTOREBENCH_LAB: Path = Path("labs/10-poweragentbench-restorebench/restorebench_lab.py")
+RESTOREBENCH_LAB: Path = Path("benchmarks/restorebench/restorebench_lab.py")
 # A pilot, not a benchmark result: the first 5 IEEE 118 scenarios per model, as a
 # transfer/regression check. RestoreBench caps
 # an episode at 1,200 s, so 5 at 8 in flight is bounded at ~20 min per model;

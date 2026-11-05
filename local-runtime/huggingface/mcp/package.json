@@ -1,0 +1,7 @@
+{
+  "name": "wattson-hf-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Official HF MCP packaged for the local host architecture (upstream image currently amd64 only)",
+  "dependencies": {"@llmindset/hf-mcp-server": "0.4.32"}
+}

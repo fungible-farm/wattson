@@ -8,8 +8,8 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 stage() { printf '\n=== %s ===\n' "$1"; }
 
-stage "1/5 environment (uv sync, locked)"
-uv sync --all-groups --frozen
+stage "1/5 environment (locked CPU checks; no training dependencies)"
+uv sync --all-groups --frozen --extra labs --extra engineering --extra semantic --extra forecasting
 uv run python - <<'PY'
 import platform, sys
 import numpy, pandapower, scipy

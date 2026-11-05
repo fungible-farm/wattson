@@ -1,0 +1,210 @@
+# SHACL shapes for the powercoder.semantic CGMES-shaped CIM subset (PC-REQ-020).
+#
+# Sandbox stand-in (named): these are NOT the ENTSO-E CGMES conformity SHACL shapes. They are a
+# hand-written subset targeting only the concrete classes export.py emits, without the CIM
+# RDFS schema (so no subclass inference). They check:
+#   - every Terminal sits on exactly one existing ConnectivityNode and one piece of equipment;
+#   - every ConnectivityNode has at least one Terminal (no dangling node) and a TopologicalNode;
+#   - every ACLineSegment / PowerTransformer has exactly two Terminals; one-port equipment one;
+#   - required electrical parameters are present, and positive / non-negative where physical;
+#   - base voltages are present and positive.
+#
+# Sign choices are deliberate and evidence-based:
+#   - ACLineSegment.x is required but NOT sign-constrained: snemSA.m has 2 series-compensated
+#     branches with negative reactance (min x = -63.0 ohm, measured 2026-10-23).
+#   - ACLineSegment.r >= 0, not > 0: snemSA.m has 2 branches with r = 0.
+
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix cim:  <http://iec.ch/TC57/2013/CIM-schema-cim16#> .
+@prefix md:   <http://iec.ch/TC57/61970-552/ModelDescription/1#> .
+@prefix pcx:  <urn:powercoder:semantic:pandapower-ext#> .
+@prefix pcs:  <urn:powercoder:semantic:shapes#> .
+
+# ---------------------------------------------------------------- identity
+pcs:IdentifiedObjectShape a sh:NodeShape ;
+    sh:targetClass cim:ConnectivityNode, cim:TopologicalNode, cim:BaseVoltage, cim:Terminal,
+        cim:ACLineSegment, cim:PowerTransformer, cim:PowerTransformerEnd, cim:RatioTapChanger,
+        cim:SynchronousMachine, cim:GeneratingUnit, cim:RegulatingControl,
+        cim:ExternalNetworkInjection, cim:EnergySource, cim:EnergyConsumer,
+        cim:LinearShuntCompensator, cim:OperationalLimitSet, cim:CurrentLimit ;
+    sh:property [ sh:path cim:IdentifiedObject.mRID ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:string ; sh:message "every CIM object needs one mRID" ] .
+
+# ---------------------------------------------------------------- nodes
+pcs:ConnectivityNodeShape a sh:NodeShape ;
+    sh:targetClass cim:ConnectivityNode ;
+    sh:property [ sh:path [ sh:inversePath cim:Terminal.ConnectivityNode ] ; sh:minCount 1 ;
+                  sh:message "dangling ConnectivityNode: no Terminal connects to it" ] ;
+    sh:property [ sh:path cim:ConnectivityNode.TopologicalNode ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:class cim:TopologicalNode ;
+                  sh:message "ConnectivityNode must map to exactly one TopologicalNode" ] .
+
+pcs:TopologicalNodeShape a sh:NodeShape ;
+    sh:targetClass cim:TopologicalNode ;
+    sh:property [ sh:path cim:TopologicalNode.BaseVoltage ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:class cim:BaseVoltage ; sh:message "TopologicalNode needs a BaseVoltage" ] .
+
+pcs:BaseVoltageShape a sh:NodeShape ;
+    sh:targetClass cim:BaseVoltage ;
+    sh:property [ sh:path cim:BaseVoltage.nominalVoltage ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ; sh:minExclusive 0.0 ;
+                  sh:message "BaseVoltage.nominalVoltage must be present and > 0 kV" ] .
+
+# ---------------------------------------------------------------- terminals
+pcs:TerminalShape a sh:NodeShape ;
+    sh:targetClass cim:Terminal ;
+    sh:property [ sh:path cim:Terminal.ConnectivityNode ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:class cim:ConnectivityNode ;
+                  sh:message "Terminal must sit on exactly one existing ConnectivityNode" ] ;
+    sh:property [ sh:path cim:Terminal.ConductingEquipment ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:nodeKind sh:IRI ; sh:message "Terminal must belong to one equipment" ] ;
+    sh:property [ sh:path cim:ACDCTerminal.sequenceNumber ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:integer ; sh:minInclusive 1 ] ;
+    sh:property [ sh:path cim:ACDCTerminal.connected ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:boolean ;
+                  sh:message "Terminal needs a switching state (ACDCTerminal.connected)" ] .
+
+# ---------------------------------------------------------------- two-port equipment
+pcs:ACLineSegmentShape a sh:NodeShape ;
+    sh:targetClass cim:ACLineSegment ;
+    sh:property [ sh:path [ sh:inversePath cim:Terminal.ConductingEquipment ] ;
+                  sh:minCount 2 ; sh:maxCount 2 ;
+                  sh:message "ACLineSegment must have exactly two Terminals" ] ;
+    sh:property [ sh:path cim:ACLineSegment.r ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ; sh:minInclusive 0.0 ;
+                  sh:message "ACLineSegment.r must be present and >= 0 ohm" ] ;
+    sh:property [ sh:path cim:ACLineSegment.x ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ; sh:message "ACLineSegment.x must be present" ] ;
+    sh:property [ sh:path cim:ACLineSegment.bch ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ; sh:minInclusive 0.0 ;
+                  sh:message "ACLineSegment.bch must be present and >= 0 S" ] ;
+    sh:property [ sh:path cim:ACLineSegment.gch ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ; sh:minInclusive 0.0 ] ;
+    sh:property [ sh:path cim:Conductor.length ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ; sh:minExclusive 0.0 ;
+                  sh:message "Conductor.length must be present and > 0 km" ] ;
+    sh:property [ sh:path cim:ConductingEquipment.BaseVoltage ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:class cim:BaseVoltage ] .
+
+pcs:PowerTransformerShape a sh:NodeShape ;
+    sh:targetClass cim:PowerTransformer ;
+    sh:property [ sh:path [ sh:inversePath cim:Terminal.ConductingEquipment ] ;
+                  sh:minCount 2 ; sh:maxCount 2 ;
+                  sh:message "two-winding PowerTransformer must have exactly two Terminals" ] ;
+    sh:property [ sh:path [ sh:inversePath cim:PowerTransformerEnd.PowerTransformer ] ;
+                  sh:minCount 2 ; sh:maxCount 2 ;
+                  sh:message "two-winding PowerTransformer must have exactly two ends" ] .
+
+pcs:PowerTransformerEndShape a sh:NodeShape ;
+    sh:targetClass cim:PowerTransformerEnd ;
+    sh:property [ sh:path cim:TransformerEnd.Terminal ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:class cim:Terminal ] ;
+    sh:property [ sh:path cim:TransformerEnd.endNumber ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:in ( 1 2 ) ] ;
+    sh:property [ sh:path cim:TransformerEnd.BaseVoltage ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:class cim:BaseVoltage ] ;
+    sh:property [ sh:path cim:PowerTransformerEnd.ratedU ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ; sh:minExclusive 0.0 ;
+                  sh:message "PowerTransformerEnd.ratedU must be present and > 0 kV" ] ;
+    sh:property [ sh:path cim:PowerTransformerEnd.ratedS ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ; sh:minExclusive 0.0 ;
+                  sh:message "PowerTransformerEnd.ratedS must be present and > 0 MVA" ] ;
+    sh:property [ sh:path cim:PowerTransformerEnd.r ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ; sh:minInclusive 0.0 ;
+                  sh:message "PowerTransformerEnd.r must be present and >= 0 ohm" ] ;
+    sh:property [ sh:path cim:PowerTransformerEnd.x ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ; sh:minInclusive 0.0 ] ;
+    sh:property [ sh:path cim:PowerTransformerEnd.g ; sh:maxCount 1 ; sh:datatype xsd:double ;
+                  sh:minInclusive 0.0 ] ;
+    sh:property [ sh:path cim:PowerTransformerEnd.b ; sh:maxCount 1 ; sh:datatype xsd:double ] .
+
+pcs:RatioTapChangerShape a sh:NodeShape ;
+    sh:targetClass cim:RatioTapChanger ;
+    sh:property [ sh:path cim:RatioTapChanger.TransformerEnd ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:class cim:PowerTransformerEnd ] .
+
+# ---------------------------------------------------------------- one-port equipment
+pcs:OnePortShape a sh:NodeShape ;
+    sh:targetClass cim:SynchronousMachine, cim:ExternalNetworkInjection, cim:EnergySource,
+        cim:EnergyConsumer, cim:LinearShuntCompensator ;
+    sh:property [ sh:path [ sh:inversePath cim:Terminal.ConductingEquipment ] ;
+                  sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:message "one-port equipment must have exactly one Terminal" ] ;
+    sh:property [ sh:path cim:ConductingEquipment.BaseVoltage ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:class cim:BaseVoltage ] .
+
+pcs:SynchronousMachineShape a sh:NodeShape ;
+    sh:targetClass cim:SynchronousMachine ;
+    sh:property [ sh:path cim:RotatingMachine.p ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ] ;
+    sh:property [ sh:path cim:RotatingMachine.ratedS ; sh:maxCount 1 ; sh:datatype xsd:double ;
+                  sh:minExclusive 0.0 ] ;
+    sh:property [ sh:path cim:RotatingMachine.GeneratingUnit ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:class cim:GeneratingUnit ] ;
+    sh:property [ sh:path cim:RegulatingCondEq.RegulatingControl ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:class cim:RegulatingControl ;
+                  sh:message "a PV machine needs its voltage RegulatingControl" ] .
+
+pcs:ExternalNetworkInjectionShape a sh:NodeShape ;
+    sh:targetClass cim:ExternalNetworkInjection ;
+    sh:property [ sh:path cim:RegulatingCondEq.RegulatingControl ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:class cim:RegulatingControl ] .
+
+pcs:RegulatingControlShape a sh:NodeShape ;
+    sh:targetClass cim:RegulatingControl ;
+    sh:property [ sh:path cim:RegulatingControl.Terminal ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:class cim:Terminal ] ;
+    sh:property [ sh:path cim:RegulatingControl.mode ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:hasValue cim:RegulatingControlModeKind.voltage ] ;
+    sh:property [ sh:path cim:RegulatingControl.targetValue ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ; sh:minExclusive 0.0 ;
+                  sh:message "voltage target must be present and > 0 kV" ] .
+
+pcs:EnergyConsumerShape a sh:NodeShape ;
+    sh:targetClass cim:EnergyConsumer ;
+    sh:property [ sh:path cim:EnergyConsumer.p ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ] ;
+    sh:property [ sh:path cim:EnergyConsumer.q ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ] .
+
+pcs:EnergySourceShape a sh:NodeShape ;
+    sh:targetClass cim:EnergySource ;
+    sh:property [ sh:path cim:EnergySource.activePower ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ] ;
+    sh:property [ sh:path cim:EnergySource.reactivePower ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ] .
+
+pcs:LinearShuntCompensatorShape a sh:NodeShape ;
+    sh:targetClass cim:LinearShuntCompensator ;
+    sh:property [ sh:path cim:ShuntCompensator.nomU ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ; sh:minExclusive 0.0 ;
+                  sh:message "ShuntCompensator.nomU must be present and > 0 kV" ] ;
+    sh:property [ sh:path cim:LinearShuntCompensator.bPerSection ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ] ;
+    sh:property [ sh:path cim:ShuntCompensator.sections ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ; sh:minInclusive 0.0 ] ;
+    sh:property [ sh:path cim:ShuntCompensator.maximumSections ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:integer ; sh:minInclusive 1 ] .
+
+# ---------------------------------------------------------------- limits
+pcs:CurrentLimitShape a sh:NodeShape ;
+    sh:targetClass cim:CurrentLimit ;
+    sh:property [ sh:path cim:OperationalLimit.OperationalLimitSet ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:class cim:OperationalLimitSet ] ;
+    sh:property [ sh:path cim:CurrentLimit.value ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ; sh:minExclusive 0.0 ;
+                  sh:message "CurrentLimit.value must be present and > 0 A" ] .
+
+pcs:OperationalLimitSetShape a sh:NodeShape ;
+    sh:targetClass cim:OperationalLimitSet ;
+    sh:property [ sh:path cim:OperationalLimitSet.Terminal ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:class cim:Terminal ] .
+
+# ---------------------------------------------------------------- header
+pcs:FullModelShape a sh:NodeShape ;
+    sh:targetClass md:FullModel ;
+    sh:property [ sh:path pcx:frequencyHz ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ; sh:minExclusive 0.0 ] ;
+    sh:property [ sh:path pcx:snMva ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:datatype xsd:double ; sh:minExclusive 0.0 ] .

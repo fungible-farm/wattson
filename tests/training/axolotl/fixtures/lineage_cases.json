@@ -1,0 +1,13 @@
+{
+  "scope": "Synthetic token and checkpoint markers for bookkeeping tests only; no training or model performance evidence",
+  "train_row": {"input_ids": [1, 2, 3], "attention_mask": [1, 1, 1], "labels": [-100, -100, 3]},
+  "validation_row": {"input_ids": [4, 5, 6], "attention_mask": [1, 1, 1], "labels": [-100, -100, 6]},
+  "parent_step": 50,
+  "checkpoint_marker": "synthetic bookkeeping marker, not a tensor checkpoint",
+  "tampered_marker": "changed after manifest creation",
+  "implicit_parent_cases": [
+    {"field": "auto_resume_from_checkpoints", "value": true},
+    {"field": "resume_from_checkpoint", "value": "checkpoint-50"},
+    {"field": "lora_model_dir", "value": "adapter-root"}
+  ]
+}

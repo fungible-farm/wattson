@@ -1,0 +1,184 @@
+#!/bin/sh
+# Host adapter: POSIX shell + a working Podman installation, no host Python/just.
+# It is the small local control plane. Workers never receive the engine socket.
+set -eu
+HERE=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+cd "$HERE"
+STATE="$HERE/.wattson"
+IMAGE=${WATTSON_IMAGE:-localhost/wattson-command:example}
+DEV_IMAGE=${WATTSON_DEV_IMAGE:-localhost/wattson-developer:example}
+POD=wattson-local-example
+SERVICE=wattson-local-example-service
+VOLUME=wattson-local-example-ipc
+# Explicit infra image so disconnected export includes the pod's sandbox process.
+INFRA_IMAGE=registry.k8s.io/pause:3.10
+# The example waits at most 30 seconds for startup; per-request IPC timeout is 10s.
+STARTUP_ATTEMPTS=30
+mkdir -p "$STATE/runs" "$STATE/recordings"
+ACTION=${1:-help}
+if [ "$#" -gt 0 ]; then shift; fi
+
+need_image() {
+    # No implicit pulls during execution. Install/build is the acquisition phase.
+    if ! podman image exists "$1"; then
+        echo "Missing image $1. Run ./wattson build, or podman load an approved bundle." >&2
+        exit 1
+    fi
+}
+
+require_service() {
+    if [ "$(podman inspect --format '{{.State.Running}}' "$SERVICE")" != true ]; then
+        echo 'The example service is stopped. Run ./wattson install.' >&2
+        exit 1
+    fi
+}
+
+run_command() {
+    # Every command has a retained container and a separate host artifact directory.
+    # Unfinished directories remain visible if this adapter itself is interrupted.
+    RECIPE=$1
+    case "$RECIPE" in hello|check|fail|record) ;; *) exit 2 ;; esac
+    require_service
+    need_image "$IMAGE"
+    RUN_DIR=$(mktemp -d "$STATE/runs/invocation-XXXXXXXX")
+    RUN_ID=${RUN_DIR##*/}
+    RUN_IMAGE=$IMAGE
+    if [ "$RECIPE" = record ]; then need_image "$DEV_IMAGE"; RUN_IMAGE=$DEV_IMAGE; fi
+    printf '{"invocation":"%s","recipe":"%s","phase":"requested"}\n' \
+        "$RUN_ID" "$RECIPE" > "$RUN_DIR/request.json"
+    # Container root maps to the invoking user in the rootless Podman path.
+    # This local-only choice keeps named-volume ownership simple; K8s runs nonroot.
+    # Recording gets its own volume mount; no host home directory is exposed.
+    if [ "$RECIPE" = record ]; then
+        podman create --tty --name "$RUN_ID" --pod "$POD" --pull=never --user 0 \
+            --read-only --tmpfs /tmp:rw,nosuid,nodev --cap-drop=all \
+            --security-opt=no-new-privileges --memory=256m --cpus=1 --pids-limit=64 \
+            --timeout=120 \
+            --label wattson.example=true --label "wattson.recipe=$RECIPE" \
+            --volume "$VOLUME:/shared" --volume "$STATE/recordings:/recordings:Z" \
+            "$RUN_IMAGE" "$RECIPE" > "$RUN_DIR/container-id"
+    else
+        podman create --name "$RUN_ID" --pod "$POD" --pull=never --user 0 \
+            --read-only --tmpfs /tmp:rw,nosuid,nodev --cap-drop=all \
+            --security-opt=no-new-privileges --memory=128m --cpus=1 --pids-limit=64 \
+            --timeout=120 \
+            --label wattson.example=true --label "wattson.recipe=$RECIPE" \
+            --volume "$VOLUME:/shared" "$RUN_IMAGE" "$RECIPE" > "$RUN_DIR/container-id"
+    fi
+    podman start "$RUN_ID" > /dev/null
+    # wait prints the real container exit code; it does not return that code itself.
+    EXIT_CODE=$(podman wait "$RUN_ID")
+    podman logs "$RUN_ID" > "$RUN_DIR/output.log" 2>&1
+    podman inspect "$RUN_ID" > "$RUN_DIR/inspect.json"
+    printf '{"invocation":"%s","recipe":"%s","phase":"finished","exit_code":%s}\n' \
+        "$RUN_ID" "$RECIPE" "$EXIT_CODE" > "$RUN_DIR/result.json"
+    cat "$RUN_DIR/output.log" "$RUN_DIR/result.json"
+    echo "Evidence: $RUN_DIR"
+    return "$EXIT_CODE"
+}
+
+case "$ACTION" in
+    build)
+        # Build only on a connected preparation machine; dependencies stay in images.
+        podman build --target runtime -t "$IMAGE" -f Containerfile .
+        podman build --target developer -t "$DEV_IMAGE" -f Containerfile .
+        podman pull "$INFRA_IMAGE"
+        ;;
+    install|install-ipc)
+        # Safe to repeat against this example's existing pod. No unrelated workloads touched.
+        sh "$HERE/nemo-agent/environment.sh" components
+        if ! podman image exists "$IMAGE" || ! podman image exists "$DEV_IMAGE" || ! podman image exists "$INFRA_IMAGE"; then
+            if [ "${WATTSON_OFFLINE:-0}" = 1 ]; then
+                echo 'Offline install needs the approved image bundle loaded first.' >&2
+                exit 1
+            fi
+            sh "$HERE/wattson" build
+        fi
+        need_image "$IMAGE"
+        need_image "$INFRA_IMAGE"
+        if ! podman pod exists "$POD"; then
+            podman pod create --name "$POD" --network=none --infra-image "$INFRA_IMAGE" --label wattson.example=true
+        fi
+        if ! podman volume exists "$VOLUME"; then podman volume create "$VOLUME"; fi
+        if ! podman container exists "$SERVICE"; then
+            podman create --name "$SERVICE" --pod "$POD" --pull=never --user 0 \
+                --read-only --tmpfs /tmp:rw,nosuid,nodev --cap-drop=all \
+                --security-opt=no-new-privileges --memory=128m --cpus=1 --pids-limit=64 \
+                --label wattson.example=true --volume "$VOLUME:/shared" \
+                "$IMAGE" serve
+        fi
+        if [ "$(podman inspect --format '{{.State.Running}}' "$SERVICE")" != true ]; then
+            podman start "$SERVICE"
+        fi
+        ATTEMPT=0
+        until podman exec "$SERVICE" python /opt/wattson/ipc.py hello > /dev/null 2>&1; do
+            ATTEMPT=$((ATTEMPT + 1))
+            if [ "$ATTEMPT" -ge "$STARTUP_ATTEMPTS" ]; then
+                podman logs "$SERVICE"
+                echo 'Service failed its bounded startup check.' >&2
+                exit 1
+            fi
+            sleep 1
+        done
+        run_command check
+        echo 'PASS: Wattson IPC example installed'
+        if [ "$ACTION" = install ]; then sh "$HERE/nemo-agent/environment.sh" install; fi
+        ;;
+    package) sh "$HERE/nemo-agent/environment.sh" package ;;
+    hello|check|fail|record) run_command "$ACTION" ;;
+    status)
+        podman pod ps --filter "name=$POD"
+        podman ps --all --filter label=wattson.example=true
+        ;;
+    inspect)
+        # All runs remain explicit: avoid an ambiguous "latest" in concurrent use.
+        for RESULT in "$STATE"/runs/*/result.json; do
+            [ -f "$RESULT" ] && cat "$RESULT"
+        done
+        ;;
+    logs) podman logs "$SERVICE" ;;
+    stop)
+        podman pod stop "$POD"
+        # External stop evidence does not depend on an in-container cleanup hook.
+        podman inspect "$SERVICE" > "$STATE/service-stopped.json"
+        podman logs "$SERVICE" > "$STATE/service-stopped.log" 2>&1
+        ;;
+    down)
+        # Explicitly requested removal of this tutorial's containers and scratch only.
+        if podman pod exists "$POD"; then podman pod rm --force "$POD"; fi
+        if podman volume exists "$VOLUME"; then podman volume rm "$VOLUME"; fi
+        echo "Removed example pod and IPC volume; evidence retained at $STATE"
+        ;;
+    export)
+        need_image "$IMAGE"
+        need_image "$DEV_IMAGE"
+        need_image "$INFRA_IMAGE"
+        # Podman cannot overwrite an existing docker archive. Publish a fresh
+        # completed archive atomically so a failed export preserves the old one.
+        EXPORT_DIR=$(mktemp -d "$STATE/export-XXXXXXXX")
+        podman save --multi-image-archive --output "$EXPORT_DIR/wattson-images.tar" "$IMAGE" "$DEV_IMAGE" "$INFRA_IMAGE"
+        mv "$EXPORT_DIR/wattson-images.tar" "$STATE/wattson-images.tar"
+        rmdir "$EXPORT_DIR"
+        echo "Transfer $STATE/wattson-images.tar and this directory to the isolated machine."
+        ;;
+    manifest)
+        # Produce JSON (valid Kubernetes YAML) with tools from the command image.
+        # The source is supplied on stdin; no host source mount or engine socket.
+        need_image "$IMAGE"
+        podman run --rm -i --pull=never --network=none --read-only \
+            --cap-drop=all --security-opt=no-new-privileges \
+            --env WATTSON_KUBE_IMAGE \
+            --entrypoint python "$IMAGE" - "$@" < kubernetes.py
+        ;;
+    play)
+        need_image "$DEV_IMAGE"
+        podman run --rm -it --pull=never --network=none --read-only --tmpfs /tmp \
+            --user 0 --cap-drop=all --security-opt=no-new-privileges \
+            --volume "$STATE/recordings:/recordings:ro,Z" \
+            --entrypoint asciinema "$DEV_IMAGE" play /recordings/wattson.cast
+        ;;
+    help)
+        echo 'Usage: ./wattson {build|install|install-ipc|package|hello|check|fail|status|inspect|logs|record|play|stop|down|export|manifest [openshift]}'
+        ;;
+    *) echo "Unknown action: $ACTION" >&2; exit 2 ;;
+esac

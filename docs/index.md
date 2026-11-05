@@ -15,3 +15,9 @@ Start with the [README quick start](../README.md#quick-start). Then:
 | [training.md](training.md) | reproduce a student, and see what is not yet reproducible from this repository |
 | [results.md](results.md) | read the measured results, with seeds and limits |
 | [troubleshooting.md](troubleshooting.md) | fix what went wrong; every entry is something that actually went wrong |
+| [Experimental local runtime handoff](../local-runtime/HANDOFF-2026-11-04.md) | review the separate IPC/MCP/HF container prototype, actual evidence, and unfinished offline acceptance gates |
+| [PowerCoder consolidation staging](../migration/powercoder/README.md) | inspect preserved local training/tests/source, canonical ownership mappings, and the unfinished repository cutover |
+
+[PowerCoder port handoff and remaining release gates](POWERCODER_PORT_HANDOFF_2026-11-05.md).
+
+[Shared launch, service and IDE interfaces](interfaces.md).

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "description": "Explicit component inventory; image IDs and file hashes are captured during packaging.",
+  "host": ["Linux with working rootless Podman 5.4+ and cgroup v2 delegation", "POSIX shell and core utilities", "available disk for images, a model snapshot and the exported package"],
+  "images": {
+    "runtime": "localhost/wattson-command:example",
+    "developer": "localhost/wattson-developer:example",
+    "pause": "registry.k8s.io/pause:3.10",
+    "nemo": "localhost/wattson-nemo:example",
+    "agent": "localhost/wattson-pi:example",
+    "cpu": "localhost/wattson-candle-cpu:example",
+    "mcp_builder": "localhost/wattson-mcp-builder:example",
+    "scanner": "docker.io/anchore/syft:v1.56.0",
+    "hf_cli": "localhost/wattson-hf-cli:2.4.0",
+    "hf_mcp": "localhost/wattson-hf-mcp:0.4.32",
+    "model_qwen": "localhost/wattson-model-qwen3.5-4b:d1826df681c9",
+    "model_granite": "localhost/wattson-model-granite4.2-8b:dd8af31440cd"
+  },
+  "nemo": {"repository": "https://github.com/bje-/NEMO", "commit": "0251ee41cf806915905ad43934520d8d258d8810", "release": "GenCost 2024-25 via gencost2025", "license": "GPL-3.0-or-later", "adapter": "read-only AST reader for literal capital-cost tables; does not run the optimizer or evaluate formula expressions"},
+  "just_mcp": {"repository": "https://github.com/toolprint/just-mcp", "version": "0.2.0", "source_commit": "11a2a7c47a0598ee21769ecf515db563bba96f0b", "local_fixes": ["tracing diagnostics to stderr", "execute the exact discovered justfile path"], "lock": "just-mcp.Cargo.lock", "license": "MIT"},
+  "pi": {"npm": "@earendil-works/pi-coding-agent", "version": "1.3.0", "license": "MIT"},
+  "cpu": {"implementation": "mistral.rs, using Candle", "version": "0.9.5", "license": "MIT", "candle_license": "MIT OR Apache-2.0", "models": "../huggingface/models.json", "model_license": "Apache-2.0", "device": "cpu", "note": "Downstream serving image, not an official Hugging Face Candle image. Architecture/model compatibility and actual Pi task execution for the selected Wattson models still require target-host validation. Burn is a separate framework and is not used."},
+  "huggingface": {"cli": {"version": "2.4.0", "license": "Apache-2.0", "lock": "../huggingface/uv.lock"}, "mcp": {"package": "@llmindset/hf-mcp-server", "version": "0.4.32", "license": "MIT", "lock": "../huggingface/mcp/package-lock.json"}, "model_artifacts": "../huggingface/models.json"},
+  "preparation_network": ["docker.io", "ghcr.io", "github.com and its release/codeload hosts", "registry.npmjs.org", "huggingface.co and its model-storage hosts"],
+  "execution_network": ["Configured sm3lly LAN endpoint for the remote arm", "loopback for the CPU arm; NEMO tools require no network"]
+}

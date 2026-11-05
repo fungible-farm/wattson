@@ -1,0 +1,83 @@
+# NEM PowerCoder Model Registry
+# Records all teacher and student models with their roles, revisions, and deployment status.
+
+models:
+  - id: qwen3.8-flash-next
+    name: Qwen3.8-Flash-Next
+    role: teacher
+    architecture: qwen3
+    hf_id: Qwen/Qwen3.8-Flash-Next
+    revision: null  # to be pinned
+    license: Qwen Community License 1.0
+    training_framework: null
+    deployment:
+      - backend: vllm
+        recipe: qwen3.8-Flash-DGX-UltraFast v16b
+        status: planned
+    notes: Primary locally served teacher; GB10-optimised vLLM recipe
+
+  - id: qwen3.8-27b
+    name: Qwen3.8-27B
+    role: teacher
+    architecture: qwen3
+    hf_id: Qwen/Qwen3.8-27B
+    revision: null  # to be pinned
+    license: Apache 2.0
+    training_framework: null
+    deployment: null
+    notes: Independent teacher / quality challenger
+
+  - id: qwen3.5-4b
+    name: Qwen3.5-4B
+    role: student
+    architecture: qwen3_5
+    hf_id: Qwen/Qwen3.5-4B
+    revision: 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a
+    license: Apache 2.0
+    training_framework: unsloth
+    deployment:
+      - backend: onnx
+        target: windows-foundry-local
+        quantization: INT4/INT8
+        status: planned
+    notes: First Unsloth candidate; Windows Foundry Local target
+
+  - id: qwen2.5-coder-1.5b
+    name: Qwen2.5-Coder-1.5B
+    role: student
+    architecture: qwen2
+    hf_id: Qwen/Qwen2.5-Coder-1.5B
+    revision: df3ce67c0e24480f20468b6ef2894622d69eb73b
+    license: Apache 2.0
+    training_framework: unsloth
+    deployment:
+      - backend: qnn
+        target: qualcomm-q6a
+        quantization: INT4
+        status: deferred
+    notes: Qualcomm Q6A student; edge deployment target
+
+  - id: granite-4.2-8b
+    name: IBM Granite 4.2-8B
+    role: challenger
+    architecture: granite
+    hf_id: ibm-granite/granite-4.2-8b
+    revision: b3791992239dce12d0038f1f54a8adb7b02d59ab
+    license: Apache 2.0
+    training_framework: transformers-peft
+    deployment:
+      - backend: vllm
+        target: local-llama-swap
+        status: verified
+    notes: Pinned upstream BF16 model; separate same-split LoRA experiment is pending
+
+  - id: granite-4.2-3b
+    name: IBM Granite 4.2-3B
+    role: challenger
+    architecture: granite
+    hf_id: ibm-granite/granite-4.2-3b
+    revision: null  # to be pinned
+    license: Apache 2.0
+    training_framework: null
+    deployment: null
+    notes: Independent laboratory challenger for evaluation

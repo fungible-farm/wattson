@@ -1,0 +1,22 @@
+# Runtime and tool installations live entirely in the image.
+FROM ghcr.io/astral-sh/uv:0.12.23 AS uv
+FROM docker.io/library/python:3.12.3-slim AS cli
+COPY --from=uv /uv /usr/local/bin/uv
+WORKDIR /opt/hf
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev --no-cache
+COPY models.py models.json /opt/hf/
+ENV PATH=/opt/hf/.venv/bin:$PATH HF_HOME=/tmp/hf HF_HUB_DISABLE_TELEMETRY=1 HF_XET_CHUNK_CACHE_SIZE_BYTES=0 DO_NOT_TRACK=1 PYTHONDONTWRITEBYTECODE=1
+USER 65532
+ENTRYPOINT ["hf"]
+CMD ["--help"]
+
+# The official MCP server package is MIT; build natively rather than emulate amd64.
+FROM docker.io/library/node:24-slim AS mcp
+WORKDIR /opt/hf-mcp
+COPY mcp/package.json mcp/package-lock.json ./
+RUN npm ci --ignore-scripts && npm cache clean --force
+COPY mcp/probe.mjs ./probe.mjs
+ENV TRANSPORT=stdio HOME=/tmp HF_HUB_DISABLE_TELEMETRY=1 DO_NOT_TRACK=1 DISABLE_TOOLS=gr1_z_image_turbo_generate
+USER 65532
+ENTRYPOINT ["/opt/hf-mcp/node_modules/.bin/hf-mcp-server"]

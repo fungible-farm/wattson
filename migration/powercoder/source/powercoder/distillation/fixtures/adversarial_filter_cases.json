@@ -1,0 +1,50 @@
+{
+  "replay_specs": [
+    {"name": "success", "case": "fixture-2bus-ok", "max_iter": 20, "status": "success"},
+    {"name": "non_convergence", "case": "fixture-2bus-ok", "max_iter": 1, "status": "non_convergence"},
+    {"name": "unknown_case", "case": "fixture-does-not-exist", "max_iter": 20, "status": "execution_failure"}
+  ],
+  "fit_task": {
+    "subfamily": "pf-load-scale-fit",
+    "task": {"inputs": {
+      "case": "fixture-2bus-ok", "element": "bus 1", "target": 1.0,
+      "tolerance": 0.001, "scale_lo": 0.9, "scale_hi": 1.1
+    }}
+  },
+  "invalid_fit_values": [0.8, 1.2, true, null, "0.95", "nan", 1e999],
+  "invalid_iteration_budgets": [0, -1, true, "20", null],
+  "stdout_cases": [
+    {"name": "one_answer", "stdout": "{\"answer\": {\"scale_factor\": 1.0}}\n", "pass": true},
+    {"name": "multiple_answers", "stdout": "{\"answer\": 1}\n{\"answer\": 2}\n", "pass": false},
+    {"name": "unverified_prose", "stdout": "The grid is safe.\n{\"answer\": 1}\n", "pass": false},
+    {"name": "extra_root_claim", "stdout": "{\"answer\": 1, \"safe_to_operate\": true}", "pass": false},
+    {"name": "duplicate_keys", "stdout": "{\"answer\": {\"converged\": false, \"converged\": true}}", "pass": false},
+    {"name": "not_finite", "stdout": "{\"answer\": {\"scale_factor\": NaN}}", "pass": false},
+    {"name": "overflowing_number", "stdout": "{\"answer\": {\"scale_factor\": 1e999}}", "pass": false}
+  ],
+  "trajectory_mutations": [
+    {"name": "invented_final_status", "path": ["trajectory", 1, "status"], "value": "non_convergence", "pass": false},
+    {"name": "self_hashed_invented_voltage", "path": ["trajectory", 1, "result", "min_bus_voltage_pu"], "offset": 0.05, "rehash": true, "pass": false},
+    {"name": "documented_voltage_rounding", "path": ["trajectory", 1, "result", "min_bus_voltage_pu"], "offset": 0.0005, "rehash": true, "pass": true},
+    {"name": "wrong_network", "path": ["trajectory", 1, "args", "network_id"], "value": "snem-sa-2000", "pass": false},
+    {"name": "wrong_iteration_budget", "path": ["trajectory", 1, "args", "max_iter"], "value": 999, "pass": false},
+    {"name": "wrong_limit_policy", "path": ["trajectory", 1, "args", "check_limits"], "value": false, "pass": false},
+    {"name": "missing_evidence", "path": ["trajectory", 1, "evidence"], "value": null, "pass": false},
+    {"name": "forged_result_hash", "path": ["trajectory", 1, "evidence", "result_hash"], "value": "sha256:forged", "pass": false},
+    {"name": "non_finite_observation", "path": ["trajectory", 1, "result", "min_bus_voltage_pu"], "value": 1e999, "pass": false},
+    {"name": "false_physical_validity", "path": ["trajectory", 1, "evidence", "validity", "physical"], "value": false, "pass": false},
+    {"name": "legacy_placeholder_result", "path": ["trajectory", 1, "result"], "value": "ok", "pass": false},
+    {"name": "boolean_violation_count", "path": ["trajectory", 1, "result", "voltage_violations"], "value": false, "rehash": true, "pass": false},
+    {"name": "missing_calls", "path": ["trajectory"], "value": [], "pass": false}
+  ],
+  "report_mutations": [
+    {"name": "fractional_iterations", "field": "iterations", "offset": 0.9},
+    {"name": "fractional_violations", "field": "voltage_violations", "offset": 0.9},
+    {"name": "null_iterations", "field": "iterations", "value": null},
+    {"name": "non_finite_voltage", "field": "min_bus_voltage_pu", "value": 1e999},
+    {"name": "string_convergence", "field": "converged", "value": "true"},
+    {"name": "unsupported_safe_claim", "field": "safe_to_operate", "value": true}
+  ],
+  "failed_report": {"converged": false},
+  "fabricated_failed_report": {"converged": false, "min_bus_voltage_pu": 1.0}
+}

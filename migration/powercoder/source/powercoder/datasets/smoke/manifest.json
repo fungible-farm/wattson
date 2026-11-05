@@ -1,0 +1,35 @@
+{
+  "base_seed": 42,
+  "content_hash": "sha256:a4200a7b9bdf29c1a39e9a938443c7c41fd055433059f103105cd6268ffa6d4d",
+  "counts_by_family": {
+    "power-flow-contingency": 400,
+    "powermcp-trajectories": 100
+  },
+  "counts_by_lifecycle_status": {
+    "verified": 500
+  },
+  "counts_by_subfamily": {
+    "mcp-trajectory": 100,
+    "pf-gen-dispatch-fit": 40,
+    "pf-line-rating-fit": 120,
+    "pf-load-scale-fit": 120,
+    "pf-report": 120
+  },
+  "created_utc": "2026-10-19T00:08:11Z",
+  "dataset": "nem-powercoder-smoke",
+  "generator": "powercoder/datasets/generate.py",
+  "git_commit": "4f41c75672594f8fc35241da31c0140841d9c6b4",
+  "licence": "CSIRO Synthetic-NEM-2000-Bus case data (public); generated examples (c) PromptExecution, MIT",
+  "notes": "500-example smoke dataset (MISSION.md M04). All expected values are real pandapower solver output. snem-1803 excluded (EXECUTION_FAILURE; reserved for code-repair family). See schemas/training-example.schema.json.",
+  "requested_counts": {
+    "mcp-trajectory": 100,
+    "pf-gen-dispatch-fit": 40,
+    "pf-line-rating-fit": 120,
+    "pf-load-scale-fit": 120,
+    "pf-report": 120
+  },
+  "solver": "pandapower",
+  "solver_version": "3.5.4",
+  "total_examples": 500,
+  "version": "0.1.0"
+}

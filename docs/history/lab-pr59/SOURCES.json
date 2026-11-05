@@ -1,0 +1,218 @@
+{
+  "source_repository": "fungible-farm/nem-poweragent-lab",
+  "original_pr": 59,
+  "original_head": "e11038d54fbf6507a31eaf316a26d1817c8f3d71",
+  "historical_only": true,
+  "files": [
+    {
+      "source": "docs/HANDOFF.md",
+      "sha256": "e6be852c0750dd7455e577eb145f4a4baa81fdfdd472dff91cde984410f059e7",
+      "retained_as": "docs/history/lab-pr59/docs/HANDOFF.md"
+    },
+    {
+      "source": "docs/POWERCODER_HANDOFF_2026-10-21.md",
+      "sha256": "3f53c10df901f0870558e5400e7b38b9f88537699514b5ce7fb1e4e20d61b6d0",
+      "retained_as": "docs/history/lab-pr59/docs/POWERCODER_HANDOFF_2026-10-21.md"
+    },
+    {
+      "source": "docs/POWERCODER_HANDOFF_2026-10-23.md",
+      "sha256": "6aa10ca1fda5d72d4c857dfac61cd64bc492d2aee9174c6ebe23ce4d4d3d9255",
+      "retained_as": "docs/history/lab-pr59/docs/POWERCODER_HANDOFF_2026-10-23.md"
+    },
+    {
+      "source": "docs/PSCADOSSE.md",
+      "sha256": "b5cdd94bec82baea609e8caaa745f0532fac8a90cc4f9bda8aec67f4481ad65b",
+      "retained_as": "docs/history/lab-pr59/docs/PSCADOSSE.md"
+    },
+    {
+      "source": "docs/VISION.md",
+      "sha256": "cc0d634bae1122e3b2581f3619563f2358ce13c27628709c227cb4f098b76b6c",
+      "retained_as": "docs/history/lab-pr59/docs/VISION.md"
+    },
+    {
+      "source": "docs/backlog/0004-lab4-lab5-visualization-options.md",
+      "sha256": "2cc1d78ffb3ad77665bd0a9cd85cc5aa83087494d64b8c80723abda33689eefc",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0004-lab4-lab5-visualization-options.md"
+    },
+    {
+      "source": "docs/backlog/0008-powercoder-benchmark-cannot-measure-agent-value.md",
+      "sha256": "ad069c6013b9ef071a078e132ae7b2a3370dcac108cc5b954b36c5906d4b7d9f",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0008-powercoder-benchmark-cannot-measure-agent-value.md"
+    },
+    {
+      "source": "docs/backlog/0009-recovery-training-supervised-the-injected-mistake.md",
+      "sha256": "000fee761ef4a64fa3d70a494128b2ab2f041d56f7311786b878a3911cde5028",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0009-recovery-training-supervised-the-injected-mistake.md"
+    },
+    {
+      "source": "docs/backlog/0010-provenance-check-hardening.md",
+      "sha256": "3b119f7ffab2eaaa14694af033d7883acb5be240d9d8e2b9b16e96c29a23825d",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0010-provenance-check-hardening.md"
+    },
+    {
+      "source": "docs/backlog/0011-strict-tool-calling-arm-redesign.md",
+      "sha256": "808d9ee324c8f49b29954ea6079cb7287455459fe47b1b300cce8395d6cf5bee",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0011-strict-tool-calling-arm-redesign.md"
+    },
+    {
+      "source": "docs/backlog/0012-answer-by-reference.md",
+      "sha256": "7a95ac7973f28eb691f6738646b52340edda4787aef09971d32f556cdfaa0d05",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0012-answer-by-reference.md"
+    },
+    {
+      "source": "docs/backlog/0013-sensitivity-newton-tool.md",
+      "sha256": "fc98e766ea8aa6974b4b21a8db9341f7a40e6a4231d7200d631d31c40e8ddf4b",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0013-sensitivity-newton-tool.md"
+    },
+    {
+      "source": "docs/backlog/0014-grammar-engines-xgrammar-llguidance-gbnf.md",
+      "sha256": "73c95e0732abb1648a94f332433c508b90b895da729d6d9dffd9a59fb7e46716",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0014-grammar-engines-xgrammar-llguidance-gbnf.md"
+    },
+    {
+      "source": "docs/backlog/0015-g1-typed-command-protocol-and-gateway.md",
+      "sha256": "10ca4ada76072cc3d4f8b63cfc376dcaec1116cc511bcec382d1bf7e645193e0",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0015-g1-typed-command-protocol-and-gateway.md"
+    },
+    {
+      "source": "docs/backlog/0016-g2-verified-engineering-mathematics.md",
+      "sha256": "daec910e9a18777e2b0b06121536a1138126b4aba91176e4f33ffe5c4a5909ec",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0016-g2-verified-engineering-mathematics.md"
+    },
+    {
+      "source": "docs/backlog/0017-g3-verifier-guided-investigative-learning.md",
+      "sha256": "6ba9a851886fe149bb74393b60c416ec49e6cc3b6cde828636b2bbd9ba5b3e12",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0017-g3-verifier-guided-investigative-learning.md"
+    },
+    {
+      "source": "docs/backlog/0018-g4-cim-semantic-network-intelligence.md",
+      "sha256": "16e37458bf1a88ae52715ffe7e606f500c10b73615218f0ecfd38304122c1555",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0018-g4-cim-semantic-network-intelligence.md"
+    },
+    {
+      "source": "docs/backlog/0019-g5-observations-and-weather.md",
+      "sha256": "694410def2c7b1bb364ace91212f569732eabad5da8453b7fc560df1a857f392",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0019-g5-observations-and-weather.md"
+    },
+    {
+      "source": "docs/backlog/0020-g6-autonomous-engineering-investigations.md",
+      "sha256": "a8a25656c01cd177df1733fe5791fd7beba52b7a416af9fe8276c0f0b46a0a6d",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0020-g6-autonomous-engineering-investigations.md"
+    },
+    {
+      "source": "docs/backlog/0021-g7-probabilistic-forecasting.md",
+      "sha256": "3c1447ac4eda458f4457837675aa4c21f3b81a7748da4a60a3e2783602fef3e6",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0021-g7-probabilistic-forecasting.md"
+    },
+    {
+      "source": "docs/backlog/0022-g8-independent-superiority-assessment.md",
+      "sha256": "bec1e6bdc61d7296e7dcfcdf98b51ac30870113fa4bfe44e8fcd8933c8136e84",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0022-g8-independent-superiority-assessment.md"
+    },
+    {
+      "source": "docs/backlog/0023-snemsa-case-lacks-ratings-costs-and-distributed-slack.md",
+      "sha256": "4ee4c9ee7c2b022e1ed41fe3c45d9f67c4e9535f82761692a63b4771901397bf",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0023-snemsa-case-lacks-ratings-costs-and-distributed-slack.md"
+    },
+    {
+      "source": "docs/backlog/0024-element-discovery-and-graph-search.md",
+      "sha256": "01601ec77adf30eeaf534add6f2f282496b35e10cb6a8bcf28827d0b8a2d3c8e",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0024-element-discovery-and-graph-search.md"
+    },
+    {
+      "source": "docs/backlog/0025-podman-desktop-packaging-of-on-demand-services.md",
+      "sha256": "fe699762a5dabeb4f9dd27b3441b76a64bb52b29cf89c2d620afb1233623d98b",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0025-podman-desktop-packaging-of-on-demand-services.md"
+    },
+    {
+      "source": "docs/backlog/0026-walkable-path-namespace-ls-get.md",
+      "sha256": "39b0d0c766db88ecb9066c690d03688be85d9535f75fe072ddf7f146f5d8cba1",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0026-walkable-path-namespace-ls-get.md"
+    },
+    {
+      "source": "docs/backlog/0027-functional-data-virtualization-layer.md",
+      "sha256": "16c5135ec4e4bb14b169ec56393260fe519d16deceac210992430f1bfabbce00",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0027-functional-data-virtualization-layer.md"
+    },
+    {
+      "source": "docs/backlog/0028-short-circuit-and-system-strength-tasks.md",
+      "sha256": "32b3e64f1172eb18f6a1c28e8814d86427dc20c6de043f6b4f663e38f8a78177",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0028-short-circuit-and-system-strength-tasks.md"
+    },
+    {
+      "source": "docs/backlog/0029-cgmes-round-trip-with-pypowsybl.md",
+      "sha256": "0889a39fe2b4d130e64738c837d69852879599d9e3d4b3e30068b547acc8e5cc",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0029-cgmes-round-trip-with-pypowsybl.md"
+    },
+    {
+      "source": "docs/backlog/0030-nem-dispatch-reruns-with-nempy.md",
+      "sha256": "be8b57bebc6e3b18178786f440ac0be2169434ef8947866a11f67ca7ec03068e",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0030-nem-dispatch-reruns-with-nempy.md"
+    },
+    {
+      "source": "docs/backlog/0031-openstef-short-term-forecasting.md",
+      "sha256": "72de8b88e7ef90dd24095a563007f51b4c057d7847c91fa8d06fd2b7aaacedf4",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0031-openstef-short-term-forecasting.md"
+    },
+    {
+      "source": "docs/backlog/0032-energnn-screening-surrogate.md",
+      "sha256": "f5c8f99eba51f7766a0fa5b7f96be94f67258237e2b4865f2fb7cad4d2ef36ce",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0032-energnn-screening-surrogate.md"
+    },
+    {
+      "source": "docs/backlog/0033-study-workbook-audit.md",
+      "sha256": "33121bec045ec6ce3795ca36b85631edb7f6a23bba5de00a5396243531adf704",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0033-study-workbook-audit.md"
+    },
+    {
+      "source": "docs/backlog/0034-cgmes-conformant-g4-export.md",
+      "sha256": "dd55911371c1c983a4ebfd54f6d9eb7e1a1d9821347f8dd4bdeee2e5f7ea3d69",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/0034-cgmes-conformant-g4-export.md"
+    },
+    {
+      "source": "docs/backlog/README.md",
+      "sha256": "8f64fb2cc8a292a572739ae9e1f707f74d1112111c944ffdc97433d77090192b",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/README.md"
+    },
+    {
+      "source": "docs/backlog/reviews/2026-10-23-r6-merit-review.md",
+      "sha256": "0fc6caf7781c98577906335ea61a9ca7f46c050553bddde38bf4e349bcdc2bb4",
+      "retained_as": "docs/history/lab-pr59/docs/backlog/reviews/2026-10-23-r6-merit-review.md"
+    },
+    {
+      "source": "docs/powercoder/00-environment.md",
+      "sha256": "f5f8e24512392ac4d04e7d20aa595c8b9c87361dcbcdb9d10028ede10b3b7fe0",
+      "retained_as": "docs/history/lab-pr59/docs/powercoder/00-environment.md"
+    },
+    {
+      "source": "docs/powercoder/evidence/m02-snem-sa-2000.json",
+      "sha256": "eb43297672392f6444dcf6db0b18e2388cedcb2e0c108af3d9567b771cff1433",
+      "retained_as": "docs/history/lab-pr59/docs/powercoder/evidence/m02-snem-sa-2000.json"
+    },
+    {
+      "source": "docs/powercoder/trainer-parity.md",
+      "sha256": "268353592a76bb34cf35b0f832e6f8cd081d52d97dff4706a8260b69bbe94b3e",
+      "retained_as": "docs/history/lab-pr59/docs/powercoder/trainer-parity.md"
+    },
+    {
+      "source": "docs/prd/0010-powercoder-physics-grounded-engineering-agent.md",
+      "sha256": "90fe080dabe307a3350e6b3ef9707de0de8ec8c965f7dd412391848b3612541d",
+      "retained_as": "docs/history/lab-pr59/docs/prd/0010-powercoder-physics-grounded-engineering-agent.md"
+    },
+    {
+      "source": "docs/prd/README.md",
+      "sha256": "f7054fed73cda4906350cad538eee38ca880d0c0c1aac9bba586d40f1ecddc4b",
+      "retained_as": "docs/history/lab-pr59/docs/prd/README.md"
+    },
+    {
+      "source": "MISSION.md",
+      "sha256": "b91726e3198d3fbebe206d520f8a1e73909ac3afda7de953ba66950b6075fe49",
+      "retained_as": "docs/history/lab-pr59/MISSION.md"
+    },
+    {
+      "source": "AGENTS.md",
+      "sha256": "07d0ef1a3ace1adfdf0db7562345c4e50ac87931e0701c4c21c356dc6181f596",
+      "retained_as": "docs/history/lab-pr59/AGENTS.md.txt"
+    }
+  ]
+}

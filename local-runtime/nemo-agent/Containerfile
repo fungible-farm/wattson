@@ -1,0 +1,48 @@
+# No system-wide dependency installation on the workstation.
+FROM ghcr.io/casey/just:1.59.0 AS just-binary
+FROM docker.io/library/node:24-slim AS node-binary
+FROM node-binary AS pi-build
+WORKDIR /opt/pi
+COPY pi/package.json pi/package-lock.json ./
+RUN npm ci --ignore-scripts
+FROM docker.io/library/python:3.14-slim AS build
+COPY fetch.py /build/fetch.py
+RUN python /build/fetch.py nemo /opt/nemo-source
+RUN python /build/fetch.py just-mcp-source /opt/just-mcp-source
+COPY patch_just_mcp.py /build/patch_just_mcp.py
+RUN python /build/patch_just_mcp.py /opt/just-mcp-source
+COPY just-mcp.Cargo.lock /opt/just-mcp-source/Cargo.lock
+
+FROM docker.io/library/rust:1.90-slim-bookworm AS mcp-build
+# Use the image's installed toolchain instead of downloading the upstream pin.
+ENV RUSTUP_TOOLCHAIN=1.90.0
+RUN apt-get update && apt-get install -y --no-install-recommends g++ make perl pkg-config && rm -rf /var/lib/apt/lists/*
+COPY --from=just-binary /just /usr/local/bin/just
+COPY --from=build /opt/just-mcp-source /build/just-mcp
+COPY upstream/justfile_case.rs /build/just-mcp/tests/wattson_justfile_case.rs
+WORKDIR /build/just-mcp
+RUN cargo test --locked --release --test wattson_justfile_case && cargo build --locked --release --bin just-mcp
+
+# Runtime is a data reader, not the full GUI/optimizer dependency tree. The
+# unchanged upstream source and GPL notices are included in the image/package.
+FROM docker.io/library/python:3.14-slim AS nemo
+COPY --from=just-binary /just /usr/local/bin/just
+COPY --from=mcp-build /build/just-mcp/target/release/just-mcp /usr/local/bin/just-mcp
+COPY --from=build /opt/just-mcp-source /opt/just-mcp-source
+COPY --from=build /opt/nemo-source /opt/nemo-source
+WORKDIR /opt/wattson-nemo
+COPY query.py components.json fixtures/expected_costs.json ./
+COPY tasks /opt/wattson-nemo/tasks
+ENV HOME=/tmp XDG_CACHE_HOME=/tmp/cache MPLCONFIGDIR=/tmp/matplotlib PYTHONDONTWRITEBYTECODE=1
+USER 65532
+ENTRYPOINT ["just-mcp", "--watch-dir", "/opt/wattson-nemo/tasks"]
+
+# Agent shares the exact NEMO/task layers; it does not need an engine socket.
+FROM nemo AS agent
+USER 0
+COPY --from=node-binary /usr/local/bin/node /usr/local/bin/node
+COPY --from=pi-build /opt/pi /opt/pi
+ENV PATH=/opt/pi/node_modules/.bin:$PATH PI_CODING_AGENT_DIR=/tmp/pi PI_OFFLINE=1 PI_TELEMETRY=0
+COPY agent_run.py package.py report.py cpu_probe.py test_nemo.py /opt/wattson-nemo/
+USER 65532
+ENTRYPOINT ["python", "/opt/wattson-nemo/agent_run.py"]

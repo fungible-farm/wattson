@@ -9,6 +9,8 @@
 # Override with environment variables, e.g.  WATTSON_TAG=sha-abc1234 just up qwen   or   WATTSON_PORT=8100 just up granite
 # (WATTSON_PORT is the port on YOUR machine; inside the pod the server is always on 8000.)
 
+set positional-arguments := true
+
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
 registry  := env("WATTSON_REGISTRY", "ghcr.io/fungible-farm")
@@ -35,7 +37,7 @@ cases:
 
 # Run lab N's self-check (1, 2 or 3) in the container.
 lab n: cases
-    podman run --rm -v wattson-cases:/cases {{lab_image}} lab {{n}}
+    podman run --rm -v wattson-cases:/cases {{lab_image}} lab "$1"
 
 # Labs 1, 2 and 3 in turn.
 labs: cases
@@ -43,7 +45,7 @@ labs: cases
 
 # Check the container environment (no model server).
 check:
-    podman run --rm -v wattson-cases:/cases {{lab_image}} doctor
+    ./wattson check
 
 # --- the pod: model server + harness ---------------------------------------------------------------------------------------
 
@@ -51,10 +53,10 @@ check:
 up model="granite":
     #!/usr/bin/env bash
     set -euo pipefail
-    case "{{model}}" in
+    case "$1" in
       granite) repo=PromptExecutionAU/wattson-granite-4.2-8b-py; dir=granite-4.2-8b-py; reasoning=nemotron_v3 ;;
       qwen)    repo=PromptExecutionAU/wattson-qwen3.5-4b-pyt;    dir=qwen3.5-4b-pyt;    reasoning=qwen3 ;;
-      *) echo "unknown model '{{model}}': use granite or qwen" >&2; exit 2 ;;
+      *) echo "unknown model '$1': use granite or qwen" >&2; exit 2 ;;
     esac
     mkdir -p "$PWD/out"
     for v in wattson-models wattson-cases; do podman volume exists "$v" || podman volume create "$v" >/dev/null; done
@@ -71,7 +73,7 @@ down:
 
 # Follow a container's log: pull-model | fetch-cases | vllm | harness
 logs service="vllm":
-    podman logs --follow wattson-{{service}}
+    podman logs --follow "wattson-$1"
 
 # Containers in the pod and their state.
 ps:
@@ -83,19 +85,19 @@ doctor:
 
 # One question through the real tool harness. Add --enforce to refuse any answer containing a number no tool produced (docs/evaluation.md).
 ask question *flags:
-    podman exec wattson-harness bash -lc 'just --justfile /app/justfile ask "$1" $2' _ "{{question}}" "{{flags}}"
+    podman exec wattson-harness bash -lc 'exec just --justfile /app/justfile ask "$@"' _ "$@"
 
 # Lab 1's task given to the served model, graded by re-solving, next to the lab's committed bisection result. Add --enforce for the guard.
 lab1-agent *flags:
-    podman exec wattson-harness bash -lc "just --justfile /app/justfile lab1-agent {{flags}}"
+    podman exec wattson-harness bash -lc 'exec just --justfile /app/justfile lab1-agent "$@"' _ "$@"
 
 # Run a frozen suite: smoke | heldout | judgement | unsolvable | planning | derived. Add --enforce for the runtime provenance guard.
 eval suite="smoke" *flags:
-    podman exec wattson-harness bash -lc "just --justfile /app/justfile eval {{suite}} {{flags}}"
+    podman exec wattson-harness bash -lc 'exec just --justfile /app/justfile eval "$@"' _ "$@"
 
 # Interactive pi agent, wired to the model server and the WattsOn tools.
-pi:
-    podman exec -it wattson-harness bash -lc "just --justfile /app/justfile pi"
+pi *args:
+    podman exec -it wattson-harness bash -lc 'exec just --justfile /app/justfile pi "$@"' _ "$@"
 
 # A shell in the harness container.
 shell:
@@ -109,7 +111,7 @@ demo model="granite":
     set -euo pipefail
     banner() { printf '\n\n==================== %s ====================\n' "$1"; }
     banner "1/6  labs 1-3, in a container (no GPU, no model)"; just labs
-    banner "2/6  start the pod: model puller, CSIRO fetcher, model server, harness"; just up {{model}}
+    banner "2/6  start the pod: model puller, CSIRO fetcher, model server, harness"; just up "$1"
     echo "waiting for the model server..."; until curl -sf "http://127.0.0.1:{{host_port}}/health" >/dev/null 2>&1; do sleep 5; done
     banner "3/6  diagnostics, including one real completion"; just doctor
     banner "4/6  one question through the tool harness"
@@ -127,6 +129,13 @@ build:
     podman build -f containers/hf/Containerfile -t {{hf_image}} .
     podman build -f containers/csiro/Containerfile -t {{csiro_image}} .
 
+# Build the CPU-only developer tools and migrated checks; no host Python/Rust install.
+developer-build:
+    podman build -f containers/Containerfile --target developer -t localhost/wattson-developer:port .
+
+# Run developer checks offline. Input artifacts must already be approved and staged.
+developer-test:
+    podman run --rm --pull=never --network=none --memory=4g --memory-swap=4g --cpus=4 --pids-limit=256 --tmpfs /tmp -v "$PWD/.artifacts:/app/.artifacts:ro,z" -v "$PWD/data:/cases:ro,z" localhost/wattson-developer:port -m pytest -q -rs
 # --- independent dbt MCP integration (CPU, no model or cloud credentials) -------------------------------------------------
 
 # Build pinned upstream dbt MCP + dbt Core/DuckDB in an independent environment.
@@ -144,3 +153,19 @@ dbt-mcp-stdio:
 # Baseline real build followed by injected build failure; require no stale success proof.
 dbt-mcp-regression:
     integrations/dbt-mcp/run.sh regression
+
+# List runtime components, isolation boundaries and acquisition requirements.
+components:
+    @./wattson components
+
+# Prepare core images without host Python/Rust/Node; select optional profiles explicitly.
+install profile="core":
+    ./wattson install "$@"
+
+# One interface for optional services: service NAME build|check|stdio [ARGS...].
+service name action *args:
+    @./wattson service "$@"
+
+# Package the experimental offline runtime (see its separate acceptance gates).
+package:
+    ./wattson package

@@ -1,0 +1,12 @@
+# This file is an allowlist, not a record of queries the model has merely seen.
+# Approval occurs outside MCP through your repository review process.
+[datasets.asset_parameters]
+workbook = "demo.xlsx"
+contract = "asset_parameters.toml"
+
+[queries.regional_ratings]
+dataset = "asset_parameters"
+sql = "regional_ratings.sql"
+description = "Approved ratings for one NEM region, with cell provenance; no inferred units."
+[queries.regional_ratings.parameters]
+region = '(?:SA|VIC|NSW|QLD|TAS)1'

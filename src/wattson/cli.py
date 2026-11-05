@@ -77,6 +77,39 @@ def cmd_verify_data(_: argparse.Namespace) -> int:
     return 1 if problems else 0
 
 
+def cmd_mcp_config(a: argparse.Namespace) -> int:
+    """Emit the same stdio contract for IDE clients without copying credentials.
+
+    The launcher path belongs to the host, even when this generator runs in a
+    container. Only the selected file/configuration is passed to its service.
+    """
+    launcher = Path(a.launcher)
+    if not launcher.is_absolute():
+        raise ValueError("--launcher must be an absolute host path")
+    args = ["service", a.service, "stdio"]
+    if a.service == "excel-mcp":
+        if not a.workbook or not Path(a.workbook).is_absolute():
+            raise ValueError("excel-mcp requires --workbook with an absolute host path")
+        args.append(a.workbook)
+    elif a.service == "pyodbc-mcp":
+        if not a.config_dir or not Path(a.config_dir).is_absolute() or not a.dsn:
+            raise ValueError("pyodbc-mcp requires absolute --config-dir and --dsn")
+        args.extend([a.config_dir, a.dsn])
+    # Persist only public image selectors. The IDE may have a different shell
+    # environment from preparation; never copy API keys/DSN credentials into JSON.
+    environment = {"WATTSON_REGISTRY": os.environ.get("WATTSON_REGISTRY", "ghcr.io/fungible-farm"),
+                   "WATTSON_TAG": os.environ.get("WATTSON_TAG", "latest")}
+    image_variable = {"dbt-mcp": "DBT_MCP_IMAGE", "excel-mcp": "EXCEL_MCP_IMAGE"}.get(a.service)
+    if image_variable and os.environ.get(image_variable):
+        environment[image_variable] = os.environ[image_variable]
+    server: dict[str, object] = {"command": str(launcher), "args": args, "env": environment}
+    if a.client == "vscode":
+        server["type"] = "stdio"
+    key = "servers" if a.client == "vscode" else "mcpServers"
+    print(json.dumps({key: {a.service: server}}, indent=2))
+    return 0
+
+
 def cmd_models(a: argparse.Namespace) -> int:
     if a.action == "pull":
         return models.main(["pull", a.repo, "--dest", a.dest, *(["--revision", a.revision] if a.revision else []), *(["--force"] if a.force else [])])
@@ -251,6 +284,14 @@ def build_parser() -> argparse.ArgumentParser:
     run_pi.add_argument("--model", default=os.environ.get("WATTSON_SERVED_MODEL", "wattson")), run_pi.add_argument("--context", type=int, default=32768)
     run_pi.add_argument("pi_args", nargs=argparse.REMAINDER, help="passed to pi, e.g. --print 'a question'")
     run_pi.set_defaults(run=cmd_pi)
+    config = sub.add_parser("mcp-config", help="emit a shared service launch contract for an IDE")
+    config.add_argument("service", choices=["power-mcp", "excel-mcp", "pyodbc-mcp", "dbt-mcp"])
+    config.add_argument("--launcher", required=True, help="absolute path to repository wattson host launcher")
+    config.add_argument("--client", choices=["generic", "vscode"], default="generic")
+    config.add_argument("--workbook", help="absolute host workbook path; Excel reads only this file")
+    config.add_argument("--config-dir", help="absolute host directory containing private odbc.ini")
+    config.add_argument("--dsn")
+    config.set_defaults(run=cmd_mcp_config)
     return parser
 
 

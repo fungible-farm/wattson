@@ -1,0 +1,56 @@
+# Adapted from upstream examples/qwen3.5/27b-qlora.yaml at cc83a1c12e2d.
+# Reproduction mode: independently start from the original student base.
+base_model: Qwen/Qwen3.5-4B
+revision_of_model: 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a
+strict: false
+chat_template: tokenizer_default
+datasets:
+  - path: training/axolotl/out/data/tokenized-train.jsonl
+    ds_type: json
+    type:
+test_datasets:
+  - path: training/axolotl/out/data/tokenized-validation.jsonl
+    ds_type: json
+    type:
+val_set_size: 0.0
+output_dir: training/axolotl/out/reproduction-4b
+dataset_prepared_path: training/axolotl/out/prepared-identical-4b
+sequence_len: 1024
+# Upstream requires extra FLA kernels for packing; ARM64 baseline uses SDPA.
+sample_packing: false
+attn_implementation: sdpa
+load_in_4bit: false
+load_in_8bit: false
+adapter: lora
+lora_r: 32
+lora_alpha: 64
+lora_dropout: 0.0
+lora_target_linear: true
+lora_qkv_kernel: false
+lora_o_kernel: false
+lora_mlp_kernel: false
+train_on_inputs: false
+micro_batch_size: 2
+gradient_accumulation_steps: 2
+max_steps: 100
+optimizer: adamw_bnb_8bit
+lr_scheduler: cosine
+learning_rate: 0.00002
+warmup_steps: 10
+weight_decay: 0.01
+seed: 42
+bf16: true
+tf32: false
+gradient_checkpointing: true
+gradient_checkpointing_kwargs:
+  use_reentrant: false
+logging_steps: 10
+save_steps: 50
+eval_steps: 50
+save_total_limit: 3
+save_safetensors: true
+save_only_model: false
+wandb_project:
+resume_from_checkpoint:
+auto_resume_from_checkpoints: false
+lora_model_dir:

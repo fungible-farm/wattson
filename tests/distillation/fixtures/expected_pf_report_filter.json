@@ -1,0 +1,58 @@
+{
+  "example": {
+    "example_id": "ex_c7ce132bc33c8cac",
+    "execution": {
+      "case_id": "snem-sa-2000",
+      "execution_time_s": 1.2392712329747155,
+      "input_hash": "sha256:731d5a9fd21118df122dc5107b887e9f91a259b14470a48538af8037bebf8f2a",
+      "iterations": 5,
+      "result_hash": "sha256:962f675239e25941ff8bcab1f5ba7569d2d3a869f2030f793c60d0330b585881",
+      "solver": "pandapower",
+      "solver_version": "3.5.4",
+      "status": "constraint_violation"
+    },
+    "expected": {
+      "answer": "Power flow on 'snem-sa-2000' (base case) converged in 5 iterations. Min bus voltage = 0.9070 pu, max bus voltage = 1.0941 pu, max line loading = 2.66%, voltage violations = 39.",
+      "structured": {
+        "converged": true,
+        "iterations": 5,
+        "max_bus_voltage_pu": 1.09411,
+        "max_line_loading_percent": 2.6613611948477516,
+        "min_bus_voltage_pu": 0.9069796405729293,
+        "voltage_violations": 39
+      },
+      "validity": "constraint_violation"
+    },
+    "family": "power-flow-contingency",
+    "lifecycle": {
+      "rejection_reason": null,
+      "split": null,
+      "status": "verified"
+    },
+    "provenance": {
+      "created_utc": "2026-10-19T00:05:41Z",
+      "generator": "powercoder/datasets/generate.py",
+      "generator_version": "0.1.0",
+      "git_commit": "4f41c75672594f8fc35241da31c0140841d9c6b4",
+      "licence": "CSIRO Synthetic-NEM-2000-Bus case data (public); generated examples (c) PromptExecution, MIT",
+      "seed": 42,
+      "source_refs": [
+        "case:snem-sa-2000",
+        "MISSION.md#M04"
+      ]
+    },
+    "seed": 14592902000433761010,
+    "subfamily": "pf-report",
+    "task": {
+      "inputs": {
+        "case": "snem-sa-2000",
+        "contingency_line": null
+      },
+      "prompt": "Run an AC power flow on case 'snem-sa-2000' (base case) and report the result: convergence, iterations, min/max bus voltage (pu), max line loading (percent), and the number of bus-voltage violations."
+    },
+    "topology": "snem-sa-2000"
+  },
+  "correct_code": "import sys, json, copy\nsys.path.insert(0, \".\")\nfrom wattson.inference import powermcp as pm\nimport pandapower as pp\nimport pandapower.pf.run_newton_raphson_pf as _nr\n_pp = _nr.newtonpf\n_st = {\"it\": 0}\ndef _cn(*a, **k):\n    o = _pp(*a, **k)\n    _st[\"it\"] = o[2] if len(o) > 2 else 0\n    return o\n_nr.newtonpf = _cn\nbase, _ = pm._load_network_object(\"snem-sa-2000\")\nnet = copy.deepcopy(base)\nCONTINGENCY = None\nif CONTINGENCY is not None:\n    net.line = net.line.drop(index=int(CONTINGENCY))\ntry:\n    pp.runpp(net, numba=True)\n    _conv = True\nexcept Exception:\n    _conv = False\nif _conv:\n    vm = net.res_bus[\"vm_pu\"]\n    ans = {\"converged\": True, \"iterations\": _st[\"it\"],\n           \"min_bus_voltage_pu\": float(vm.min()),\n           \"max_bus_voltage_pu\": float(vm.max()),\n           \"max_line_loading_percent\": float(net.res_line[\"loading_percent\"].max()),\n           \"voltage_violations\": int(((vm < 0.95) | (vm > 1.05)).sum())}\nelse:\n    ans = {\"converged\": False, \"iterations\": _st[\"it\"],\n           \"min_bus_voltage_pu\": None, \"max_bus_voltage_pu\": None,\n           \"max_line_loading_percent\": None, \"voltage_violations\": 0}\nprint(json.dumps({\"answer\": ans}))",
+  "wrong_code": "import sys, json, copy\nsys.path.insert(0, \".\")\nfrom wattson.inference import powermcp as pm\nimport pandapower as pp\nimport pandapower.pf.run_newton_raphson_pf as _nr\n_pp = _nr.newtonpf\n_st = {\"it\": 0}\ndef _cn(*a, **k):\n    o = _pp(*a, **k)\n    _st[\"it\"] = o[2] if len(o) > 2 else 0\n    return o\n_nr.newtonpf = _cn\nbase, _ = pm._load_network_object(\"snem-sa-2000\")\nnet = copy.deepcopy(base)\nCONTINGENCY = None\nif CONTINGENCY is not None:\n    net.line = net.line.drop(index=int(CONTINGENCY))\ntry:\n    pp.runpp(net, numba=True)\n    _conv = True\nexcept Exception:\n    _conv = False\nif _conv:\n    vm = net.res_bus[\"vm_pu\"]\n    ans = {\"converged\": True, \"iterations\": _st[\"it\"],\n           \"min_bus_voltage_pu\": float(vm.min()) + 0.05,\n           \"max_bus_voltage_pu\": float(vm.max()),\n           \"max_line_loading_percent\": float(net.res_line[\"loading_percent\"].max()),\n           \"voltage_violations\": int(((vm < 0.95) | (vm > 1.05)).sum())}\nelse:\n    ans = {\"converged\": False, \"iterations\": _st[\"it\"],\n           \"min_bus_voltage_pu\": None, \"max_bus_voltage_pu\": None,\n           \"max_line_loading_percent\": None, \"voltage_violations\": 0}\nprint(json.dumps({\"answer\": ans}))",
+  "note": "M05 self-check fixture: correct_code is a real flash-next accepted candidate (independent re-solve matches); wrong_code offsets min_bus_voltage_pu by +0.05 so the independent re-solve mismatches -> rejected."
+}

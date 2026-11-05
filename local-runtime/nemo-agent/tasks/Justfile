@@ -1,0 +1,9 @@
+# Only the read-only GenCost task is exposed to the agent.
+set shell := ["/bin/sh", "-eu", "-c"]
+
+# Look up one NEMO GenCost 2024-25 capital cost, in AUD/kW, without guessing.
+# technology: NEMO identifier, e.g. PV1Axis, Wind, CCGT, OCGT, Nuclear.
+# year: projection year, one of 2030, 2040, 2050.
+# scenario: CP, NZE2050, or NZEPost2050.
+gencost-capital-cost technology="PV1Axis" year="2030" scenario="CP":
+    python /opt/wattson-nemo/query.py --technology {{quote(technology)}} --year {{quote(year)}} --scenario {{quote(scenario)}}

@@ -1,0 +1,8 @@
+# Extend the recovered, GPU-tested training image without rebuilding PyTorch.
+# Record the resolved base image ID alongside each evaluation run.
+ARG BASE_IMAGE=localhost/unsloth-gb10:local
+FROM ${BASE_IMAGE}
+COPY --from=ghcr.io/astral-sh/uv:0.12.23 /uv /usr/local/bin/uv
+RUN uv pip install --system --no-cache \
+    "pandapower==3.5.4" "powerio==0.7.2" "scipy>=1.11" "pyyaml>=6.0.3"
+WORKDIR /workspace

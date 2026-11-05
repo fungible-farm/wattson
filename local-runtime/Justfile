@@ -1,0 +1,107 @@
+# Optional host convenience. The ./wattson bootstrap needs no host just installation.
+set shell := ["/bin/sh", "-eu", "-c"]
+
+default:
+    @just --list
+
+# Prepare both OCI images on a connected machine; installs nothing in the host OS.
+build:
+    sh ./wattson build
+
+# Create the private pod and shared volume, start the service, and prove real IPC.
+install:
+    sh ./wattson install
+
+# Prepare only the small IPC teaching example; no model downloads.
+install-ipc:
+    sh ./wattson install-ipc
+
+# Show every prerequisite, image, model and preparation/execution network dependency.
+components:
+    sh ./nemo-agent/environment.sh components
+
+# Run the same versioned task directly, without an LLM; no network is available.
+nemo-cost technology="PV1Axis" year="2030" scenario="CP":
+    sh ./nemo-agent/environment.sh query {{quote(technology)}} {{quote(year)}} {{quote(scenario)}}
+
+# Start upstream just-mcp inside the read-only NEMO task container (stdio).
+nemo-mcp:
+    sh ./nemo-agent/environment.sh mcp
+
+# Run the same simple prompts through Pi + just-mcp on both local model deployments.
+nemo-compare:
+    sh ./nemo-agent/environment.sh compare
+
+# Produce our own offline environment package and an SBOM for every included image.
+package:
+    sh ./nemo-agent/environment.sh package
+
+# Rebuild the maintained MCP binary using only the packaged Rust SDK/cache image.
+offline-mcp-build:
+    sh ./nemo-agent/environment.sh offline-mcp-build
+
+# Run only the CPU agent prompts inside the pod with no external network.
+nemo-local model="qwen":
+    WATTSON_MODEL={{quote(model)}} sh ./nemo-agent/environment.sh cpu-up
+    sh ./nemo-agent/environment.sh benchmark candle
+
+# Build HF tooling and pull both pinned model repositories into local OCI images.
+hf-install:
+    sh ./huggingface/environment.sh install
+
+# Verify all model bytes through a read-only OCI image mount with network disabled.
+hf-verify model="qwen":
+    sh ./huggingface/environment.sh verify {{quote(model)}}
+
+# Official Hub MCP for connected preparation/discovery (stdio).
+hf-mcp:
+    sh ./huggingface/environment.sh mcp
+
+# Remove only this example's model pod; preserve packages, models and measurements.
+nemo-down:
+    sh ./nemo-agent/environment.sh down
+
+# The first end-user task: one request, one observable invocation.
+hello:
+    sh ./wattson hello
+
+# Verify the actual cross-container socket and named-pipe data.
+check:
+    sh ./wattson check
+
+# Expected nonzero status: use inspect immediately afterward.
+fail:
+    sh ./wattson fail
+
+# Show retained workload state without requiring Kubernetes knowledge.
+status:
+    sh ./wattson status
+    sh ./nemo-agent/environment.sh status
+
+# Print invocation results; raw logs and engine inspection are beside each result.
+inspect:
+    sh ./wattson inspect
+
+# Record a real IPC walkthrough as an asciinema .cast file; no upload.
+record:
+    sh ./wattson record
+
+# Play the local recording using a containerized terminal player.
+play:
+    sh ./wattson play
+
+# Stop the example; install starts it again without losing evidence.
+stop:
+    sh ./wattson stop
+
+# Remove only the example pod and scratch volume; retain invocation evidence.
+down:
+    sh ./wattson down
+
+# Bundle both images for a disconnected machine.
+export:
+    sh ./wattson export
+
+# Emit Kubernetes objects; openshift omits fixed fsGroup so SCC can assign it.
+manifest platform="kubernetes":
+    sh ./wattson manifest {{quote(platform)}}

@@ -1,0 +1,28 @@
+# Small, non-AI command runtime. Build context is this directory only.
+# just is CC0; Python is PSF-2.0. Tags are readable development pins;
+# replace them with approved registry digests for a controlled deployment.
+FROM ghcr.io/casey/just:1.59.0 AS just-binary
+FROM ghcr.io/astral-sh/uv:0.12.23 AS uv-binary
+FROM docker.io/library/python:3.12.3-slim-bookworm AS runtime
+COPY --from=just-binary /just /usr/local/bin/just
+WORKDIR /opt/wattson
+COPY Justfile.commands ipc.py expected_check.json ./
+# World-writable scratch is only for this non-sensitive IPC demonstration.
+# Cluster deployments use emptyDir and the platform's assigned fsGroup.
+RUN mkdir /shared && chmod 1777 /shared
+ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 WATTSON_SHARED=/shared
+USER 65532
+ENTRYPOINT ["just", "--justfile", "/opt/wattson/Justfile.commands"]
+CMD ["check"]
+
+# Recording is a developer utility; it never enters the command runtime.
+# uv: MIT/Apache-2.0; asciinema 2.4.0: GPL-3.0 (external CLI).
+FROM runtime AS developer
+USER 0
+COPY --from=uv-binary /uv /usr/local/bin/uv
+ENV UV_TOOL_DIR=/opt/uv-tools UV_TOOL_BIN_DIR=/usr/local/bin
+RUN uv tool install --python /usr/local/bin/python asciinema==2.4.0
+# Recorder configuration is ephemeral too; the root filesystem stays read-only.
+ENV ASCIINEMA_CONFIG_HOME=/tmp/asciinema
+COPY tour.sh ./
+USER 65532

@@ -1,0 +1,1630 @@
+{
+  "source_repository": "fungible-farm/nem-poweragent-lab",
+  "source_base": "0d26462",
+  "includes_working_tree_changes": true,
+  "destination_repository": "fungible-farm/wattson",
+  "runtime_cutover_complete": false,
+  "files": [
+    {
+      "source": "powercoder/README.md",
+      "target": "docs/legacy-powercoder/README.md",
+      "status": "missing",
+      "source_sha256": "c7e413fce2af31e255ea08cffbbabbaf85367ae07c96af74b2801cee12b11f57",
+      "snapshot": "migration/powercoder/source/powercoder/README.md"
+    },
+    {
+      "source": "powercoder/commands.py",
+      "target": "src/wattson/commands.py",
+      "status": "missing",
+      "source_sha256": "905fdf623f97a6118671ee4dffb5214ba00951cd87195dcc5c644c15267f9606",
+      "snapshot": "migration/powercoder/source/powercoder/commands.py"
+    },
+    {
+      "source": "powercoder/datasets/audit.py",
+      "target": "src/wattson/datasets/audit.py",
+      "status": "same",
+      "source_sha256": "8e7c64a8dd0827a78f72eba639e416f1471732dbce1aab1213b16c07a44de415",
+      "canonical_sha256": "8e7c64a8dd0827a78f72eba639e416f1471732dbce1aab1213b16c07a44de415"
+    },
+    {
+      "source": "powercoder/datasets/build_benchmark.py",
+      "target": "src/wattson/datasets/build_benchmark.py",
+      "status": "missing",
+      "source_sha256": "805380e74e033a7cd5baaf9f0505674ff4e7b21b4ff3664a28732b1a91e9bf28",
+      "snapshot": "migration/powercoder/source/powercoder/datasets/build_benchmark.py"
+    },
+    {
+      "source": "powercoder/datasets/common.py",
+      "target": "src/wattson/datasets/common.py",
+      "status": "different",
+      "source_sha256": "f03f794d70ac85ef7339c70d23afc73e62ae4b6c44bf420017f8de4a563b22c2",
+      "canonical_sha256": "bb64b58224c0b6970bb344416c94d657c00432be1b7145c919e5074ee521b8c9",
+      "snapshot": "migration/powercoder/source/powercoder/datasets/common.py"
+    },
+    {
+      "source": "powercoder/datasets/deduplicate.py",
+      "target": "src/wattson/datasets/deduplicate.py",
+      "status": "missing",
+      "source_sha256": "0f389f30f2b730babb2bfa3021104a35baca6a5bc8b43b4034754d2482360196",
+      "snapshot": "migration/powercoder/source/powercoder/datasets/deduplicate.py"
+    },
+    {
+      "source": "powercoder/datasets/element_lists.json",
+      "target": "docs/legacy-powercoder/datasets/element_lists.json",
+      "status": "missing",
+      "source_sha256": "402fd5e37ab348cee3778b1b475ac122a137c4f88dc54eeee0cd2cdb6fee390e",
+      "snapshot": "migration/powercoder/source/powercoder/datasets/element_lists.json"
+    },
+    {
+      "source": "powercoder/datasets/generate.py",
+      "target": "src/wattson/datasets/generate.py",
+      "status": "different",
+      "source_sha256": "57dd49caac75e0e76e6213cd0e68d4d67b95021be043049b8fc6864d2d7023fc",
+      "canonical_sha256": "85b75046b11798762ae6dffffda54cf8c1d9f0e35940fc295b125f6cb25cc897",
+      "snapshot": "migration/powercoder/source/powercoder/datasets/generate.py"
+    },
+    {
+      "source": "powercoder/datasets/judgement.py",
+      "target": "src/wattson/datasets/judgement.py",
+      "status": "different",
+      "source_sha256": "b1ebdc0c77acdd73c727ed23010e70d4805a9bfb3949c5e7d16cd675d987e9e0",
+      "canonical_sha256": "430fd15dc5e404018ead8aee1a8a23d3009c05a4ef2c9f8f8f25f25f7944db46",
+      "snapshot": "migration/powercoder/source/powercoder/datasets/judgement.py"
+    },
+    {
+      "source": "powercoder/datasets/procedural.py",
+      "target": "src/wattson/datasets/procedural.py",
+      "status": "different",
+      "source_sha256": "67bf74861456cc6faad2d002b5e687ff9500696c2c9c22749c16edb5cd752328",
+      "canonical_sha256": "1bdaf962fb6fcc8552a02bd51bb50a12f43bb0854d564220fd72905e5dfe25c4",
+      "snapshot": "migration/powercoder/source/powercoder/datasets/procedural.py"
+    },
+    {
+      "source": "powercoder/datasets/reword.py",
+      "target": "src/wattson/datasets/reword.py",
+      "status": "missing",
+      "source_sha256": "9977985dcb3f8c48ea6e9d6c14e6ed0d933adef6102742d95005600de7b59255",
+      "snapshot": "migration/powercoder/source/powercoder/datasets/reword.py"
+    },
+    {
+      "source": "powercoder/datasets/sample_benchmark.py",
+      "target": "src/wattson/datasets/sample_benchmark.py",
+      "status": "missing",
+      "source_sha256": "4ec83140ac85e4a1485ad4f9114910a75962ab809008b64382203db9f9c64576",
+      "snapshot": "migration/powercoder/source/powercoder/datasets/sample_benchmark.py"
+    },
+    {
+      "source": "powercoder/datasets/smoke/manifest.json",
+      "target": "docs/legacy-powercoder/datasets/smoke/manifest.json",
+      "status": "missing",
+      "source_sha256": "5cbca92a0a049619f3a2912a537ca0d360bfc2c963821d16cd3c738a6c7bf8e6",
+      "snapshot": "migration/powercoder/source/powercoder/datasets/smoke/manifest.json"
+    },
+    {
+      "source": "powercoder/datasets/split.py",
+      "target": "src/wattson/datasets/split.py",
+      "status": "missing",
+      "source_sha256": "2bfaf6554ba52a3fceaa488790a3b09b52ed5d681e6d5dbf4cea21bfab005136",
+      "snapshot": "migration/powercoder/source/powercoder/datasets/split.py"
+    },
+    {
+      "source": "powercoder/datasets/test_judgement.py",
+      "target": "tests/datasets/test_judgement.py",
+      "status": "different",
+      "source_sha256": "1195f7bd60841d27c0412eed84cf4cbbb3ef990ea4e6d2f1014439b4be718d80",
+      "canonical_sha256": "4c309a514ed8c03345e8614f91a3ea937cc51c80c21a310bfffc8b426745d3af",
+      "snapshot": "migration/powercoder/source/powercoder/datasets/test_judgement.py"
+    },
+    {
+      "source": "powercoder/datasets/test_procedural.py",
+      "target": "tests/datasets/test_procedural.py",
+      "status": "missing",
+      "source_sha256": "b74218345da4d38398a0977fbe973aaf8f82e1f2f13fe3384d30e5de211ac75b",
+      "snapshot": "migration/powercoder/source/powercoder/datasets/test_procedural.py"
+    },
+    {
+      "source": "powercoder/datasets/test_reword.py",
+      "target": "tests/datasets/test_reword.py",
+      "status": "missing",
+      "source_sha256": "6d983a0fdc5e0006c72194530bdfcccf510ec960aaffb892c7125f3f30825044",
+      "snapshot": "migration/powercoder/source/powercoder/datasets/test_reword.py"
+    },
+    {
+      "source": "powercoder/datasets/test_sample_benchmark.py",
+      "target": "tests/datasets/test_sample_benchmark.py",
+      "status": "missing",
+      "source_sha256": "1a953743e03389b41929e63435250585d480995752d2fda1d773225629e9f165",
+      "snapshot": "migration/powercoder/source/powercoder/datasets/test_sample_benchmark.py"
+    },
+    {
+      "source": "powercoder/datasets/test_trajectories.py",
+      "target": "tests/datasets/test_trajectories.py",
+      "status": "different",
+      "source_sha256": "bd822cb78702425eb6cacbdb3f22e07401877bda1619113c5b9e34847e91e110",
+      "canonical_sha256": "a793626348c39bd0404eca54cf51db4956808b7475a2cee9582d64d4d4987cce",
+      "snapshot": "migration/powercoder/source/powercoder/datasets/test_trajectories.py"
+    },
+    {
+      "source": "powercoder/datasets/trajectories.py",
+      "target": "src/wattson/datasets/trajectories.py",
+      "status": "different",
+      "source_sha256": "169e7d126897f4a4eaf99643da53a7e203d9cf2a3a6a448ff69122228c4b36d6",
+      "canonical_sha256": "dd7f51c2553ed7921f3f4a0cf1f7b91c7d3540688473538d8c3d84b568ae8359",
+      "snapshot": "migration/powercoder/source/powercoder/datasets/trajectories.py"
+    },
+    {
+      "source": "powercoder/datasets/unsolvable.py",
+      "target": "src/wattson/datasets/unsolvable.py",
+      "status": "different",
+      "source_sha256": "30c8de85d3cf21b59d75391b044bcef6c6725963e308597781addac32772a632",
+      "canonical_sha256": "6c94215e1e056b24e7a77555cd21fc0875a4d8edc0760df807fcfc507fd64735",
+      "snapshot": "migration/powercoder/source/powercoder/datasets/unsolvable.py"
+    },
+    {
+      "source": "powercoder/datasets/validate.py",
+      "target": "src/wattson/datasets/validate.py",
+      "status": "missing",
+      "source_sha256": "775c486db7d5c22f8e7bad86675c94c5de3e2d6584163e55fcd91eae5f5ddab0",
+      "snapshot": "migration/powercoder/source/powercoder/datasets/validate.py"
+    },
+    {
+      "source": "powercoder/distillation/filter.py",
+      "target": "src/wattson/distillation/filter.py",
+      "status": "different",
+      "source_sha256": "36cb6c3a44beb3d17c963ddf7479601bd5ba43fce2cb77841cd227029f547684",
+      "canonical_sha256": "ee18ee024f0093e8b4432298bd539a97a2243d923637cf856512728da86ecef5",
+      "snapshot": "migration/powercoder/source/powercoder/distillation/filter.py"
+    },
+    {
+      "source": "powercoder/distillation/fixtures/adversarial_filter_cases.json",
+      "target": "docs/legacy-powercoder/distillation/fixtures/adversarial_filter_cases.json",
+      "status": "missing",
+      "source_sha256": "063193f3790104ff2daebd1ccf5319857ee4ec78d4ac31687081292fab8624da",
+      "snapshot": "migration/powercoder/source/powercoder/distillation/fixtures/adversarial_filter_cases.json"
+    },
+    {
+      "source": "powercoder/distillation/fixtures/expected_mcp_replays.json",
+      "target": "docs/legacy-powercoder/distillation/fixtures/expected_mcp_replays.json",
+      "status": "missing",
+      "source_sha256": "69b033307ced70b15626df74d7c8f6f11014daf46d33e9e9b24bccd692d04901",
+      "snapshot": "migration/powercoder/source/powercoder/distillation/fixtures/expected_mcp_replays.json"
+    },
+    {
+      "source": "powercoder/distillation/fixtures/expected_pf_report_filter.json",
+      "target": "docs/legacy-powercoder/distillation/fixtures/expected_pf_report_filter.json",
+      "status": "missing",
+      "source_sha256": "27a8093d29a55624d7c2dbc562b35ebad02ad2d18df51aa7d24893b753e6df31",
+      "snapshot": "migration/powercoder/source/powercoder/distillation/fixtures/expected_pf_report_filter.json"
+    },
+    {
+      "source": "powercoder/distillation/generate.py",
+      "target": "src/wattson/distillation/generate.py",
+      "status": "missing",
+      "source_sha256": "5c26d8c1eae6dfa716c1893bec86d5ac0d2e9dfc999c9937d5b5e7d749840910",
+      "snapshot": "migration/powercoder/source/powercoder/distillation/generate.py"
+    },
+    {
+      "source": "powercoder/distillation/manifest.py",
+      "target": "src/wattson/distillation/manifest.py",
+      "status": "missing",
+      "source_sha256": "9af94d5dda9784a609718cf55298c1bf0974e931a846f7c6893582f1d384282e",
+      "snapshot": "migration/powercoder/source/powercoder/distillation/manifest.py"
+    },
+    {
+      "source": "powercoder/distillation/refresh_replay_fixture.py",
+      "target": "src/wattson/distillation/refresh_replay_fixture.py",
+      "status": "missing",
+      "source_sha256": "480449fff6765631393827267dbca5cf0090504220728afdb58b6b5afac55a55",
+      "snapshot": "migration/powercoder/source/powercoder/distillation/refresh_replay_fixture.py"
+    },
+    {
+      "source": "powercoder/distillation/repair.py",
+      "target": "src/wattson/distillation/repair.py",
+      "status": "missing",
+      "source_sha256": "37df24028868b320f4f3789804aff8f9ceb522139617fab0fda6044c8ecf3da5",
+      "snapshot": "migration/powercoder/source/powercoder/distillation/repair.py"
+    },
+    {
+      "source": "powercoder/distillation/teacher.py",
+      "target": "src/wattson/distillation/teacher.py",
+      "status": "missing",
+      "source_sha256": "7e00f6664674ff5b49ee0924aa8d6cd99058031faad2a4f7b87d3e9c058aabd1",
+      "snapshot": "migration/powercoder/source/powercoder/distillation/teacher.py"
+    },
+    {
+      "source": "powercoder/distillation/test_distillation.py",
+      "target": "tests/distillation/test_distillation.py",
+      "status": "missing",
+      "source_sha256": "624dc39e62a71e3319840ba64df45fa38e74c6003ca51ebd2b134c372da61a00",
+      "snapshot": "migration/powercoder/source/powercoder/distillation/test_distillation.py"
+    },
+    {
+      "source": "powercoder/distillation/test_filter_integrity.py",
+      "target": "tests/distillation/test_filter_integrity.py",
+      "status": "missing",
+      "source_sha256": "47d88e81be45944afaeee92f2d18344e3362cff7a855443b53a65ff966fb2c36",
+      "snapshot": "migration/powercoder/source/powercoder/distillation/test_filter_integrity.py"
+    },
+    {
+      "source": "powercoder/engineering/__init__.py",
+      "target": "src/wattson/engineering/__init__.py",
+      "status": "missing",
+      "source_sha256": "391e9b36eb5aa4c8c886bfe8ef6f15fced026eef4e9ba0fccc966291684418c0",
+      "snapshot": "migration/powercoder/source/powercoder/engineering/__init__.py"
+    },
+    {
+      "source": "powercoder/engineering/ac_analysis.py",
+      "target": "src/wattson/engineering/ac_analysis.py",
+      "status": "missing",
+      "source_sha256": "d125590fe899877b274a9b968a5d14fccb316c7ebfbbb03698cd6f55a011137d",
+      "snapshot": "migration/powercoder/source/powercoder/engineering/ac_analysis.py"
+    },
+    {
+      "source": "powercoder/engineering/ac_opf.py",
+      "target": "src/wattson/engineering/ac_opf.py",
+      "status": "missing",
+      "source_sha256": "0b7c18cf11b2e892ae525b9834b0c2bb99fcaa2cebebafc682738331ae6d7be6",
+      "snapshot": "migration/powercoder/source/powercoder/engineering/ac_opf.py"
+    },
+    {
+      "source": "powercoder/engineering/cases.py",
+      "target": "src/wattson/engineering/cases.py",
+      "status": "missing",
+      "source_sha256": "471bd4a3097e8aae0af5fb09f545faa8901e1bfd0144c46bb42e9c9a8532be43",
+      "snapshot": "migration/powercoder/source/powercoder/engineering/cases.py"
+    },
+    {
+      "source": "powercoder/engineering/conftest.py",
+      "target": "tests/engineering/conftest.py",
+      "status": "missing",
+      "source_sha256": "a4c15550e9a9df4acb834837b11fc26baf7882d4eafa875a171537dfbcde783b",
+      "snapshot": "migration/powercoder/source/powercoder/engineering/conftest.py"
+    },
+    {
+      "source": "powercoder/engineering/contingency.py",
+      "target": "src/wattson/engineering/contingency.py",
+      "status": "missing",
+      "source_sha256": "40876c5ddadf26bec23cc64400bc22c62033d6321c31e53e22d666e64eec02f1",
+      "snapshot": "migration/powercoder/source/powercoder/engineering/contingency.py"
+    },
+    {
+      "source": "powercoder/engineering/dc_model.py",
+      "target": "src/wattson/engineering/dc_model.py",
+      "status": "missing",
+      "source_sha256": "7bdfd9177523db0709497555f6af64834f54f89cd6f61c95e004800cc29406f2",
+      "snapshot": "migration/powercoder/source/powercoder/engineering/dc_model.py"
+    },
+    {
+      "source": "powercoder/engineering/dc_opf.py",
+      "target": "src/wattson/engineering/dc_opf.py",
+      "status": "missing",
+      "source_sha256": "ef508645fcbdb377a7fb8d019b88973917f2164e45e492818bb73640f85a0e4b",
+      "snapshot": "migration/powercoder/source/powercoder/engineering/dc_opf.py"
+    },
+    {
+      "source": "powercoder/engineering/proof.py",
+      "target": "src/wattson/engineering/proof.py",
+      "status": "missing",
+      "source_sha256": "3da55daa4751ac10c7bfcfa9c9c8e9672b85c425234bf05f83568b44238f1625",
+      "snapshot": "migration/powercoder/source/powercoder/engineering/proof.py"
+    },
+    {
+      "source": "powercoder/engineering/sensitivities.py",
+      "target": "src/wattson/engineering/sensitivities.py",
+      "status": "missing",
+      "source_sha256": "b2911bb782887613a4d9264240f477914eb97815e0003970959f8484182f27ae",
+      "snapshot": "migration/powercoder/source/powercoder/engineering/sensitivities.py"
+    },
+    {
+      "source": "powercoder/engineering/state_estimation.py",
+      "target": "src/wattson/engineering/state_estimation.py",
+      "status": "missing",
+      "source_sha256": "14453ab98b8b9772b84ff1a342ed1e4ac5f6839191d442535d401730b4591e99",
+      "snapshot": "migration/powercoder/source/powercoder/engineering/state_estimation.py"
+    },
+    {
+      "source": "powercoder/engineering/test_ac_analysis.py",
+      "target": "tests/engineering/test_ac_analysis.py",
+      "status": "missing",
+      "source_sha256": "10364d202873419d7c030533253bbbd07933e4fd938db2cebd5713f4d2dc0ec8",
+      "snapshot": "migration/powercoder/source/powercoder/engineering/test_ac_analysis.py"
+    },
+    {
+      "source": "powercoder/engineering/test_ac_opf.py",
+      "target": "tests/engineering/test_ac_opf.py",
+      "status": "missing",
+      "source_sha256": "51aa6ea3d424a74a76298fff390e01c1c0698f7c78988cbfd0985753ec94d0f0",
+      "snapshot": "migration/powercoder/source/powercoder/engineering/test_ac_opf.py"
+    },
+    {
+      "source": "powercoder/engineering/test_cases.py",
+      "target": "tests/engineering/test_cases.py",
+      "status": "missing",
+      "source_sha256": "b8bfc94f001814bc9eaeca5d97fef71304f4f755064dcef21f695c2ba44ccb3f",
+      "snapshot": "migration/powercoder/source/powercoder/engineering/test_cases.py"
+    },
+    {
+      "source": "powercoder/engineering/test_contingency.py",
+      "target": "tests/engineering/test_contingency.py",
+      "status": "missing",
+      "source_sha256": "f627e6d17cb5996e63eecab3dfd245ce490253d5e8619d0bf7da9ed780d4fc2e",
+      "snapshot": "migration/powercoder/source/powercoder/engineering/test_contingency.py"
+    },
+    {
+      "source": "powercoder/engineering/test_dc_opf.py",
+      "target": "tests/engineering/test_dc_opf.py",
+      "status": "missing",
+      "source_sha256": "d4a6682ce888d1446c6ad513a21f6e432331141f8e1b44fe37953d754b11d306",
+      "snapshot": "migration/powercoder/source/powercoder/engineering/test_dc_opf.py"
+    },
+    {
+      "source": "powercoder/engineering/test_proof.py",
+      "target": "tests/engineering/test_proof.py",
+      "status": "missing",
+      "source_sha256": "ed41a6a2e92cd5cb2d0faa556e3178aa61b1c1a799b3520214e2a8585ed826e3",
+      "snapshot": "migration/powercoder/source/powercoder/engineering/test_proof.py"
+    },
+    {
+      "source": "powercoder/engineering/test_sensitivities.py",
+      "target": "tests/engineering/test_sensitivities.py",
+      "status": "missing",
+      "source_sha256": "05dd86b95bd4d3d9b7871e76c876edbd9245dd882d289156ab446490461b43ac",
+      "snapshot": "migration/powercoder/source/powercoder/engineering/test_sensitivities.py"
+    },
+    {
+      "source": "powercoder/engineering/test_state_estimation.py",
+      "target": "tests/engineering/test_state_estimation.py",
+      "status": "missing",
+      "source_sha256": "8653ae4d4e974369584b599b36703bc6dcf55861fc44163b4953abb9e51c0ad9",
+      "snapshot": "migration/powercoder/source/powercoder/engineering/test_state_estimation.py"
+    },
+    {
+      "source": "powercoder/forecasting/__init__.py",
+      "target": "src/wattson/forecasting/__init__.py",
+      "status": "missing",
+      "source_sha256": "edbd0871bd67541a8c71a44769e5f1f47f2f5a95b45bbf226b234f6d473b3f64",
+      "snapshot": "migration/powercoder/source/powercoder/forecasting/__init__.py"
+    },
+    {
+      "source": "powercoder/forecasting/hindcast.py",
+      "target": "src/wattson/forecasting/hindcast.py",
+      "status": "missing",
+      "source_sha256": "8b3b77dc8772e6732c647428da5932204a3d55e8f1a8d435b9b264bb448ef54a",
+      "snapshot": "migration/powercoder/source/powercoder/forecasting/hindcast.py"
+    },
+    {
+      "source": "powercoder/forecasting/test_hindcast.py",
+      "target": "tests/forecasting/test_hindcast.py",
+      "status": "missing",
+      "source_sha256": "c4494ba95c6e60e5ccf3effa1f1dd584840e998e1ea9ba52cc8f68eec2601162",
+      "snapshot": "migration/powercoder/source/powercoder/forecasting/test_hindcast.py"
+    },
+    {
+      "source": "powercoder/inference/README.md",
+      "target": "docs/legacy-powercoder/inference/README.md",
+      "status": "missing",
+      "source_sha256": "5711d11b485abfdf793d45d515547fa1a5b77192c582b88006686f2a003e72e3",
+      "snapshot": "migration/powercoder/source/powercoder/inference/README.md"
+    },
+    {
+      "source": "powercoder/inference/client.py",
+      "target": "src/wattson/inference/client.py",
+      "status": "different",
+      "source_sha256": "c3167c3feefd8b35e0bb92b8b1554759e3976da7fd4304c9d66ce431d70b3217",
+      "canonical_sha256": "13bde01f2e4628546d90e1dec01cebb86dbf2a02ae9fdeede9a60bd43f1e8b8d",
+      "snapshot": "migration/powercoder/source/powercoder/inference/client.py"
+    },
+    {
+      "source": "powercoder/inference/compare_agents.py",
+      "target": "src/wattson/inference/compare_agents.py",
+      "status": "same",
+      "source_sha256": "4e63d148db38c9a4beb16abbd545d00d3007b685bd119a563813b974ace506de",
+      "canonical_sha256": "48a8b43fc651122757fd0fae8cb9e37c6be0fe9a2fb4bdc37a9f2763958cddea"
+    },
+    {
+      "source": "powercoder/inference/domain_scorecard.py",
+      "target": "src/wattson/inference/domain_scorecard.py",
+      "status": "different",
+      "source_sha256": "0e86583c44e8188473e5b8ba1e1253715a8472675b8557b141ebfa5c99314033",
+      "canonical_sha256": "477aaafa415e78bfe0f1acf9bbb47a4fe81561a619bfe9d7d30c9109ef96375d",
+      "snapshot": "migration/powercoder/source/powercoder/inference/domain_scorecard.py"
+    },
+    {
+      "source": "powercoder/inference/error_ledger.py",
+      "target": "src/wattson/inference/error_ledger.py",
+      "status": "same",
+      "source_sha256": "b027e7179443e68e2dccbc24a4c5c02147cf2d7f0d3213f8439d7de701f48662",
+      "canonical_sha256": "b027e7179443e68e2dccbc24a4c5c02147cf2d7f0d3213f8439d7de701f48662"
+    },
+    {
+      "source": "powercoder/inference/evaluate_agent.py",
+      "target": "src/wattson/inference/evaluate_agent.py",
+      "status": "different",
+      "source_sha256": "84615257d68f76e8907384c058a1f49cd311aec6fab2c7002b86e17233e275bb",
+      "canonical_sha256": "cfb1207e94f9cc52f9b59b34f5d5146aef66c07dd1e2b6486728bd419763a215",
+      "snapshot": "migration/powercoder/source/powercoder/inference/evaluate_agent.py"
+    },
+    {
+      "source": "powercoder/inference/evaluate_prompted.py",
+      "target": "src/wattson/inference/evaluate_prompted.py",
+      "status": "missing",
+      "source_sha256": "72b1e94b3ffc05c7e0c00191ddead364874106fed87b23aaf5cf8f8fa1d5310d",
+      "snapshot": "migration/powercoder/source/powercoder/inference/evaluate_prompted.py"
+    },
+    {
+      "source": "powercoder/inference/failure_modes.py",
+      "target": "src/wattson/inference/failure_modes.py",
+      "status": "missing",
+      "source_sha256": "deeef5e45c868bb39a755cf3da296d6d24a202abd364aa1f37510a4ac976d0b0",
+      "snapshot": "migration/powercoder/source/powercoder/inference/failure_modes.py"
+    },
+    {
+      "source": "powercoder/inference/gateway.py",
+      "target": "src/wattson/inference/gateway.py",
+      "status": "same",
+      "source_sha256": "7bb1e98a933b22502598238e3528b0c97507a95ca0fe7abbb0b86209a0f8f5b4",
+      "canonical_sha256": "53c725dc5747bd30c9981af5804a2af630c21cebafcb3e44d17554cc9d42d5a6"
+    },
+    {
+      "source": "powercoder/inference/gpu_lease.py",
+      "target": "src/wattson/inference/gpu_lease.py",
+      "status": "missing",
+      "source_sha256": "84a8435b69008a017ba6fdfb7980be5cceb38b3806242c995c081f24a80ffec2",
+      "snapshot": "migration/powercoder/source/powercoder/inference/gpu_lease.py"
+    },
+    {
+      "source": "powercoder/inference/latency_bench.py",
+      "target": "src/wattson/inference/latency_bench.py",
+      "status": "missing",
+      "source_sha256": "5d223282b43553a34b2d08e4d69e2ce374a3cb469db87d9e41d28d2093ee0d71",
+      "snapshot": "migration/powercoder/source/powercoder/inference/latency_bench.py"
+    },
+    {
+      "source": "powercoder/inference/mcp_server.py",
+      "target": "src/wattson/inference/mcp_server.py",
+      "status": "different",
+      "source_sha256": "e37b5bd7683543907f0bb96a2de768c18cc649ee616a61fdf3715d2687f44f02",
+      "canonical_sha256": "932a94df3d2b03986dfd59cf1b7a0ecea32adca821aa0bac1d4a92e4e3386a53",
+      "snapshot": "migration/powercoder/source/powercoder/inference/mcp_server.py"
+    },
+    {
+      "source": "powercoder/inference/namespace.lark",
+      "target": "docs/legacy-powercoder/inference/namespace.lark",
+      "status": "missing",
+      "source_sha256": "b7da6c9e82dcfdf30e9a54d92a291186c7b460ba069d354528f24ceb01a77200",
+      "snapshot": "migration/powercoder/source/powercoder/inference/namespace.lark"
+    },
+    {
+      "source": "powercoder/inference/namespace.py",
+      "target": "src/wattson/inference/namespace.py",
+      "status": "same",
+      "source_sha256": "a035686ee492a9933e0be61ca723df82f1abb77601905f5d80ae51db3349ef7b",
+      "canonical_sha256": "aa9fa614479b3cc96dbf10195a1233394304522d0c1a4e4365536ae4fc0fbfc0"
+    },
+    {
+      "source": "powercoder/inference/powermcp.py",
+      "target": "src/wattson/inference/powermcp.py",
+      "status": "different",
+      "source_sha256": "93f0d29563e74c25faf58b6daac0439fc359d87ce141ccc2f59b75422e28891a",
+      "canonical_sha256": "05fae668ca4d0e393bad26329143217605407b5fa30a7a4a6bf767d428fabc6c",
+      "snapshot": "migration/powercoder/source/powercoder/inference/powermcp.py"
+    },
+    {
+      "source": "powercoder/inference/protocol_suite.py",
+      "target": "src/wattson/inference/protocol_suite.py",
+      "status": "different",
+      "source_sha256": "e510db803f4ef5336c61b3f5f07d2f0e9d8e5245eca0904d567e7d5391b9ec98",
+      "canonical_sha256": "fd191eb0dd16d1b87f7674d57a97d04738c65669fc99c4da4f7edca19b6c40ff",
+      "snapshot": "migration/powercoder/source/powercoder/inference/protocol_suite.py"
+    },
+    {
+      "source": "powercoder/inference/provenance.py",
+      "target": "src/wattson/inference/provenance.py",
+      "status": "different",
+      "source_sha256": "01d850861c0206910f073213bfabc0dd165c8303df7af4c6d8d6bc431213ea8b",
+      "canonical_sha256": "7fd806bee330e1ca40b5817d30f84248bac714c9d815d13ad83f9df7b5732519",
+      "snapshot": "migration/powercoder/source/powercoder/inference/provenance.py"
+    },
+    {
+      "source": "powercoder/inference/registry.py",
+      "target": "src/wattson/inference/registry.py",
+      "status": "missing",
+      "source_sha256": "0b39ddc4c2454b3dcdb7321468463eda28d347c8cf0cc8458102e16bb1a7cf44",
+      "snapshot": "migration/powercoder/source/powercoder/inference/registry.py"
+    },
+    {
+      "source": "powercoder/inference/replay.py",
+      "target": "src/wattson/inference/replay.py",
+      "status": "missing",
+      "source_sha256": "db14bd6b35dfda834b10dc67c066526544ea20ae0ad3e43e1964b9ddbf1ae868",
+      "snapshot": "migration/powercoder/source/powercoder/inference/replay.py"
+    },
+    {
+      "source": "powercoder/inference/script_baseline.py",
+      "target": "src/wattson/inference/script_baseline.py",
+      "status": "missing",
+      "source_sha256": "69003488dc5347708d597711263b0821583b553e7c9a9d5a8631f3eca394a972",
+      "snapshot": "migration/powercoder/source/powercoder/inference/script_baseline.py"
+    },
+    {
+      "source": "powercoder/inference/strict_arm_metrics.py",
+      "target": "src/wattson/inference/strict_arm_metrics.py",
+      "status": "missing",
+      "source_sha256": "c972b323dd353cc03e3f57bf1b1330704b75cd50f0eb4ca7c03746d9f1fc632f",
+      "snapshot": "migration/powercoder/source/powercoder/inference/strict_arm_metrics.py"
+    },
+    {
+      "source": "powercoder/inference/studies.py",
+      "target": "src/wattson/inference/studies.py",
+      "status": "different",
+      "source_sha256": "2cbd11a7fdb1421a48ffccc356e7375ac8ca887647b0930e469d39fc84667e73",
+      "canonical_sha256": "d6ddf10ca2312ad2f656823856fa9fef5041522e8d227f9b5b3981633a5c23d9",
+      "snapshot": "migration/powercoder/source/powercoder/inference/studies.py"
+    },
+    {
+      "source": "powercoder/inference/test_command_ir.py",
+      "target": "tests/inference/test_command_ir.py",
+      "status": "missing",
+      "source_sha256": "a76798bd5363a507cd12902b5f6b4759bab298cc8327e114836adcc72c4f2f14",
+      "snapshot": "migration/powercoder/source/powercoder/inference/test_command_ir.py"
+    },
+    {
+      "source": "powercoder/inference/test_compare_agents.py",
+      "target": "tests/inference/test_compare_agents.py",
+      "status": "different",
+      "source_sha256": "d098ce4fdf69f39cc7f68ebae7abff20a0c12513c57397e40219b25896533a4c",
+      "canonical_sha256": "093a62a722faef1df959758c36ac4e55975fa58410aa720fa8092fe31a5a31d8",
+      "snapshot": "migration/powercoder/source/powercoder/inference/test_compare_agents.py"
+    },
+    {
+      "source": "powercoder/inference/test_domain_scorecard.py",
+      "target": "tests/inference/test_domain_scorecard.py",
+      "status": "different",
+      "source_sha256": "bddc55c21efb31533e3bd963d6591aa55dc75025a0cfedc71d9c8ef6b03c98df",
+      "canonical_sha256": "e8a9ba3b9c9383babb96002df1272eae954e9662e696268365d928e6fa32ce5f",
+      "snapshot": "migration/powercoder/source/powercoder/inference/test_domain_scorecard.py"
+    },
+    {
+      "source": "powercoder/inference/test_error_ledger.py",
+      "target": "tests/inference/test_error_ledger.py",
+      "status": "missing",
+      "source_sha256": "41f081459b5cd45e4509d02f52c9e315ee001f9defaee6017338e473078c7514",
+      "snapshot": "migration/powercoder/source/powercoder/inference/test_error_ledger.py"
+    },
+    {
+      "source": "powercoder/inference/test_evaluate_agent.py",
+      "target": "tests/inference/test_evaluate_agent.py",
+      "status": "same",
+      "source_sha256": "5a191921004037600817adb9064efccec5f6d916bc0a746064f26b7515bdfaa8",
+      "canonical_sha256": "23c71c294fc45006aeff11075b83f9415186709a3035af73da458fb388c57eec"
+    },
+    {
+      "source": "powercoder/inference/test_evaluate_prompted.py",
+      "target": "tests/inference/test_evaluate_prompted.py",
+      "status": "missing",
+      "source_sha256": "fc6af42b7fd7b2ea7c3d8350cd9b51cfe99ce88dfa8cb4c1d3c89b82fd68233b",
+      "snapshot": "migration/powercoder/source/powercoder/inference/test_evaluate_prompted.py"
+    },
+    {
+      "source": "powercoder/inference/test_failure_modes.py",
+      "target": "tests/inference/test_failure_modes.py",
+      "status": "missing",
+      "source_sha256": "9f24176c141c29d97390d5af0c6c5d5291159c5b7bdf3aaea3f8a7eb40bea4ca",
+      "snapshot": "migration/powercoder/source/powercoder/inference/test_failure_modes.py"
+    },
+    {
+      "source": "powercoder/inference/test_gateway.py",
+      "target": "tests/inference/test_gateway.py",
+      "status": "same",
+      "source_sha256": "4e4b20b1fc664d861ef4d0b570b3ae033c4eb21afc204800d209716674c36a1e",
+      "canonical_sha256": "04cf9075518d177e7ce0be49ad621de91f4c5d45294a43e3dd3ba75e2e133e79"
+    },
+    {
+      "source": "powercoder/inference/test_latency_bench.py",
+      "target": "tests/inference/test_latency_bench.py",
+      "status": "missing",
+      "source_sha256": "3a3453a1441dc0a80f3ca1e627aa688ab69c33f9f6212f201bf78a44e76ec7bf",
+      "snapshot": "migration/powercoder/source/powercoder/inference/test_latency_bench.py"
+    },
+    {
+      "source": "powercoder/inference/test_namespace.py",
+      "target": "tests/inference/test_namespace.py",
+      "status": "same",
+      "source_sha256": "80d07060ddc305631d159ca12eabf3f461626d86afa4c60c51f363da46f0bd4c",
+      "canonical_sha256": "0203378d96074a867251e19be7ba60d0658b84ce0940049c321f543cb81b5997"
+    },
+    {
+      "source": "powercoder/inference/test_protocol_suite.py",
+      "target": "tests/inference/test_protocol_suite.py",
+      "status": "missing",
+      "source_sha256": "0069b8ccbf3d2a9c026e1a5dc854bc01ac1295a0c91a76d34aff6c06546489a9",
+      "snapshot": "migration/powercoder/source/powercoder/inference/test_protocol_suite.py"
+    },
+    {
+      "source": "powercoder/inference/test_provenance.py",
+      "target": "tests/inference/test_provenance.py",
+      "status": "same",
+      "source_sha256": "b2a837d8777016ba74c9b2f4ed6ef808f939427dda24fe41b92472517285239e",
+      "canonical_sha256": "8f692e3e3b14915fcb78210bd8eabee0c3104201bbf0f2bc7b379e33a419f256"
+    },
+    {
+      "source": "powercoder/inference/test_replay.py",
+      "target": "tests/inference/test_replay.py",
+      "status": "missing",
+      "source_sha256": "724c8ad80e8307ccfbae5d91b384b717ba2c0eab073f18c0d35f012c7711385d",
+      "snapshot": "migration/powercoder/source/powercoder/inference/test_replay.py"
+    },
+    {
+      "source": "powercoder/inference/test_script_baseline.py",
+      "target": "tests/inference/test_script_baseline.py",
+      "status": "missing",
+      "source_sha256": "2b16be0dcd957946b343064a78ccda5affd7eca13f3ea649dcdb952ea09c0b9d",
+      "snapshot": "migration/powercoder/source/powercoder/inference/test_script_baseline.py"
+    },
+    {
+      "source": "powercoder/inference/test_strict_arm_metrics.py",
+      "target": "tests/inference/test_strict_arm_metrics.py",
+      "status": "missing",
+      "source_sha256": "83c867d93bf429797574be062fe1de8230ff05bfab57aebbc539233dfddbef44",
+      "snapshot": "migration/powercoder/source/powercoder/inference/test_strict_arm_metrics.py"
+    },
+    {
+      "source": "powercoder/inference/test_studies.py",
+      "target": "tests/inference/test_studies.py",
+      "status": "same",
+      "source_sha256": "557071c343a1e8a85af85a294cc4fe7e3389e6061f5b9d303e4de310fdcc04fb",
+      "canonical_sha256": "34596c0e4cd665b5eec5a66e456496537a829c0d2b2fef23a393fcbaf24282e9"
+    },
+    {
+      "source": "powercoder/inference/test_tool_probe.py",
+      "target": "tests/inference/test_tool_probe.py",
+      "status": "missing",
+      "source_sha256": "ab239e21cea0aa2b40a4644d395bf5cc40c1f58d5fa79e804d3c7246f69dffb6",
+      "snapshot": "migration/powercoder/source/powercoder/inference/test_tool_probe.py"
+    },
+    {
+      "source": "powercoder/inference/tool_probe.py",
+      "target": "src/wattson/inference/tool_probe.py",
+      "status": "different",
+      "source_sha256": "a1eed4fc83b6d1a0f4ff278dc03680be5bd1c49fcd1765eb9bbc875cd06e8a23",
+      "canonical_sha256": "0d00e6e2c8ca8e77060e45843d379d5a7a574ccb98f015b51d125d9f14760523",
+      "snapshot": "migration/powercoder/source/powercoder/inference/tool_probe.py"
+    },
+    {
+      "source": "powercoder/powercoder.just",
+      "target": "docs/legacy-powercoder/powercoder.just",
+      "status": "missing",
+      "source_sha256": "14757d131a108357370d4499cb6c47c97eda6ce76d227f046efbf5206b86cb77",
+      "snapshot": "migration/powercoder/source/powercoder/powercoder.just"
+    },
+    {
+      "source": "powercoder/semantic/__init__.py",
+      "target": "src/wattson/semantic/__init__.py",
+      "status": "missing",
+      "source_sha256": "b2563c03db54c62bf12f1a9716e546e6db189862e5ed59acb146ea92811a7355",
+      "snapshot": "migration/powercoder/source/powercoder/semantic/__init__.py"
+    },
+    {
+      "source": "powercoder/semantic/_cases.py",
+      "target": "src/wattson/semantic/_cases.py",
+      "status": "missing",
+      "source_sha256": "e9128e96b7b9413c88089a0e483bf707797de2be98f70f138382780c6e4f994d",
+      "snapshot": "migration/powercoder/source/powercoder/semantic/_cases.py"
+    },
+    {
+      "source": "powercoder/semantic/cgmes.py",
+      "target": "src/wattson/semantic/cgmes.py",
+      "status": "missing",
+      "source_sha256": "0ea3cbe41e243f5dec6d8602a01f721371dd1a246f637095dfca5074ebd6905e",
+      "snapshot": "migration/powercoder/source/powercoder/semantic/cgmes.py"
+    },
+    {
+      "source": "powercoder/semantic/conftest.py",
+      "target": "tests/semantic/conftest.py",
+      "status": "missing",
+      "source_sha256": "2a14f84cb2deaf25444bd98da0d48ad2d7a3f636c8615c7e352dc78f5e52d604",
+      "snapshot": "migration/powercoder/source/powercoder/semantic/conftest.py"
+    },
+    {
+      "source": "powercoder/semantic/export.py",
+      "target": "src/wattson/semantic/export.py",
+      "status": "missing",
+      "source_sha256": "f4e78b4582c37bd39f6b3e7e97717b4c2d1bc62884f4027aa094cbbd8df9afd8",
+      "snapshot": "migration/powercoder/source/powercoder/semantic/export.py"
+    },
+    {
+      "source": "powercoder/semantic/import_.py",
+      "target": "src/wattson/semantic/import_.py",
+      "status": "missing",
+      "source_sha256": "350550b4139eb345e70f27d245692ad79f1b6564bf5929fe4dbf047f9b8729e5",
+      "snapshot": "migration/powercoder/source/powercoder/semantic/import_.py"
+    },
+    {
+      "source": "powercoder/semantic/namespaces.py",
+      "target": "src/wattson/semantic/namespaces.py",
+      "status": "missing",
+      "source_sha256": "da5ea0d5501786ccd9b38ccb8ab1cb13ab76520c32750d7c5b1abbfc4cd26f34",
+      "snapshot": "migration/powercoder/source/powercoder/semantic/namespaces.py"
+    },
+    {
+      "source": "powercoder/semantic/peer_check.py",
+      "target": "src/wattson/semantic/peer_check.py",
+      "status": "missing",
+      "source_sha256": "41203b4962e2d3e3797a0f3ff9272d58a87dcb6e7c832f5b6007f5c8a6357a4c",
+      "snapshot": "migration/powercoder/source/powercoder/semantic/peer_check.py"
+    },
+    {
+      "source": "powercoder/semantic/queries.py",
+      "target": "src/wattson/semantic/queries.py",
+      "status": "missing",
+      "source_sha256": "e1483de186c12589671998eda2470d3b1413eeb08a087f6ff64de6d6bbba99eb",
+      "snapshot": "migration/powercoder/source/powercoder/semantic/queries.py"
+    },
+    {
+      "source": "powercoder/semantic/shapes.ttl",
+      "target": "docs/legacy-powercoder/semantic/shapes.ttl",
+      "status": "missing",
+      "source_sha256": "d24fa42a63daa3ffdb55b6a4b74f53d6937ca550fe91ae37e1ee3874b8571305",
+      "snapshot": "migration/powercoder/source/powercoder/semantic/shapes.ttl"
+    },
+    {
+      "source": "powercoder/semantic/snapshots.py",
+      "target": "src/wattson/semantic/snapshots.py",
+      "status": "missing",
+      "source_sha256": "ee98f1ddd0ae00b0e4b0d748b593a745152be56d46f5c6fea20eb0e92f76f205",
+      "snapshot": "migration/powercoder/source/powercoder/semantic/snapshots.py"
+    },
+    {
+      "source": "powercoder/semantic/test_cgmes.py",
+      "target": "tests/semantic/test_cgmes.py",
+      "status": "missing",
+      "source_sha256": "cb94a3b5d11d95744204f77fa864cd579a8cd8aff81715e12e63b81a5d1afdd6",
+      "snapshot": "migration/powercoder/source/powercoder/semantic/test_cgmes.py"
+    },
+    {
+      "source": "powercoder/semantic/test_queries.py",
+      "target": "tests/semantic/test_queries.py",
+      "status": "missing",
+      "source_sha256": "493e14acb0007beb7a5fecc6b187443bdd0cf859464856c3d2153fd13a996c3d",
+      "snapshot": "migration/powercoder/source/powercoder/semantic/test_queries.py"
+    },
+    {
+      "source": "powercoder/semantic/test_roundtrip.py",
+      "target": "tests/semantic/test_roundtrip.py",
+      "status": "missing",
+      "source_sha256": "4be76e254b3c4d871929afb4c158821a913fb2706517c605db5e53d8fd1f9f7f",
+      "snapshot": "migration/powercoder/source/powercoder/semantic/test_roundtrip.py"
+    },
+    {
+      "source": "powercoder/semantic/test_shacl.py",
+      "target": "tests/semantic/test_shacl.py",
+      "status": "missing",
+      "source_sha256": "6885e9a99bcdb736a52890ed1a6e7153f393d1a6ae5a19b35589bae08a8ef51a",
+      "snapshot": "migration/powercoder/source/powercoder/semantic/test_shacl.py"
+    },
+    {
+      "source": "powercoder/semantic/test_snapshots.py",
+      "target": "tests/semantic/test_snapshots.py",
+      "status": "missing",
+      "source_sha256": "3c4dc11158681ab447bb18713629777dfd1e59ea0a3dfad5cb0ae10ecfe16881",
+      "snapshot": "migration/powercoder/source/powercoder/semantic/test_snapshots.py"
+    },
+    {
+      "source": "powercoder/semantic/test_topology.py",
+      "target": "tests/semantic/test_topology.py",
+      "status": "missing",
+      "source_sha256": "9789cfe42addfb98c4fa00f99d534e151f5a4dac505a132cc98d3f955704e869",
+      "snapshot": "migration/powercoder/source/powercoder/semantic/test_topology.py"
+    },
+    {
+      "source": "powercoder/semantic/topology.py",
+      "target": "src/wattson/semantic/topology.py",
+      "status": "missing",
+      "source_sha256": "15aa3855b6dd9f0ea43352690d8c9a2e6367803a0dde417711239ae08b513c96",
+      "snapshot": "migration/powercoder/source/powercoder/semantic/topology.py"
+    },
+    {
+      "source": "powercoder/semantic/validate.py",
+      "target": "src/wattson/semantic/validate.py",
+      "status": "missing",
+      "source_sha256": "d4f36f8f2a82f1d9a38f6d8b51dd53b85549bd4b1bf3e7ae26e8213eede453dd",
+      "snapshot": "migration/powercoder/source/powercoder/semantic/validate.py"
+    },
+    {
+      "source": "powercoder/test_commands.py",
+      "target": "tests/test_commands.py",
+      "status": "missing",
+      "source_sha256": "ed2eef803d13cbc7121f7399edacd9b5ebe0ac31b01adde6211eb847332dfd69",
+      "snapshot": "migration/powercoder/source/powercoder/test_commands.py"
+    },
+    {
+      "source": "training/agent/Containerfile",
+      "target": "containers/train/agent/Containerfile",
+      "status": "missing",
+      "source_sha256": "c4e0483bf9c96e8a19d5c289644f360c2ead0a432056dcfa72e450858f6c9c03",
+      "snapshot": "migration/powercoder/source/training/agent/Containerfile"
+    },
+    {
+      "source": "training/agent/Containerfile.x86",
+      "target": "containers/train/agent/Containerfile.x86",
+      "status": "missing",
+      "source_sha256": "b0d8caf2d631d8c1a753a61b8a0c3d2071ac124b3e988f3c37dd85a30ef7ed69",
+      "snapshot": "migration/powercoder/source/training/agent/Containerfile.x86"
+    },
+    {
+      "source": "training/agent/config.granite42-8b.g11py.yaml",
+      "target": "configs/agent/config.granite42-8b.g11py.yaml",
+      "status": "different",
+      "source_sha256": "e661c8fab47fa56d2e5725c63b4535b6c378c11554849a85a4c1d78e0571ed00",
+      "canonical_sha256": "34151e4b7f42941375356a66dcebac7b8764dc24e0cf5427652ca4b0835bbb1f",
+      "snapshot": "migration/powercoder/source/training/agent/config.granite42-8b.g11py.yaml"
+    },
+    {
+      "source": "training/agent/config.granite42-8b.r7.yaml",
+      "target": "configs/agent/config.granite42-8b.r7.yaml",
+      "status": "missing",
+      "source_sha256": "d1076b2500ed4d3cc68650e01b740c3da8404e2ec9d8711b7a5c08824716d6bf",
+      "snapshot": "migration/powercoder/source/training/agent/config.granite42-8b.r7.yaml"
+    },
+    {
+      "source": "training/agent/config.granite42-8b.yaml",
+      "target": "configs/agent/config.granite42-8b.yaml",
+      "status": "missing",
+      "source_sha256": "8105687f0462dcbab5214a2e44df3c899d01ded4438c8154b8cbea78978fff09",
+      "snapshot": "migration/powercoder/source/training/agent/config.granite42-8b.yaml"
+    },
+    {
+      "source": "training/agent/config.grpo-qwen35-4b.yaml",
+      "target": "configs/agent/config.grpo-qwen35-4b.yaml",
+      "status": "same",
+      "source_sha256": "09e92d823e68028a306df89a97e8ea2069a54850b2f18f31f4d17a21e38f96bd",
+      "canonical_sha256": "09e92d823e68028a306df89a97e8ea2069a54850b2f18f31f4d17a21e38f96bd"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.r7.yaml",
+      "target": "configs/agent/config.qwen35-4b.r7.yaml",
+      "status": "missing",
+      "source_sha256": "01e9838b166e7e1b6227af683456519c6f713f06959df5c529124942d2687974",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.r7.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.r7e2.yaml",
+      "target": "configs/agent/config.qwen35-4b.r7e2.yaml",
+      "status": "missing",
+      "source_sha256": "8efa39066732f36ee0466bf14b97412f8f5b34b96d9e1143b0eae6659703e8af",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.r7e2.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.v10pyt-s43.yaml",
+      "target": "configs/agent/config.qwen35-4b.v10pyt-s43.yaml",
+      "status": "different",
+      "source_sha256": "abd3b2b763a8fdc0f597c0855c191f4b4159044abc678972b61987f3eeb29df7",
+      "canonical_sha256": "1fccf0751f0232b2f17f506dc7973dc2b4ad136f524a180c1391b4c9a351986a",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.v10pyt-s43.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.v10pyt-s44.yaml",
+      "target": "configs/agent/config.qwen35-4b.v10pyt-s44.yaml",
+      "status": "different",
+      "source_sha256": "c91bce93f56a85cd7c962b2d579893005c7f29a5739d1d121093968c8ef7ba3a",
+      "canonical_sha256": "cdd3ab25ea706bf551ff1010caaf12d2c0a0d4cb38b77e53ff9857537dcff19a",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.v10pyt-s44.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.v10pyt.yaml",
+      "target": "configs/agent/config.qwen35-4b.v10pyt.yaml",
+      "status": "different",
+      "source_sha256": "5d0553e72c2da75e3f34248a23d02f6e3e75ad44ebb8b4612ef4d6a8fddf9760",
+      "canonical_sha256": "9b8bc4e12474e3ededa8f5d3eedaf102679747ab7bcbc9637f6bd91615fcd903",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.v10pyt.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.v11plain.yaml",
+      "target": "configs/agent/config.qwen35-4b.v11plain.yaml",
+      "status": "different",
+      "source_sha256": "398235fc3d4d5b377b03fb482f33812b32e9af62926bd6d945de0216ec6a2399",
+      "canonical_sha256": "d4ec2c9ad6ec29d6b2110877c25013b9815285f01c0753d70c701e3cc0a3d8b9",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.v11plain.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.v11py-s43.yaml",
+      "target": "configs/agent/config.qwen35-4b.v11py-s43.yaml",
+      "status": "different",
+      "source_sha256": "0d2426e35f471b2e877942cf5dfe9cb86252e30e03e5fd352184224965eefb3b",
+      "canonical_sha256": "0f27ea4b6f5a6e79b77f0b735ecfcce4b4127c119ec6a905df44d75acd5272ac",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.v11py-s43.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.v11py-s44.yaml",
+      "target": "configs/agent/config.qwen35-4b.v11py-s44.yaml",
+      "status": "different",
+      "source_sha256": "df41944bd1f01ef4ef5d8f0488d13a8acd3eda61846122bc0e16787825d4988a",
+      "canonical_sha256": "24fb90820baeac99e0e2e469946e96c3789b5e6047d17e45d4e76f3e2f69c33d",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.v11py-s44.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.v11py.yaml",
+      "target": "configs/agent/config.qwen35-4b.v11py.yaml",
+      "status": "different",
+      "source_sha256": "56ff19f6ce563cabc2dcdd3ea0a927d56d11b4994d2ce4607efb350fbd091a91",
+      "canonical_sha256": "8ee166a673ac75e9660e80403deb9db29b152ac3d1f615839bd2e9c8cdc28bdb",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.v11py.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.v11pyt-s43.yaml",
+      "target": "configs/agent/config.qwen35-4b.v11pyt-s43.yaml",
+      "status": "different",
+      "source_sha256": "de3c21eed16c085ee049ea76fad66d139504abc9bc70b029f44571dc58a70990",
+      "canonical_sha256": "d2711fb2e3b85a8a084113a6d0af30d3b6a66a007242071b661c5ee5f1cea22a",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.v11pyt-s43.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.v11pyt-s44.yaml",
+      "target": "configs/agent/config.qwen35-4b.v11pyt-s44.yaml",
+      "status": "different",
+      "source_sha256": "0b5cec93c009e0cfb7d3889772a5ef839b5bb56b6d1957333eb4eace4e538614",
+      "canonical_sha256": "3ab85ae5db1fc58e4290f77ee458d02f1872dda0a0ec5d185ca25848578b2fb8",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.v11pyt-s44.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.v11pyt.yaml",
+      "target": "configs/agent/config.qwen35-4b.v11pyt.yaml",
+      "status": "different",
+      "source_sha256": "b77ca80cbd53ae3c6946810c6113a075aa138a8dd5ac40c5b47365dafc8d0d1d",
+      "canonical_sha256": "6ddff3c941e5a989db3513acf7f702a0b4bfcd633bdad47e00fe79655dae5c68",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.v11pyt.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.v8py.yaml",
+      "target": "configs/agent/config.qwen35-4b.v8py.yaml",
+      "status": "missing",
+      "source_sha256": "49922f5d0a5142cfa1ac5a3cbfbc7cd9b6a19f6656239e3847df61e5d80d773a",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.v8py.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.v8pyt.yaml",
+      "target": "configs/agent/config.qwen35-4b.v8pyt.yaml",
+      "status": "missing",
+      "source_sha256": "f1d214acb63d0c0763850f69fa80cc2a7d99d385632e4ca8ac1f507d2f4f16f3",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.v8pyt.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.v9plain-s43.yaml",
+      "target": "configs/agent/config.qwen35-4b.v9plain-s43.yaml",
+      "status": "different",
+      "source_sha256": "e29037aa506d7c437ac3c31739cf5f5ebaaea631f1a87a33e163ef45d1290543",
+      "canonical_sha256": "3b770c68eb8f00315a072b47bd6a6ed06f80e5ba4dee267b794353e322bf45e1",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.v9plain-s43.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.v9plain-s44.yaml",
+      "target": "configs/agent/config.qwen35-4b.v9plain-s44.yaml",
+      "status": "different",
+      "source_sha256": "a707da5579cb159a390354616053aae0f7fdc34be3432442c8070ec79d1bffc2",
+      "canonical_sha256": "688a2ea3100b677ec8e5c432064f4330b49e317be9633e61c449a646242f4666",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.v9plain-s44.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.v9plain.yaml",
+      "target": "configs/agent/config.qwen35-4b.v9plain.yaml",
+      "status": "different",
+      "source_sha256": "da304a241d34f16b00278325c336b98cc838bcd3a3f8db2edc9802dfa17ccbd8",
+      "canonical_sha256": "4b9ba709de9521323076a4be020d85b992659fb4d14703711447a4f9e94dff4d",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.v9plain.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.v9py-s43.yaml",
+      "target": "configs/agent/config.qwen35-4b.v9py-s43.yaml",
+      "status": "different",
+      "source_sha256": "e3cf323646f57d64cb43855feb44ae5e84f2f8c1a3b6a762753c3bc4590f2e0c",
+      "canonical_sha256": "be91c8eb183b39f31c27579d7861c2487b2466410d9510c2f51bc34ff4db235b",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.v9py-s43.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.v9py-s44.yaml",
+      "target": "configs/agent/config.qwen35-4b.v9py-s44.yaml",
+      "status": "different",
+      "source_sha256": "f7d8310daf1cffd553fcebb3d3674ea1fb7909d4db89c773e4be486005429b9f",
+      "canonical_sha256": "564301078e5156a2278e15f899c945bede28d2aec03299d05a086b20a7d33027",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.v9py-s44.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.v9py.yaml",
+      "target": "configs/agent/config.qwen35-4b.v9py.yaml",
+      "status": "different",
+      "source_sha256": "dd40102de8888cebc88d20e48d6aa9a145cbe48c9b4e0fd84b1695809cd2f9f1",
+      "canonical_sha256": "e182c75c273c246c8f2719a8ab680eccac6ee0dfd0839c55a42fef59ed530335",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.v9py.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.v9pyt.yaml",
+      "target": "configs/agent/config.qwen35-4b.v9pyt.yaml",
+      "status": "different",
+      "source_sha256": "c3278796cd4499928412e366e74f15c1731d13fc4a37aa16d0286eae747cbb39",
+      "canonical_sha256": "a611945196992482214c7b32d9709874cb03505d1e2d0926ddf0ac375db06051",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.v9pyt.yaml"
+    },
+    {
+      "source": "training/agent/config.qwen35-4b.yaml",
+      "target": "configs/agent/config.qwen35-4b.yaml",
+      "status": "missing",
+      "source_sha256": "204ff6494967eb1129dab9f6206ab35471b465ebeeb5436b2d4b80e9acbd9a81",
+      "snapshot": "migration/powercoder/source/training/agent/config.qwen35-4b.yaml"
+    },
+    {
+      "source": "training/agent_sft.py",
+      "target": "src/wattson/training/agent_sft.py",
+      "status": "different",
+      "source_sha256": "6dfa7c6336216b4ade7101fd26267627cdf2dc9eec355b529890fe7b97d9028f",
+      "canonical_sha256": "8b1b198c62e0ace1732fcaf6e7daaeb2080a6a4e6d6a33dac5e366942b53c8f7",
+      "snapshot": "migration/powercoder/source/training/agent_sft.py"
+    },
+    {
+      "source": "training/axolotl/Containerfile",
+      "target": "containers/train/axolotl/Containerfile",
+      "status": "missing",
+      "source_sha256": "ee66cd19a61a82806841b5e50cc592d6cd407fb167efa31ee3eb5e428a1af11d",
+      "snapshot": "migration/powercoder/source/training/axolotl/Containerfile"
+    },
+    {
+      "source": "training/axolotl/compare.py",
+      "target": "src/wattson/training/axolotl/compare.py",
+      "status": "missing",
+      "source_sha256": "5439cf6f09e2630e5398175f1e539ce1bb3dea74dcc94ee1640d1fd2dce3e519",
+      "snapshot": "migration/powercoder/source/training/axolotl/compare.py"
+    },
+    {
+      "source": "training/axolotl/fixtures/lineage_cases.json",
+      "target": "docs/legacy-training/axolotl/fixtures/lineage_cases.json",
+      "status": "missing",
+      "source_sha256": "3bb7210689072f90ee0f4edc0ee144a68993a422137ed377f6af5d75888cfbaf",
+      "snapshot": "migration/powercoder/source/training/axolotl/fixtures/lineage_cases.json"
+    },
+    {
+      "source": "training/axolotl/prepare.py",
+      "target": "src/wattson/training/axolotl/prepare.py",
+      "status": "missing",
+      "source_sha256": "edf91829091d13a5a35ef2f15086132d18df7e44e3f8f70e801eb3360fb471c4",
+      "snapshot": "migration/powercoder/source/training/axolotl/prepare.py"
+    },
+    {
+      "source": "training/axolotl/run.py",
+      "target": "src/wattson/training/axolotl/run.py",
+      "status": "missing",
+      "source_sha256": "d02ede78920c6830654ab949af6ae14a57b56ee4ddc4a2c601c4de01313d3bff",
+      "snapshot": "migration/powercoder/source/training/axolotl/run.py"
+    },
+    {
+      "source": "training/axolotl/sft-4b.yaml",
+      "target": "configs/axolotl/sft-4b.yaml",
+      "status": "missing",
+      "source_sha256": "5477235ebd26446b38fe00fbc8a82f3416e3f1cc14fb46c7b155f4297ab07204",
+      "snapshot": "migration/powercoder/source/training/axolotl/sft-4b.yaml"
+    },
+    {
+      "source": "training/axolotl/sft-edge.yaml",
+      "target": "configs/axolotl/sft-edge.yaml",
+      "status": "missing",
+      "source_sha256": "008554e9517a06fcd01879286c56142996584db3696c499c13f433dcc113622d",
+      "snapshot": "migration/powercoder/source/training/axolotl/sft-edge.yaml"
+    },
+    {
+      "source": "training/axolotl/smoke.py",
+      "target": "src/wattson/training/axolotl/smoke.py",
+      "status": "missing",
+      "source_sha256": "9a61d5196fd166fb89d64177c7dd3dc53095c9fb2653fa6028860e7b3f795238",
+      "snapshot": "migration/powercoder/source/training/axolotl/smoke.py"
+    },
+    {
+      "source": "training/axolotl/test_lineage.py",
+      "target": "tests/training/axolotl/test_lineage.py",
+      "status": "missing",
+      "source_sha256": "6f804526d29dda0a751c91261ecb58b69c543b8af2ffa66ce25aee489bab63bd",
+      "snapshot": "migration/powercoder/source/training/axolotl/test_lineage.py"
+    },
+    {
+      "source": "training/granite/README.md",
+      "target": "docs/legacy-training/granite/README.md",
+      "status": "missing",
+      "source_sha256": "8a7c8f9fc693adb657ca5c6801a1fc3f8ff7d6eedbe8f58bd5babab3f9b04384",
+      "snapshot": "migration/powercoder/source/training/granite/README.md"
+    },
+    {
+      "source": "training/granite/train.py",
+      "target": "src/wattson/training/granite/train.py",
+      "status": "same",
+      "source_sha256": "c256ba325b100781d83b93f547de6f4ef11a9111efbbd93760e0011523327b5f",
+      "canonical_sha256": "c256ba325b100781d83b93f547de6f4ef11a9111efbbd93760e0011523327b5f"
+    },
+    {
+      "source": "training/grpo.py",
+      "target": "src/wattson/training/grpo.py",
+      "status": "different",
+      "source_sha256": "21868bafd95d839f110c3011378c2cae366656ecc4f007b3b31e74d1022026e8",
+      "canonical_sha256": "4f5ad7efe0585d54c21a41b54d9befc19dcb04dea2c57bb03133d0c54b763a2d",
+      "snapshot": "migration/powercoder/source/training/grpo.py"
+    },
+    {
+      "source": "training/rl_reward.py",
+      "target": "src/wattson/training/rl_reward.py",
+      "status": "same",
+      "source_sha256": "ac152cb0aa885b99569536ddb14fa0ddf2694ca7ffd3c44454c5fef42e2b41b4",
+      "canonical_sha256": "e8f2c801f3ed664017616b9de7466b039d0fa6b8e2026d27dd3cc38244346966"
+    },
+    {
+      "source": "training/run_agent_study.py",
+      "target": "src/wattson/training/run_agent_study.py",
+      "status": "different",
+      "source_sha256": "2ec8cbf112c1b256f6f5960eb3241fa2658eeca98c4d7e57ee90b19682cb3a20",
+      "canonical_sha256": "5e234fb372d1bd5c719f6d2cd915702ce52081cb9f3d3b196d02146e9c2fb33a",
+      "snapshot": "migration/powercoder/source/training/run_agent_study.py"
+    },
+    {
+      "source": "training/run_comparison.py",
+      "target": "src/wattson/training/run_comparison.py",
+      "status": "different",
+      "source_sha256": "8da3a92ae712b4056436b4362c67efe338a6817caac463842b8f718b9ca35b8e",
+      "canonical_sha256": "15517a04c368a5f00c9332e274f02a745fe8e4f33c5184b3bb3204a73eecff85",
+      "snapshot": "migration/powercoder/source/training/run_comparison.py"
+    },
+    {
+      "source": "training/run_grpo_pilot.py",
+      "target": "src/wattson/training/run_grpo_pilot.py",
+      "status": "different",
+      "source_sha256": "2e6899512688ea3204ae4a352665bda05ad6f9c66a0c65ef1724129268ff6f59",
+      "canonical_sha256": "b639f5b0fb4a2577db8eee5c952e62fd3cf7a0e982bafca3ac2d58bbb8d0db91",
+      "snapshot": "migration/powercoder/source/training/run_grpo_pilot.py"
+    },
+    {
+      "source": "training/test_agent_sft.py",
+      "target": "tests/training/test_agent_sft.py",
+      "status": "different",
+      "source_sha256": "358515bdadb5d84883e2b57c99182bb5d05b25a9153b54573b15c57bcd5586a1",
+      "canonical_sha256": "918f15fec4d8846af5f0b4fcbdb09626eac25ba83903a0b9d2bbbf8ac5a34ab4",
+      "snapshot": "migration/powercoder/source/training/test_agent_sft.py"
+    },
+    {
+      "source": "training/test_grpo.py",
+      "target": "tests/training/test_grpo.py",
+      "status": "different",
+      "source_sha256": "5e066d4072d9dccba8a25c739be2b704f4f3e0694706b9f136687e8a83dd1840",
+      "canonical_sha256": "cf9f8912f66760bbd0885958c07cafbfa359b7493ca4abd73eb8926dae19b0ac",
+      "snapshot": "migration/powercoder/source/training/test_grpo.py"
+    },
+    {
+      "source": "training/test_rl_reward.py",
+      "target": "tests/training/test_rl_reward.py",
+      "status": "different",
+      "source_sha256": "4d9c2a5b33c5bca069b004578a0a73b45a401fa6c2e5de9da42393602b9e9ab2",
+      "canonical_sha256": "5f285cc1a76ddfaed1815a37e09db2cc9eb3821ba3132971fbaedbf682f28ac4",
+      "snapshot": "migration/powercoder/source/training/test_rl_reward.py"
+    },
+    {
+      "source": "training/test_run_agent_study.py",
+      "target": "tests/training/test_run_agent_study.py",
+      "status": "different",
+      "source_sha256": "7e45cfa4d51138162fc8634772d41c0e3452d27afd39a63640fc22447a4a686c",
+      "canonical_sha256": "059644f48ba5fe488be6a49831fe8e0ffb5218530716c21d8d30b31a4ee4bf97",
+      "snapshot": "migration/powercoder/source/training/test_run_agent_study.py"
+    },
+    {
+      "source": "training/test_run_comparison.py",
+      "target": "tests/training/test_run_comparison.py",
+      "status": "different",
+      "source_sha256": "66b7c38210e1152a109e8f9277425ffb7130fb7040dfa27d59c0538be62cb5c2",
+      "canonical_sha256": "619dab3c58179850b2f47360af5d00769b00763745cab1a053f667bc6be370e0",
+      "snapshot": "migration/powercoder/source/training/test_run_comparison.py"
+    },
+    {
+      "source": "training/unsloth/Containerfile",
+      "target": "containers/train/unsloth/Containerfile",
+      "status": "missing",
+      "source_sha256": "1e988d212c99f1084302b003f38ec0b1c4105fb82f06744c0f8a08d115def606",
+      "snapshot": "migration/powercoder/source/training/unsloth/Containerfile"
+    },
+    {
+      "source": "training/unsloth/Containerfile.eval",
+      "target": "containers/train/unsloth/Containerfile.eval",
+      "status": "missing",
+      "source_sha256": "43946c60ea524125ad148a3e3eed539162886a93e377a19f15b3c6cf82ed8c5f",
+      "snapshot": "migration/powercoder/source/training/unsloth/Containerfile.eval"
+    },
+    {
+      "source": "training/unsloth/Containerfile.gputest",
+      "target": "containers/train/unsloth/Containerfile.gputest",
+      "status": "missing",
+      "source_sha256": "64ac433cfcb10a565246ed444095a481e6d3e2ae3f50d1a133538e6e860ee194",
+      "snapshot": "migration/powercoder/source/training/unsloth/Containerfile.gputest"
+    },
+    {
+      "source": "training/unsloth/README.md",
+      "target": "docs/legacy-training/unsloth/README.md",
+      "status": "missing",
+      "source_sha256": "cc7a4b4800c7354aa35ff389d67f185f2a9c81179ec9ce65a0735db419e9e146",
+      "snapshot": "migration/powercoder/source/training/unsloth/README.md"
+    },
+    {
+      "source": "training/unsloth/audit_checkpoint.py",
+      "target": "src/wattson/training/unsloth/audit_checkpoint.py",
+      "status": "missing",
+      "source_sha256": "0af4a952c117d7fb94ddf7d0b3637684c39fdede3540ba5ef816413d3ad97824",
+      "snapshot": "migration/powercoder/source/training/unsloth/audit_checkpoint.py"
+    },
+    {
+      "source": "training/unsloth/config.edge.yaml",
+      "target": "configs/unsloth/config.edge.yaml",
+      "status": "missing",
+      "source_sha256": "d89dd312ac40fe5f7a79665121d748ed9a33c888fad5f1c85cc7113b50a03c6c",
+      "snapshot": "migration/powercoder/source/training/unsloth/config.edge.yaml"
+    },
+    {
+      "source": "training/unsloth/config.granite42.yaml",
+      "target": "configs/unsloth/config.granite42.yaml",
+      "status": "different",
+      "source_sha256": "b8017b65793e6a004b052a7a1281fab38bfd5be44d67017ee34c020262de6ee2",
+      "canonical_sha256": "52757f465db6aa8a73d80aee6e0b89353eaa02e753cef19d230ebbdc604acc4a",
+      "snapshot": "migration/powercoder/source/training/unsloth/config.granite42.yaml"
+    },
+    {
+      "source": "training/unsloth/config.smoke.yaml",
+      "target": "configs/unsloth/config.smoke.yaml",
+      "status": "missing",
+      "source_sha256": "348113fe5fe9e295bdb92d496550c448ab05167126ae67208a2e5e67660e73a2",
+      "snapshot": "migration/powercoder/source/training/unsloth/config.smoke.yaml"
+    },
+    {
+      "source": "training/unsloth/config.yaml",
+      "target": "configs/unsloth/config.yaml",
+      "status": "missing",
+      "source_sha256": "34965fb197b348f536a3937d0ccce6f489003e6aa609477860aacf65c5d1f899",
+      "snapshot": "migration/powercoder/source/training/unsloth/config.yaml"
+    },
+    {
+      "source": "training/unsloth/evaluate.py",
+      "target": "src/wattson/training/unsloth/evaluate.py",
+      "status": "different",
+      "source_sha256": "84566b879f0a2e118460422f2829962556ffa3787fcb79881bb4d72aba181752",
+      "canonical_sha256": "633f0916edd6702c97b9848fe417b09ab901f6ec9143f85844138f0fa0e4581c",
+      "snapshot": "migration/powercoder/source/training/unsloth/evaluate.py"
+    },
+    {
+      "source": "training/unsloth/export.py",
+      "target": "src/wattson/training/unsloth/export.py",
+      "status": "missing",
+      "source_sha256": "769ea594bec5f9c0930d0e30b7ddcc5a1eff6add602877c93b594e934b124840",
+      "snapshot": "migration/powercoder/source/training/unsloth/export.py"
+    },
+    {
+      "source": "training/unsloth/fixtures/evaluation_cases.json",
+      "target": "docs/legacy-training/unsloth/fixtures/evaluation_cases.json",
+      "status": "missing",
+      "source_sha256": "5933afa6b65d7223feec9aa1d0d3f5e89ff44b753febb924912e061fb663488a",
+      "snapshot": "migration/powercoder/source/training/unsloth/fixtures/evaluation_cases.json"
+    },
+    {
+      "source": "training/unsloth/gputest.py",
+      "target": "src/wattson/training/unsloth/gputest.py",
+      "status": "missing",
+      "source_sha256": "7b3682ebda8da6d2e4b57c8b96810c5e666653bc48584b666010d4a633586a71",
+      "snapshot": "migration/powercoder/source/training/unsloth/gputest.py"
+    },
+    {
+      "source": "training/unsloth/runtime.py",
+      "target": "src/wattson/training/unsloth/runtime.py",
+      "status": "same",
+      "source_sha256": "2f15d0948f81b8a3e66e8168d14bc73c4113ce58230280d11eecc961318d6c20",
+      "canonical_sha256": "2f15d0948f81b8a3e66e8168d14bc73c4113ce58230280d11eecc961318d6c20"
+    },
+    {
+      "source": "training/unsloth/smoke.py",
+      "target": "src/wattson/training/unsloth/smoke.py",
+      "status": "missing",
+      "source_sha256": "07163fafa63de15a716408d1cbd3e6e54ab8ce0b65fba6b115726147e5af1fc3",
+      "snapshot": "migration/powercoder/source/training/unsloth/smoke.py"
+    },
+    {
+      "source": "training/unsloth/test_evaluation.py",
+      "target": "tests/training/unsloth/test_evaluation.py",
+      "status": "missing",
+      "source_sha256": "d0381b1844dde12434dda1f8abb603b79f26eadb94d0fef50237639ada548c99",
+      "snapshot": "migration/powercoder/source/training/unsloth/test_evaluation.py"
+    },
+    {
+      "source": "training/unsloth/train.py",
+      "target": "src/wattson/training/unsloth/train.py",
+      "status": "missing",
+      "source_sha256": "01ef80b8e1af99bd447f0aa0a8c072a1f4161587757dad056aa8891ee50e661a",
+      "snapshot": "migration/powercoder/source/training/unsloth/train.py"
+    },
+    {
+      "source": "scripts/r7_chain.sh",
+      "target": "migration/powercoder/source/scripts/r7_chain.sh",
+      "status": "historical_workflow_or_replaced_diagnostic",
+      "snapshot": "migration/powercoder/source/scripts/r7_chain.sh",
+      "source_sha256": "c5244ecf5bf6e987429ecb6ba4d06e78cc2b6a945e4fd2cf8ec4b6340ac78e09"
+    },
+    {
+      "source": "scripts/grpo_wait.sh",
+      "target": "migration/powercoder/source/scripts/grpo_wait.sh",
+      "status": "historical_workflow_or_replaced_diagnostic",
+      "snapshot": "migration/powercoder/source/scripts/grpo_wait.sh",
+      "source_sha256": "a5512cb961669ae92f57018a4a762a649df2ab9fea1afca66da8947adf7bc42b"
+    },
+    {
+      "source": "scripts/grpo_sm3lly_wait.sh",
+      "target": "migration/powercoder/source/scripts/grpo_sm3lly_wait.sh",
+      "status": "historical_workflow_or_replaced_diagnostic",
+      "snapshot": "migration/powercoder/source/scripts/grpo_sm3lly_wait.sh",
+      "source_sha256": "e5e19d81f59c516427b81c34030fdbfad7e82fccc25d5b28af1c39ef098c546f"
+    },
+    {
+      "source": "scripts/powercoder-doctor.py",
+      "target": "migration/powercoder/source/scripts/powercoder-doctor.py",
+      "status": "historical_workflow_or_replaced_diagnostic",
+      "snapshot": "migration/powercoder/source/scripts/powercoder-doctor.py",
+      "source_sha256": "e43ccdceaae4af7d0ebb90004d2ebd9f1aeac94d686b4fd88a36f2a13feb9b13"
+    }
+  ],
+  "external_reference_inventory": [
+    {
+      "source": ".gitignore",
+      "source_sha256": "be144da446d2134e2d67b81a2759b5d63339da149daeaf833a5247b182d75e8e",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "AGENTS.md",
+      "source_sha256": "07d0ef1a3ace1adfdf0db7562345c4e50ac87931e0701c4c21c356dc6181f596",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "Justfile",
+      "source_sha256": "1b2b998b934e054eea08f1718763889bdf0896ef83c7ba776aed7eb44e4e942e",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "MISSION.md",
+      "source_sha256": "b91726e3198d3fbebe206d520f8a1e73909ac3afda7de953ba66950b6075fe49",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/POWERCODER_HANDOFF_2026-10-21.md",
+      "source_sha256": "3f53c10df901f0870558e5400e7b38b9f88537699514b5ce7fb1e4e20d61b6d0",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/POWERCODER_HANDOFF_2026-10-23.md",
+      "source_sha256": "6aa10ca1fda5d72d4c857dfac61cd64bc492d2aee9174c6ebe23ce4d4d3d9255",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/PSCADOSSE.md",
+      "source_sha256": "b5cdd94bec82baea609e8caaa745f0532fac8a90cc4f9bda8aec67f4481ad65b",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/VISION.md",
+      "source_sha256": "cc0d634bae1122e3b2581f3619563f2358ce13c27628709c227cb4f098b76b6c",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/backlog/0008-powercoder-benchmark-cannot-measure-agent-value.md",
+      "source_sha256": "ad069c6013b9ef071a078e132ae7b2a3370dcac108cc5b954b36c5906d4b7d9f",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/backlog/0011-strict-tool-calling-arm-redesign.md",
+      "source_sha256": "808d9ee324c8f49b29954ea6079cb7287455459fe47b1b300cce8395d6cf5bee",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/backlog/0015-g1-typed-command-protocol-and-gateway.md",
+      "source_sha256": "10ca4ada76072cc3d4f8b63cfc376dcaec1116cc511bcec382d1bf7e645193e0",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/backlog/0016-g2-verified-engineering-mathematics.md",
+      "source_sha256": "daec910e9a18777e2b0b06121536a1138126b4aba91176e4f33ffe5c4a5909ec",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/backlog/0017-g3-verifier-guided-investigative-learning.md",
+      "source_sha256": "6ba9a851886fe149bb74393b60c416ec49e6cc3b6cde828636b2bbd9ba5b3e12",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/backlog/0018-g4-cim-semantic-network-intelligence.md",
+      "source_sha256": "16e37458bf1a88ae52715ffe7e606f500c10b73615218f0ecfd38304122c1555",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/backlog/0019-g5-observations-and-weather.md",
+      "source_sha256": "694410def2c7b1bb364ace91212f569732eabad5da8453b7fc560df1a857f392",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/backlog/0020-g6-autonomous-engineering-investigations.md",
+      "source_sha256": "a8a25656c01cd177df1733fe5791fd7beba52b7a416af9fe8276c0f0b46a0a6d",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/backlog/0021-g7-probabilistic-forecasting.md",
+      "source_sha256": "3c1447ac4eda458f4457837675aa4c21f3b81a7748da4a60a3e2783602fef3e6",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/backlog/0022-g8-independent-superiority-assessment.md",
+      "source_sha256": "bec1e6bdc61d7296e7dcfcdf98b51ac30870113fa4bfe44e8fcd8933c8136e84",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/backlog/0023-snemsa-case-lacks-ratings-costs-and-distributed-slack.md",
+      "source_sha256": "4ee4c9ee7c2b022e1ed41fe3c45d9f67c4e9535f82761692a63b4771901397bf",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/backlog/0024-element-discovery-and-graph-search.md",
+      "source_sha256": "01601ec77adf30eeaf534add6f2f282496b35e10cb6a8bcf28827d0b8a2d3c8e",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/backlog/0025-podman-desktop-packaging-of-on-demand-services.md",
+      "source_sha256": "fe699762a5dabeb4f9dd27b3441b76a64bb52b29cf89c2d620afb1233623d98b",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/backlog/0026-walkable-path-namespace-ls-get.md",
+      "source_sha256": "39b0d0c766db88ecb9066c690d03688be85d9535f75fe072ddf7f146f5d8cba1",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/backlog/0028-short-circuit-and-system-strength-tasks.md",
+      "source_sha256": "32b3e64f1172eb18f6a1c28e8814d86427dc20c6de043f6b4f663e38f8a78177",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/backlog/0029-cgmes-round-trip-with-pypowsybl.md",
+      "source_sha256": "0889a39fe2b4d130e64738c837d69852879599d9e3d4b3e30068b547acc8e5cc",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/backlog/0034-cgmes-conformant-g4-export.md",
+      "source_sha256": "dd55911371c1c983a4ebfd54f6d9eb7e1a1d9821347f8dd4bdeee2e5f7ea3d69",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/backlog/README.md",
+      "source_sha256": "8f64fb2cc8a292a572739ae9e1f707f74d1112111c944ffdc97433d77090192b",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/backlog/reviews/2026-10-23-r6-merit-review.md",
+      "source_sha256": "0fc6caf7781c98577906335ea61a9ca7f46c050553bddde38bf4e349bcdc2bb4",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/powercoder/00-environment.md",
+      "source_sha256": "f5f8e24512392ac4d04e7d20aa595c8b9c87361dcbcdb9d10028ede10b3b7fe0",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/powercoder/trainer-parity.md",
+      "source_sha256": "268353592a76bb34cf35b0f832e6f8cd081d52d97dff4706a8260b69bbe94b3e",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/prd/0010-powercoder-physics-grounded-engineering-agent.md",
+      "source_sha256": "90fe080dabe307a3350e6b3ef9707de0de8ec8c965f7dd412391848b3612541d",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "docs/prd/README.md",
+      "source_sha256": "f7054fed73cda4906350cad538eee38ca880d0c0c1aac9bba586d40f1ecddc4b",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "labs/03-advanced-provider-bakeoff/llm_provider.py",
+      "source_sha256": "06f40cacdf8249a3ea558cae8091bf077bc1feccbdb9d8d4d5bb43f2c808d6a0",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "labs/05-spartan-chaosnet-transient-stream/README.md",
+      "source_sha256": "15d66ea64c3c251c9ae2f816dbbb5093b3d27721fc2a519582a5baefad9cbd97",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "labs/10-poweragentbench-restorebench/README.md",
+      "source_sha256": "5fc2c68c942689f3cb9d1602e1b74159d82dfcae435fef94a9b448d08963a736",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "labs/10-poweragentbench-restorebench/local_provider.py",
+      "source_sha256": "1f4d84113414875b79c329a9f7a7682289f2e37a896363bc88b51aff698aef4c",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "labs/11-poweragentbench-steady/README.md",
+      "source_sha256": "0ee744ed3b00094eb578e81edb779668987295da760db345dbbd997b55bab688",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "rust/command-ir/src/bin/lift.rs",
+      "source_sha256": "7472d8a67677c459d9a4f5ecf3c98ca1baf5c13164698ec5f6937fdfec97f7fc",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "rust/command-ir/src/lib.rs",
+      "source_sha256": "85cc3869d31fdc66b41088c13801c754c985131f9378f52fc9f58c225094d739",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "rust/command-ir/tests/requests.rs",
+      "source_sha256": "70fa90c57108be01eb807768123a99236a5bc56a45a4b752675df78b2db27eec",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "schemas/training-example.schema.json",
+      "source_sha256": "7cff7de0af459b6fb5df9c11a76f0b8822f0c19a6e7c3fe6f084563967d82cde",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "scripts/cgmes_peer_check.sh",
+      "source_sha256": "d2a9dd174f04d73db4a6c4dd5cc8faa9c5ab72a5c26389a7d909f0e9498aae54",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "scripts/grpo_sm3lly_wait.sh",
+      "source_sha256": "e5e19d81f59c516427b81c34030fdbfad7e82fccc25d5b28af1c39ef098c546f",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "scripts/grpo_wait.sh",
+      "source_sha256": "a5512cb961669ae92f57018a4a762a649df2ab9fea1afca66da8947adf7bc42b",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "scripts/launch_agent_sft.sh",
+      "source_sha256": "b52c86dd746e353cc51a39db4f491922340fe5cc9ea9e2aa83a2b116e37154c3",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "scripts/launch_agent_study.sh",
+      "source_sha256": "eceb6c851647dcf2c1d0459615b91b5e1ec63cebc6210923ba3079d828739f1c",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "scripts/launch_powercoder_comparison.sh",
+      "source_sha256": "8e2dca141144f7581aa582a0ae3e14a4b09a7d74b679088308c2ae4002dc17a0",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "scripts/r7_chain.sh",
+      "source_sha256": "c5244ecf5bf6e987429ecb6ba4d06e78cc2b6a945e4fd2cf8ec4b6340ac78e09",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "tests/integration/test_canonical_mcp_transport.py",
+      "source_sha256": "6f70d100255b4b5f08e46293c0fe52328c11f62824f432f172075f80065f574c",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "tests/integration/test_powermcp_contract.py",
+      "source_sha256": "38acd7ab169f67d76376500e9c66753e6ceb25649f945a2cd7560222a226d1ea",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "tests/integration/test_study_tools.py",
+      "source_sha256": "8a7aa6b46fdbbff1185887ec147c9056c1fd3dd9ef35e90ae029f45cb4f13495",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "tests/integration/test_teacher_gateway.py",
+      "source_sha256": "ad328463925b1ef553eaddea952c34a3c7b99d8a5ae46fd44b4e9d2e8cd0ea10",
+      "status": "needs_ownership_review"
+    },
+    {
+      "source": "tests/test_m04_dataset.py",
+      "source_sha256": "afff267635d7c7e1cbf30c67d654541dbdd5a75d3a158335e6f54bbff1ba5005",
+      "status": "needs_ownership_review"
+    }
+  ]
+}

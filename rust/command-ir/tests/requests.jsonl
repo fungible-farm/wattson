@@ -1,0 +1,10 @@
+{"ir_version": "0.3.0", "command": "SOLVE", "args": {"network_id": "snem-sa-2000", "operation": "none", "contingency_line": 94, "max_iter": 50}}
+{"ir_version": "0.3.0", "command": "SIMULATE", "args": {"network_id": "snem-sa-2000", "operation": "load_scale", "scale": 1.0375, "observation": "bus_voltage", "observation_id": 985, "max_iter": 50}}
+{"ir_version": "0.3.0", "command": "RECALL", "args": {"region": "SA1", "from": "2026-06-10T00:00", "to": "2026-06-10T01:00", "as_of": "2026-06-10T00:30"}}
+{"ir_version": "0.3.0", "command": "RESOLVE", "args": {"path": "/case/snem-sa-2000/bus/985/vn_kv"}}
+{"ir_version": "0.3.0", "command": "ESTIMATE", "args": {"network_id": "fixture-2bus-ok", "seed": 1}}
+{"ir_version": "0.3.0", "command": "OPTIMIZE", "args": {"case": "ieee39-pab-stressed", "formulation": "dc"}}
+{"ir_version": "0.3.0", "command": "FORECAST", "args": {"region": "SA1", "model": "seasonal-naive", "issue_time": "2026-06-20T12:00", "horizons": [1, 12, 48]}}
+{"ir_version": "0.3.0", "command": "HINDCAST", "args": {"region": "SA1", "horizons": [12, 48], "start_day": 20, "every": 288}}
+{"ir_version": "0.3.0", "command": "COMPARE", "args": {"network_id": "snem-sa-2000", "candidate_lines": [94, 9, 97], "metric": "max_line_loading"}}
+{"ir_version": "0.3.0", "command": "EXPLAIN", "args": {"claim": "Bus 985 is at 165 kV (/case/snem-sa-2000/bus/985/vn_kv)."}}

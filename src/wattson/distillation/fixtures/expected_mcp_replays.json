@@ -1,0 +1,188 @@
+{
+  "provenance": {
+    "source": "Actual PowerMCP fixture executions; verifier tests, not model benchmark data",
+    "solver": "pandapower",
+    "solver_version": "3.5.4",
+    "source_sha256": {
+      "powercoder/distillation/refresh_replay_fixture.py": "480449fff6765631393827267dbca5cf0090504220728afdb58b6b5afac55a55",
+      "powercoder/inference/powermcp.py": "a1da2d6ca0099f497b293db716b9ce3128a34797ac1084713f89953e8a01bcb2"
+    }
+  },
+  "replays": [
+    {
+      "name": "success",
+      "example": {
+        "subfamily": "mcp-trajectory",
+        "task": {
+          "inputs": {
+            "case": "fixture-2bus-ok",
+            "max_iter": 20,
+            "check_limits": true
+          }
+        }
+      },
+      "answer": {
+        "trajectory": [
+          {
+            "tool": "load_network",
+            "args": {
+              "network_id": "fixture-2bus-ok"
+            },
+            "status": "success",
+            "result": {
+              "network_id": "fixture-2bus-ok",
+              "buses": 2,
+              "branches": 1,
+              "generators": 1,
+              "loads": 1
+            },
+            "evidence": null
+          },
+          {
+            "tool": "run_power_flow",
+            "args": {
+              "network_id": "fixture-2bus-ok",
+              "method": "nr",
+              "max_iter": 20,
+              "check_limits": true
+            },
+            "status": "success",
+            "result": {
+              "status": "converged",
+              "iterations": 3,
+              "min_bus_voltage_pu": 0.9979182358709318,
+              "max_bus_voltage_pu": 1.0,
+              "max_line_loading_percent": 5.42145925132307,
+              "voltage_violations": 0,
+              "violating_bus_ids": [],
+              "voltage_limit_pu": [
+                0.95,
+                1.05
+              ]
+            },
+            "evidence": {
+              "case_id": "fixture-2bus-ok",
+              "solver": "pandapower",
+              "solver_version": "3.5.4",
+              "tool_name": "run_power_flow",
+              "input_hash": "sha256:6adf3cbe83a69102a276899214525fc34ee66c881493a3c317eb6d918bd67832",
+              "status": "success",
+              "result_hash": "sha256:5e601c4bb41224e4a6e3cdd5a7c36b93fc2ab447e98910a7fc0d57651b73beef",
+              "validity": {
+                "schema": true,
+                "numerical": true,
+                "physical": true
+              },
+              "diagnostics": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "non_convergence",
+      "example": {
+        "subfamily": "mcp-trajectory",
+        "task": {
+          "inputs": {
+            "case": "fixture-2bus-ok",
+            "max_iter": 1,
+            "check_limits": true
+          }
+        }
+      },
+      "answer": {
+        "trajectory": [
+          {
+            "tool": "load_network",
+            "args": {
+              "network_id": "fixture-2bus-ok"
+            },
+            "status": "success",
+            "result": {
+              "network_id": "fixture-2bus-ok",
+              "buses": 2,
+              "branches": 1,
+              "generators": 1,
+              "loads": 1
+            },
+            "evidence": null
+          },
+          {
+            "tool": "run_power_flow",
+            "args": {
+              "network_id": "fixture-2bus-ok",
+              "method": "nr",
+              "max_iter": 1,
+              "check_limits": true
+            },
+            "status": "non_convergence",
+            "result": {
+              "error": "Power Flow nr did not converge after 1 iterations!"
+            },
+            "evidence": null
+          }
+        ]
+      }
+    },
+    {
+      "name": "unknown_case",
+      "example": {
+        "subfamily": "mcp-trajectory",
+        "task": {
+          "inputs": {
+            "case": "fixture-does-not-exist",
+            "max_iter": 20,
+            "check_limits": true
+          }
+        }
+      },
+      "answer": {
+        "trajectory": [
+          {
+            "tool": "load_network",
+            "args": {
+              "network_id": "fixture-does-not-exist"
+            },
+            "status": "execution_failure",
+            "result": {
+              "error": "Unknown network ID: fixture-does-not-exist"
+            },
+            "evidence": null
+          },
+          {
+            "tool": "run_power_flow",
+            "args": {
+              "network_id": "fixture-does-not-exist",
+              "method": "nr",
+              "max_iter": 20,
+              "check_limits": true
+            },
+            "status": "execution_failure",
+            "result": {
+              "error": "Unknown network ID: fixture-does-not-exist"
+            },
+            "evidence": null
+          }
+        ]
+      }
+    }
+  ],
+  "report_example": {
+    "subfamily": "pf-report",
+    "task": {
+      "inputs": {
+        "case": "fixture-2bus-ok",
+        "contingency_line": null
+      }
+    }
+  },
+  "report_answer": {
+    "converged": true,
+    "iterations": 3,
+    "min_bus_voltage_pu": 0.9979182358709318,
+    "max_bus_voltage_pu": 1.0,
+    "max_line_loading_percent": 5.42145925132307,
+    "voltage_violations": 0
+  }
+}

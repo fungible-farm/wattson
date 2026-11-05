@@ -1,0 +1,7 @@
+{
+  "source_commit": "0251ee41cf806915905ad43934520d8d258d8810",
+  "source_module": "nemo/costs/gencost2025.py",
+  "source_class": "GenCost2025_2030_CP",
+  "units": "AUD/kW",
+  "capital_costs": {"PV1Axis": 1123, "Wind": 2646, "CCGT": 1917}
+}

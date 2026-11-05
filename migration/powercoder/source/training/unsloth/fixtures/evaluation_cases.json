@@ -1,0 +1,69 @@
+{
+  "scale_cases": [
+    {"text": "1.062500", "value": 1.0625},
+    {"text": "s = -1.0", "value": -1.0},
+    {"text": "s = 1e2", "value": 100.0},
+    {"text": "s=1.0 then s=1.1", "value": null},
+    {"text": "bus = 1.0", "value": null}
+  ],
+  "paired_base": [false, true, false, true],
+  "paired_tuned": [true, true, true, true],
+  "comparisons": [
+    {
+      "subfamily": "pf-report",
+      "reference": "Power flow did not converge.",
+      "candidate": "No solver results available.",
+      "pass": false
+    },
+    {
+      "subfamily": "pf-report",
+      "reference": "Power flow did not converge.",
+      "candidate": "Power flow failed to execute.",
+      "pass": false
+    },
+    {
+      "subfamily": "mcp-trajectory",
+      "reference": "Step 1: load_network({}) -> status=success\nStep 2: run_power_flow({}) -> status=constraint_violation\nresult: {'iterations': 5}",
+      "candidate": "Step 1: load_network({}) -> status=success\nStep 2: run_power_flow({}) -> status=success\nresult: {'iterations': 5}",
+      "pass": false
+    },
+    {
+      "subfamily": "pf-report",
+      "reference": "Power flow converged in 5 iterations. Min bus voltage = 0.9070 pu, max bus voltage = 1.0941 pu, max line loading = 2.66%, voltage violations = 40.",
+      "candidate": "Power flow did not converge. Previously converged in 5 iterations. Min bus voltage = 0.9070 pu, max bus voltage = 1.0941 pu, max line loading = 2.66%, voltage violations = 40.",
+      "pass": false
+    },
+    {
+      "subfamily": "pf-report",
+      "reference": "Power flow converged in 5 iterations. Min bus voltage = 0.9070 pu, max bus voltage = 1.0941 pu, max line loading = 2.66%, voltage violations = 40.",
+      "candidate": "Power flow converged in 5 iterations. Min bus voltage = 0.9070 pu, max bus voltage = 1.0941 pu, max line loading = 2.66%, voltage violations = 40.",
+      "pass": true
+    }
+  ],
+  "tasks": [
+    {
+      "example_id": "train-seed-1",
+      "subfamily": "pf-report",
+      "topology": "fixture-2bus-ok",
+      "task": {"prompt": "Solve fixture base case", "inputs": {"case": "fixture-2bus-ok", "contingency_line": null}}
+    },
+    {
+      "example_id": "test-seed-2",
+      "subfamily": "pf-report",
+      "topology": "fixture-2bus-ok",
+      "task": {"prompt": "Solve  fixture base case", "inputs": {"case": "fixture-2bus-ok", "contingency_line": null}}
+    },
+    {
+      "example_id": "new-prompt-same-inputs",
+      "subfamily": "pf-report",
+      "topology": "fixture-2bus-ok",
+      "task": {"prompt": "Paraphrased request", "inputs": {"case": "fixture-2bus-ok", "contingency_line": null}}
+    },
+    {
+      "example_id": "independent-inputs",
+      "subfamily": "pf-report",
+      "topology": "snem-sa-2000",
+      "task": {"prompt": "Solve contingency 42", "inputs": {"case": "snem-sa-2000", "contingency_line": 42}}
+    }
+  ]
+}

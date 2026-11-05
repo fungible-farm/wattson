@@ -9,6 +9,16 @@ re-solving the network, not by matching text.
 [`PromptExecutionAU/wattson-qwen3.5-4b-pyt`](https://huggingface.co/PromptExecutionAU/wattson-qwen3.5-4b-pyt).
 Measured results, with seeds and limits, are in [`docs/results.md`](docs/results.md).
 
+## Container tools and shared agent interfaces
+
+The engineering harness now has a repository launcher for containerized data tools,
+local study MCP and IDE clients. Start with `./wattson components`, then
+`./wattson install core` and `./wattson check`; host just is optional for this path.
+The [shared interface guide](docs/interfaces.md) covers explicit service profiles,
+read-only mounts, client configuration and the boundaries of the experimental offline
+package. [Port evidence and remaining release gates](docs/POWERCODER_PORT_HANDOFF_2026-11-05.md)
+distinguish CPU checks from model, database and disconnected-deployment validation.
+
 ## Quick start
 
 You need [Podman](https://podman.io) 5 or newer and [`just`](https://just.systems). Nothing else is installed on your machine.
@@ -43,6 +53,7 @@ lists every failure we hit while building this.
 | `benchmarks/` | labs 1-3, deterministic power-system tasks with committed expected results |
 | `data/` | every task set, frozen evaluation suite and oracle trajectory used to train and score the released models, with a SHA-256 manifest |
 | `containers/`, `kube/`, `justfile` | the layered images, the pod definition, and the commands above |
+| [`local-runtime/`](local-runtime/HANDOFF-2026-11-04.md) | experimental IPC/MCP/HF model packaging profile; full model, SBOM and offline restore acceptance is unfinished |
 | `model-cards/` | the cards published with each model |
 
 ## Use it, and what may flow back

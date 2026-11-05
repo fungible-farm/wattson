@@ -1,0 +1,7 @@
+[project]
+name = "wattson-hf-tools"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = ["huggingface-hub==2.4.0"]
+
+# huggingface_hub is Apache-2.0; uv is MIT OR Apache-2.0.
