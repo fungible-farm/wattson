@@ -1,0 +1,14 @@
+# procedural-chart
+# State chart: gateway failure behaviour (#24). A throwaway gateway in front of a fake backend; nothing touches the real wattson-gateway.
+direction: down
+title: "Gateway failure behaviour" {shape: text}
+
+idle: No throwaway gateway {shape: oval}
+serving: Gateway + fake backend up (127.0.0.1:14001)
+logged: Healthy request logged
+failed: Backend stopped, error logged
+
+idle -> serving: "cmd: just gateway-failure-check | pass: throwaway container wattson-gw-failure answers HTTP on 14001"
+serving -> logged: "cmd: just gateway-failure-check | pass: prints 'request-ok: http=200' and the log gains 200 request records"
+logged -> failed: "cmd: just gateway-failure-check | pass: prints 'request-failed: http=5xx curl_rc=<non-zero>' and only 5xx request records appear (no silent failover)"
+failed -> idle: "cmd: just gateway-failure-check | pass: prints 'PASS gateway-failure' and podman ps -a lists no wattson-gw-failure"
