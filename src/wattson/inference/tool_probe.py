@@ -116,6 +116,11 @@ async def probe(args: argparse.Namespace, journal: TextIO) -> int:
     # produced rather than a re-rendered conversation (FM-22/FM-23). Both default off.
     temperature = float(getattr(args, "temperature", 0.0))
     extra = {"return_token_ids": True} if getattr(args, "return_token_ids", False) else None
+    extra_body = getattr(args, "extra_body", None)
+    if extra_body:
+        if extra is None:
+            extra = {}
+        extra.update(extra_body)
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": args.prompt.read_text()},
@@ -143,7 +148,7 @@ async def probe(args: argparse.Namespace, journal: TextIO) -> int:
         events: list[dict[str, Any]] = []  # tool responses so far, in the journal's shape, for the guard
         guard_attempts = 0
         enforce = bool(getattr(args, "enforce_provenance", False))
-        with InferenceClient(args.base_url, timeout=INFERENCE_TIMEOUT_S) as client:
+        with InferenceClient(args.base_url, timeout=INFERENCE_TIMEOUT_S, api_key_env=getattr(args, "api_key_env", None)) as client:
             for turn in range(MAX_TURNS):
                 try:
                     result = await asyncio.to_thread(
@@ -221,6 +226,10 @@ def main() -> int:
     parser.add_argument("--model", required=True)
     parser.add_argument("--prompt", type=Path, required=True)
     parser.add_argument("--journal", type=Path, required=True)
+    parser.add_argument("--api-key-env", default=None,
+                        help="Name of an environment variable containing the API key; sends Bearer auth")
+    parser.add_argument("--extra-body", default=None,
+                        help="JSON object to merge into the chat request body (e.g. {\"reasoning_effort\":\"high\"})")
     parser.add_argument("--study-tools", action="store_true")
     # The Python shell the v11 students were trained on; the evaluator passes the same flags (backlog 0041).
     parser.add_argument("--python-tools", action="store_true", help="expose run_python; run_study_trial then answers reports only")
@@ -228,6 +237,11 @@ def main() -> int:
     parser.add_argument("--enforce-provenance", action="store_true",
                         help="refuse a final answer containing a number no tool produced: send the model back to compute it (see MAX_GUARD_RETRIES)")
     args = parser.parse_args()
+    if args.extra_body is not None:
+        try:
+            args.extra_body = json.loads(args.extra_body)
+        except json.JSONDecodeError as e:
+            parser.error(f"--extra-body is not valid JSON: {e}")
     args.journal.parent.mkdir(parents=True, exist_ok=True)
     with args.journal.open("x") as journal:
         try:
