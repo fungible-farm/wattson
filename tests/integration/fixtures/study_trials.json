@@ -1,0 +1,41 @@
+[
+  {
+    "source_training_example": "ex_749f446e7197c1cc",
+    "subfamily": "pf-load-scale-fit",
+    "inputs": {
+      "case": "snem-sa-2000",
+      "element": "bus 1791",
+      "metric_unit": "pu",
+      "scale_hi": 1.1,
+      "scale_lo": 0.9,
+      "target": 1.027219,
+      "tolerance": 0.0011595451595186647
+    }
+  },
+  {
+    "source_training_example": "ex_01ee5da17e22b743",
+    "subfamily": "pf-line-rating-fit",
+    "inputs": {
+      "case": "snem-sa-2000",
+      "element": "line 144",
+      "metric_unit": "percent",
+      "scale_hi": 1.1,
+      "scale_lo": 0.9,
+      "target": 0.398714,
+      "tolerance": 0.0015813013753955207
+    }
+  },
+  {
+    "source_training_example": "ex_e9d7c1c3de7cb0d9",
+    "subfamily": "pf-gen-dispatch-fit",
+    "inputs": {
+      "case": "snem-sa-2000",
+      "element": "generator 1 (transformer 3)",
+      "metric_unit": "percent",
+      "scale_hi": 1.1,
+      "scale_lo": 0.9,
+      "target": 0.821349,
+      "tolerance": 0.003241337200180907
+    }
+  }
+]

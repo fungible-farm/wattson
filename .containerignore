@@ -6,4 +6,7 @@ out/
 dist/
 data/*.m
 .pytest_cache
+.artifacts/
+rust/target/
+local-runtime/.wattson/
 benchmarks/power-agent-bench-lite/

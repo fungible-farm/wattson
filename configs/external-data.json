@@ -1,0 +1,29 @@
+{
+  "note": "Operator inputs copied offline, not redistributed. AEMO cache: existing June 2026 DISPATCHREGIONSUM. PowerAgentBench pin: b39c48b; see engineering.cases for provenance and license limitations.",
+  "artifacts": [
+    {
+      "source_path": "data/nemosis_cache/PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202606010000.parquet",
+      "destination_path": ".artifacts/nemosis_cache/PUBLIC_ARCHIVE#DISPATCHREGIONSUM#FILE01#202606010000.parquet",
+      "sha256": "4512b1c33e668c8973ff2078e286314e5bcdeea137a79e2e23e0d2998bd8f7d9",
+      "bytes": 5458033
+    },
+    {
+      "source_path": "data/poweragentbench/cases/case39/pandapower/case39.json",
+      "destination_path": ".artifacts/poweragentbench/cases/case39/pandapower/case39.json",
+      "sha256": "33162d2cafd3db3fa1aa778c93607f6afb7dcc31c892dbfa54c50a073137a424",
+      "bytes": 104127
+    },
+    {
+      "source_path": "data/poweragentbench/benchmarks/steady/level_3/dataset/ieee118/IEEE118_BASE_CASE.json",
+      "destination_path": ".artifacts/poweragentbench/benchmarks/steady/level_3/dataset/ieee118/IEEE118_BASE_CASE.json",
+      "sha256": "557e3428d7417b8f177c0e6c8d7b8ba7532ed3250e7c0cdb392b3a32c71f6ec8",
+      "bytes": 128588
+    },
+    {
+      "source_path": "data/poweragentbench/benchmarks/steady/level_3/dataset/pegase89/PEGASE89_BASE_CASE.json",
+      "destination_path": ".artifacts/poweragentbench/benchmarks/steady/level_3/dataset/pegase89/PEGASE89_BASE_CASE.json",
+      "sha256": "82a031365571a10b3672ee9d230f6941ad95789d098380f2ec7c625b6f7f4eae",
+      "bytes": 118517
+    }
+  ]
+}

@@ -126,3 +126,11 @@ build:
     podman build -f containers/Containerfile --target harness -t {{image}} .
     podman build -f containers/hf/Containerfile -t {{hf_image}} .
     podman build -f containers/csiro/Containerfile -t {{csiro_image}} .
+
+# Build the CPU-only developer tools and migrated checks; no host Python/Rust install.
+developer-build:
+    podman build -f containers/Containerfile --target developer -t localhost/wattson-developer:port .
+
+# Run developer checks offline. Input artifacts must already be approved and staged.
+developer-test:
+    podman run --rm --pull=never --network=none --memory=4g --memory-swap=4g --cpus=4 --pids-limit=256 --tmpfs /tmp -v "$PWD/.artifacts:/app/.artifacts:ro,z" -v "$PWD/data:/cases:ro,z" localhost/wattson-developer:port -m pytest -q -rs

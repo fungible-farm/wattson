@@ -1,0 +1,1 @@
+"""Standalone Wattson integration checks."""

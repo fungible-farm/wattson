@@ -32,7 +32,7 @@ PLANNING_SEED: int = 20261029
 # snem-sa-2000 is the judgement suite's network: its training triples exclude every judgement candidate set, so this is
 # a same-network, unseen-triples setting (the held-out planning suite is the cross-network one).
 TRAIN_CASES: tuple[str, ...] = ("pegase89", "snem-sa-2000")
-JUDGEMENT_SUITE: Path = Path("training/unsloth/out/judgement-20261024-v2/examples.jsonl")
+JUDGEMENT_SUITE: Path = Path("data/suites/judgement-20261024-v2/examples.jsonl")
 HELD_OUT_CASES: tuple[str, ...] = ("snem-1803", "ieee39")
 TRAIN_PER_CASE: int = 40
 HELD_OUT_PER_CASE_AND_WORDING: int = 10

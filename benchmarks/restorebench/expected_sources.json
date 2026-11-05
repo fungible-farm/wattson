@@ -1,0 +1,17 @@
+{
+  "upstream": "https://github.com/Power-Agent/PowerAgentBench",
+  "commit": "b39c48b0b96c096632ae8e28d359f0231ea483ec",
+  "sha256": {
+    "benchmarks/steady/level_3/LICENSE": "43215fb7deb1a84dc093dd5e1417c2389d881c3be5a1ab360e43e6cd7971e2cd",
+    "benchmarks/steady/level_3/NOTICE": "e330d3eb9c963b733e50e02c05ac9785c612b56f1bdee5c24deb4b5aca2fe8f3",
+    "benchmarks/steady/level_3/dataset/LICENSE": "b553363d4ae9fc1891dbc0acf8224cc9040ccd69077363c12975c1488b582e3e",
+    "benchmarks/steady/level_3/pyproject.toml": "b07f954c183da8472d5ea07cb8681ec8af331bb61f20ae426bb7cb9a971cd21a",
+    "benchmarks/steady/level_3/uv.lock": "b2449dfa526c25e5e3fa7aeec4ca2b263c2ad49ee87e2dd8b852ff4c5e526833",
+    "benchmarks/steady/level_3/dataset/ieee118/manifest.json": "87e100b56e9e97e308d4489ea02bb5b211e8eef073fabc049cb6452829ee0301",
+    "benchmarks/steady/level_3/dataset/ieee118/evaluation_manifest.json": "bfa2bd3826c1c2cb29a63a92b925e81cc324e70d090e62b0484e72bad0c860de",
+    "benchmarks/steady/level_3/dataset/ieee118/private/witnesses.json": "7f8797e9c7b299e8ed93050c731bbdd47dce5a01936296abc5736f95d7546a4c",
+    "benchmarks/steady/level_3/dataset/pegase89/manifest.json": "7d34e8a60554387ab9ee944d0bd3e630b4dddcd394afb462a0de7bfd2511f992",
+    "benchmarks/steady/level_3/dataset/pegase89/evaluation_manifest.json": "526b8e1b2f3ff6dfd916bf2abbc537f379612ec9359f7cbb8867451202b79ed1",
+    "benchmarks/steady/level_3/dataset/pegase89/private/witnesses.json": "4377ae0a407bf530d0675aa5be49de6c8a61f4f5e5a9d229f09a3b198c79234d"
+  }
+}

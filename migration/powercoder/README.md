@@ -1,10 +1,10 @@
-# PowerCoder consolidation staging — not a runtime migration pass
+# PowerCoder preservation and runtime port
 
 The owner of model training, inference/evaluation, its tests and the PowerCoder
 capabilities is **fungible-farm/wattson**. The lab repository must eventually consume
 Wattson through an explicit versioned interface rather than own another implementation.
 
-This branch preserves the missing/differing inputs for that cutover. It does not
+The source snapshot preserves the missing/differing inputs for that cutover. The canonical runtime port now lives in `src/wattson`, with tests in `tests`; see [the port handoff](../../docs/POWERCODER_PORT_HANDOFF_2026-11-05.md) for measured checks and remaining release gates. It does not
 activate a second `powercoder` package or overwrite Wattson's already newer training
 implementation. `source/` is an exact source snapshot for review, excluded from the
 Wattson wheel and normal pytest discovery. Its old paths/imports are intentionally
@@ -26,7 +26,7 @@ those canonical changes when resolving overlaps.
 uv run python scripts/check_powercoder_snapshot.py
 ```
 
-This is a preservation gate only. Still required:
+The snapshot checker is a preservation gate only. The following original cutover checklist is retained as an audit guide; the handoff records which checks have run:
 
 1. Resolve each missing/different module into `src/wattson`, each test into `tests`,
    configuration into `configs`, container into `containers`, and fixtures into

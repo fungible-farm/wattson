@@ -15,7 +15,7 @@ import tarfile
 SOURCE_ROOT: Path = Path("/source")
 OUTPUT_ROOT: Path = Path("/package")
 # Build products and generated/private state never become source-package inputs.
-EXCLUDED: frozenset[str] = frozenset({".wattson", "target", "__pycache__", ".git", ".venv", ".pytest_cache"})
+EXCLUDED: frozenset[str] = frozenset({".wattson", ".artifacts", "target", "__pycache__", ".git", ".venv", ".pytest_cache"})
 
 
 def package() -> None:

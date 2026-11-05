@@ -1,0 +1,15 @@
+[
+  {"scale": true},
+  {"scale": "NaN"},
+  {"scale": 0.89},
+  {"scale": 1.11},
+  {"max_iter": 0},
+  {"max_iter": 101},
+  {"max_iter": true},
+  {"observation_id": 1.5},
+  {"contingency_line": false},
+  {"operation": "execute_python"},
+  {"observation": "arbitrary_file"},
+  {"operation": "line_rating", "observation": "bus_voltage"},
+  {"operation": "none", "scale": 1.1}
+]

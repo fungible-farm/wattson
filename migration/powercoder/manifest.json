@@ -1335,6 +1335,34 @@
       "status": "missing",
       "source_sha256": "01ef80b8e1af99bd447f0aa0a8c072a1f4161587757dad056aa8891ee50e661a",
       "snapshot": "migration/powercoder/source/training/unsloth/train.py"
+    },
+    {
+      "source": "scripts/r7_chain.sh",
+      "target": "migration/powercoder/source/scripts/r7_chain.sh",
+      "status": "historical_workflow_or_replaced_diagnostic",
+      "snapshot": "migration/powercoder/source/scripts/r7_chain.sh",
+      "source_sha256": "c5244ecf5bf6e987429ecb6ba4d06e78cc2b6a945e4fd2cf8ec4b6340ac78e09"
+    },
+    {
+      "source": "scripts/grpo_wait.sh",
+      "target": "migration/powercoder/source/scripts/grpo_wait.sh",
+      "status": "historical_workflow_or_replaced_diagnostic",
+      "snapshot": "migration/powercoder/source/scripts/grpo_wait.sh",
+      "source_sha256": "a5512cb961669ae92f57018a4a762a649df2ab9fea1afca66da8947adf7bc42b"
+    },
+    {
+      "source": "scripts/grpo_sm3lly_wait.sh",
+      "target": "migration/powercoder/source/scripts/grpo_sm3lly_wait.sh",
+      "status": "historical_workflow_or_replaced_diagnostic",
+      "snapshot": "migration/powercoder/source/scripts/grpo_sm3lly_wait.sh",
+      "source_sha256": "e5e19d81f59c516427b81c34030fdbfad7e82fccc25d5b28af1c39ef098c546f"
+    },
+    {
+      "source": "scripts/powercoder-doctor.py",
+      "target": "migration/powercoder/source/scripts/powercoder-doctor.py",
+      "status": "historical_workflow_or_replaced_diagnostic",
+      "snapshot": "migration/powercoder/source/scripts/powercoder-doctor.py",
+      "source_sha256": "e43ccdceaae4af7d0ebb90004d2ebd9f1aeac94d686b4fd88a36f2a13feb9b13"
     }
   ],
   "external_reference_inventory": [

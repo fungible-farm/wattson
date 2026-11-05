@@ -1,0 +1,17 @@
+{
+  "case_id": "snem-sa-2000",
+  "diagnostics": [
+    "Voltage limit violations on 39 buses (band 0.95-1.05 pu)"
+  ],
+  "input_hash": "sha256:731d5a9fd21118df122dc5107b887e9f91a259b14470a48538af8037bebf8f2a",
+  "result_hash": "sha256:646b87485e1a372a8d0fda9302722c9c272844e493c02afa94840ce1ce92fe90",
+  "solver": "pandapower",
+  "solver_version": "3.5.4",
+  "status": "constraint_violation",
+  "tool_name": "run_power_flow",
+  "validity": {
+    "numerical": true,
+    "physical": false,
+    "schema": true
+  }
+}

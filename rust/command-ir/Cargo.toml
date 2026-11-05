@@ -1,0 +1,11 @@
+[package]
+name = "command-ir"
+version = "0.1.0"
+edition = "2021"
+description = "PowerCoder's typed command IR (PRD-0010 G1): SOLVE and SIMULATE, lowered to run_study_trial"
+license = "MIT"
+
+[dependencies]
+# preserve_order: emitted JSON keeps declaration order, as the served schema does (FM-23).
+serde_json = { version = "1", features = ["preserve_order"] }
+serde = "1"

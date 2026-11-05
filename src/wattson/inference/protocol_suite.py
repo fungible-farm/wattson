@@ -20,12 +20,15 @@ from __future__ import annotations
 import argparse
 import collections
 import json
+import os
+import shutil
 import subprocess
 from pathlib import Path
 from typing import Any, TypedDict
 
 RUST_DIR: Path = Path(__file__).resolve().parents[3] / "rust"
-LIFT: Path = RUST_DIR / "target/release/lift"
+# Images ship the native binary; development checkouts may build their own source.
+LIFT: Path = Path(os.environ.get("WATTSON_IR_BINARY") or shutil.which("wattson-ir-lift") or str(RUST_DIR / "target/release/lift"))
 EXIT_CRITERION: float = 0.99  # backlog 0015 exit criterion
 ERRORS_SHOWN: int = 5
 
@@ -47,7 +50,9 @@ class ModelProtocol(TypedDict):
 def lift(arguments: list[str]) -> list[dict[str, Any]]:
     """The IR's verdict on each raw argument string (built on first use)."""
     if not LIFT.exists():
-        subprocess.run(["cargo", "build", "-q", "--release", "-p", "command-ir", "--bin", "lift"], cwd=RUST_DIR, check=True)
+        if not (RUST_DIR / "Cargo.toml").is_file() or shutil.which("cargo") is None:
+            raise RuntimeError("Use the Wattson developer image or set WATTSON_IR_BINARY to the approved native lift binary")
+        subprocess.run(["cargo", "build", "--locked", "-q", "--release", "-p", "command-ir", "--bin", "lift"], cwd=RUST_DIR, check=True)
     flat = [a.replace("\n", " ") for a in arguments]
     out = subprocess.run([str(LIFT)], input="\n".join(flat) + "\n", capture_output=True, text=True, check=True).stdout
     return [json.loads(line) for line in out.splitlines()]

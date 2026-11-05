@@ -1,0 +1,127 @@
+[
+  {
+    "source": "labs/10-poweragentbench-restorebench/restorebench_lab.py",
+    "target": "benchmarks/restorebench/restorebench_lab.py",
+    "source_sha256": "94faea48b56e9b583e6c28675eaf8adcdc00e411891add5fc5e556df804fb02a"
+  },
+  {
+    "source": "labs/10-poweragentbench-restorebench/local_provider.py",
+    "target": "benchmarks/restorebench/local_provider.py",
+    "source_sha256": "1f4d84113414875b79c329a9f7a7682289f2e37a896363bc88b51aff698aef4c"
+  },
+  {
+    "source": "labs/10-poweragentbench-restorebench/fetch_restorebench.py",
+    "target": "benchmarks/restorebench/fetch_restorebench.py",
+    "source_sha256": "8be3f08372f938104f47688dbb5991ae63acc6bf44130e4b034a2bba8429b342"
+  },
+  {
+    "source": "labs/10-poweragentbench-restorebench/witness_scorer.py",
+    "target": "benchmarks/restorebench/witness_scorer.py",
+    "source_sha256": "7d11ae124ba8f3f438209806cecac4974cb563ff33f1b5d8c107aa3fd84164d2"
+  },
+  {
+    "source": "labs/10-poweragentbench-restorebench/agent_runner.py",
+    "target": "benchmarks/restorebench/agent_runner.py",
+    "source_sha256": "379b2d780650fb9e8760337a202d6e926c1ab0d0024c6f38315c37c6f24ce5ab"
+  },
+  {
+    "source": "labs/10-poweragentbench-restorebench/expected_sources.json",
+    "target": "benchmarks/restorebench/expected_sources.json",
+    "source_sha256": "acc978db5b4f32e136604a3121fd0653b903312532e87d563c5215d21c431cd2"
+  },
+  {
+    "source": "labs/10-poweragentbench-restorebench/expected_witness_summary.json",
+    "target": "benchmarks/restorebench/expected_witness_summary.json",
+    "source_sha256": "c83be72619f0c90276a8a46f84d2baf197db341d1b7aaa028e20e19d86deb6c8"
+  },
+  {
+    "source": "labs/10-poweragentbench-restorebench/README.md",
+    "target": "benchmarks/restorebench/README.md",
+    "source_sha256": "5fc2c68c942689f3cb9d1602e1b74159d82dfcae435fef94a9b448d08963a736"
+  },
+  {
+    "source": "labs/10-poweragentbench-restorebench/test_lab10.py",
+    "target": "tests/benchmarks/restorebench/test_restorebench.py",
+    "source_sha256": "47f2b65b5dea657ce5c4a0dceca3492ef2ebc49ba3a89f2aedc92d0f336879a4"
+  },
+  {
+    "source": "tests/integration/test_canonical_mcp_transport.py",
+    "target": "tests/integration/test_canonical_mcp_transport.py",
+    "source_sha256": "6f70d100255b4b5f08e46293c0fe52328c11f62824f432f172075f80065f574c"
+  },
+  {
+    "source": "tests/integration/test_powermcp_contract.py",
+    "target": "tests/integration/test_powermcp_contract.py",
+    "source_sha256": "38acd7ab169f67d76376500e9c66753e6ceb25649f945a2cd7560222a226d1ea"
+  },
+  {
+    "source": "tests/integration/test_study_tools.py",
+    "target": "tests/integration/test_study_tools.py",
+    "source_sha256": "8a7aa6b46fdbbff1185887ec147c9056c1fd3dd9ef35e90ae029f45cb4f13495"
+  },
+  {
+    "source": "tests/integration/test_teacher_gateway.py",
+    "target": "tests/integration/test_teacher_gateway.py",
+    "source_sha256": "ad328463925b1ef553eaddea952c34a3c7b99d8a5ae46fd44b4e9d2e8cd0ea10"
+  },
+  {
+    "source": "tests/integration/fixtures/study_trials.json",
+    "target": "tests/integration/fixtures/study_trials.json",
+    "source_sha256": "e95a5513f166c2dc78669fb3aa01be2df604ab364e891491789fde1ee234b078"
+  },
+  {
+    "source": "tests/integration/fixtures/rejected_study_arguments.json",
+    "target": "tests/integration/fixtures/rejected_study_arguments.json",
+    "source_sha256": "39d22f466484dc31d6dc28dc850e38371066d6d10837ba92f6d4d01070492bc1"
+  },
+  {
+    "source": "tests/test_m04_dataset.py",
+    "target": "tests/datasets/test_factory.py",
+    "source_sha256": "afff267635d7c7e1cbf30c67d654541dbdd5a75d3a158335e6f54bbff1ba5005"
+  },
+  {
+    "source": "scripts/powercoder-discover-elements.py",
+    "target": "scripts/discover_elements.py",
+    "source_sha256": "4a650649143b3e872bfc5c055ab360604daf86c8f14e99ac5f5bd3da4e5fb100"
+  },
+  {
+    "source": "configs/powercoder/models.yaml",
+    "target": "configs/models.yaml",
+    "source_sha256": "eae03fd1f43f7e8bd9a0dd306c189e427797e2ba3e2e4ebadae31f3ec59654ae"
+  },
+  {
+    "source": "scripts/launch_agent_study.sh",
+    "target": "scripts/launch_agent_study.sh",
+    "source_sha256": "eceb6c851647dcf2c1d0459615b91b5e1ec63cebc6210923ba3079d828739f1c"
+  },
+  {
+    "source": "scripts/launch_powercoder_comparison.sh",
+    "target": "scripts/launch_powercoder_comparison.sh",
+    "source_sha256": "8e2dca141144f7581aa582a0ae3e14a4b09a7d74b679088308c2ae4002dc17a0"
+  },
+  {
+    "source": "scripts/launch_agent_sft.sh",
+    "target": "scripts/launch_agent_sft.sh",
+    "source_sha256": "b52c86dd746e353cc51a39db4f491922340fe5cc9ea9e2aa83a2b116e37154c3"
+  },
+  {
+    "source": "scripts/cgmes_peer_check.sh",
+    "target": "scripts/cgmes_peer_check.sh",
+    "source_sha256": "d2a9dd174f04d73db4a6c4dd5cc8faa9c5ab72a5c26389a7d909f0e9498aae54"
+  },
+  {
+    "source": "scripts/r7_chain.sh",
+    "target": "scripts/r7_chain.sh",
+    "source_sha256": "c5244ecf5bf6e987429ecb6ba4d06e78cc2b6a945e4fd2cf8ec4b6340ac78e09"
+  },
+  {
+    "source": "scripts/grpo_wait.sh",
+    "target": "scripts/grpo_wait.sh",
+    "source_sha256": "a5512cb961669ae92f57018a4a762a649df2ab9fea1afca66da8947adf7bc42b"
+  },
+  {
+    "source": "scripts/grpo_sm3lly_wait.sh",
+    "target": "scripts/grpo_sm3lly_wait.sh",
+    "source_sha256": "e5e19d81f59c516427b81c34030fdbfad7e82fccc25d5b28af1c39ef098c546f"
+  }
+]

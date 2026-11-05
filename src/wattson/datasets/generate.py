@@ -853,10 +853,10 @@ def main(argv: Optional[list[str]] = None) -> int:
     ap.add_argument("--base-seed", type=int, default=42, help="Deterministic base seed (default 42).")
     ap.add_argument("--count-per-subfamily", type=int, default=None,
                     help="Override: use this count for EVERY subfamily (quick smoke). Default: DEFAULT_COUNTS (sums to 500).")
-    ap.add_argument("--out-dir", type=Path, default=REPO_ROOT / "wattson" / "datasets" / "smoke",
+    ap.add_argument("--out-dir", type=Path, default=REPO_ROOT / "out" / "dataset-smoke",
                     help="Output directory (examples.jsonl + manifest.json).")
     ap.add_argument("--element-lists", type=Path,
-                    default=REPO_ROOT / "wattson" / "datasets" / "element_lists.json",
+                    default=Path(__file__).with_name("element_lists.json"),
                     help="Path to the curated element lists JSON.")
     args = ap.parse_args(argv)
 
