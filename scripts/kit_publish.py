@@ -13,6 +13,7 @@ the gateway config, skills, justfile, and diagrams from the repository root.
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -228,10 +229,31 @@ code:
   - path: gateway
   - path: skills
 docs:
+  - path: REVISION
   - path: docs/diagrams
 """
         kitfile_path = staging / "Kitfile"
         kitfile_path.write_text(kitfile)
+
+
+def kitfile_paths(text: str) -> list[str]:
+    """Every '- path: X' entry of a Kitfile (values written by write_kitfile are bare or JSON-quoted)."""
+    paths = []
+    for line in text.splitlines():
+        m = re.match(r"^\s*-\s*path:\s*(.+?)\s*$", line)
+        if m:
+            value = m.group(1)
+            paths.append(json.loads(value) if value.startswith('"') else value)
+    return paths
+
+
+def assert_kitfile_covers(staging: Path, staged: list[str]) -> None:
+    """kit pack packs only what the Kitfile names. Refuse if any staged file is not covered (it would silently be missing)."""
+    paths = [p.rstrip("/") for p in kitfile_paths((staging / "Kitfile").read_text())]
+    uncovered = [rel for rel in staged if not any(rel == p or rel.startswith(p + "/") for p in paths)]
+    if uncovered:
+        print("error: staged file(s) not listed in the Kitfile, so they would NOT be in the kit: " + ", ".join(uncovered), file=sys.stderr)
+        sys.exit(1)
 
 
 def short_sha(root: Path) -> str:
@@ -327,6 +349,8 @@ def main():
         write_kitfile(staging, args.command, args.ref,
                       Path(args.run_dir).resolve() if args.command == "evidence" else None,
                       root if args.command == "agent" else None)
+
+        assert_kitfile_covers(staging, staged)
 
         # Pack and optionally push
         digest, pushed = pack_and_push(kit_bin, staging, args.ref, args.push, args.plain_http)
