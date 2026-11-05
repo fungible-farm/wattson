@@ -12,8 +12,9 @@ and the minimum paths/context it needs; do not copy the parent transcript.
 ## Read-only work
 
 Write the task to a UTF-8 file: state the objective, file scope, expected evidence, and
-what the delegate should return. Require actual `read` calls, relevant path/line citations,
-and explicit limits. A skeptical review is one opposing review, not many repeated calls.
+what the delegate should return. Require actual `read` calls, relevant file paths and exact code anchors,
+and explicit limits. Ask for exact line numbers only when numbered tool output (for
+example grep results) supplies them; raw reads do not justify guessed line citations. A skeptical review is one opposing review, not many repeated calls.
 
 From the checkout, with its environment already installed:
 
