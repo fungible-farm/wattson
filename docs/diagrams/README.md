@@ -10,6 +10,7 @@ the pictures (`.svg`) are rendered from them.
 | [gateway-lifecycle](gateway-lifecycle.svg) | the local model gateway: up, serving, backend failure, down |
 | [model-load](model-load.svg) | the memory gate before any model is loaded or downloaded |
 | [kit-lifecycle](kit-lifecycle.svg) | install `kit`, check a directory, pack, publish, size before download |
+| [retrieval-lifecycle](retrieval-lifecycle.svg) | the embedding and reranker servers: verified models, memory gate, serving, teardown |
 | [delivery-flow](delivery-flow.svg) | backlog issue to merged change, and local equals remote |
 | [recipes](recipes.svg) | every `just` recipe and what it depends on (generated, never hand-edited) |
 | [ecosystem](ecosystem.svg) | the picture in the README |

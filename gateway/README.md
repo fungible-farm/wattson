@@ -48,3 +48,8 @@ a durable record is wanted.
 
 Harmless start-up warning: the config is read-only so agentgateway cannot write a generated MCP session
 key (MCP is not used here).
+
+## Embedding and rerank routes
+`POST /v1/embeddings` goes to the embedding server (127.0.0.1:8081) and `POST /v1/rerank` to the reranker (127.0.0.1:8082), both started by
+`just retrieval-up` (see `docs/diagrams/retrieval-lifecycle.svg`). Chat requests still go to llama-swap. These are plain routes: the gateway
+logs them but does not change them.

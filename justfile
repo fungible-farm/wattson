@@ -257,5 +257,82 @@ model-guard *args:
 
 # Check that every command named in the hand-written state charts exists, that every transition names a command and a pass observation, and that the generated recipe graph is current.
 diagrams-check:
-    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2 docs/diagrams/kit-lifecycle.d2
+    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2 docs/diagrams/kit-lifecycle.d2 docs/diagrams/retrieval-lifecycle.d2
     python3 scripts/justfile_diagram.py --check docs/diagrams/recipes.d2
+
+# --- retrieval: embedding and reranker model servers (CPU, separate containers, behind the gateway) ---------------------------
+# Embedding: nomic-embed-text-v1.5 (768-dim). Reranker: bge-reranker-v2-m3. Both Q4_K_M GGUF, each <1 GB.
+# Models are downloaded once into .models/ (gitignored). Each server is a separate llama.cpp container with a 2 GB memory limit.
+
+# Pinned: a Hugging Face commit and the file's sha256 (verified after download), and the llama.cpp image by multi-arch INDEX digest.
+embed_model := "nomic-embed-text-v1.5.Q4_K_M.gguf"
+embed_repo := "nomic-ai/nomic-embed-text-v1.5-GGUF"
+embed_rev := "0188c9bf409793f810680a5a431e7b899c46104c"
+embed_sha256 := "d4e388894e09cf3816e8b0896d81d265b55e7a9fff9ab03fe8bf4ef5e11295ac"
+embed_url := "https://huggingface.co/" + embed_repo + "/resolve/" + embed_rev + "/" + embed_model
+rerank_model := "bge-reranker-v2-m3-Q4_K_M.gguf"
+rerank_repo := "gpustack/bge-reranker-v2-m3-GGUF"
+rerank_rev := "3093af03b1a635e67b084b1d8c03c5f5e020fd05"
+rerank_sha256 := "e186a244ed455b4ab66ec64339ce7427a6ae13f5c0b5e544de96e50f0f8b3673"
+rerank_url := "https://huggingface.co/" + rerank_repo + "/resolve/" + rerank_rev + "/" + rerank_model
+llama_image := env("WATTSON_LLAMA_IMAGE", "ghcr.io/ggml-org/llama.cpp:server@sha256:c0a11067c72bb1eb330b8bddbf9869274c195e596bf4fae55fd527102e644b85")
+
+# Start the embedding and reranker servers as separate containers (ports 8081, 8082). Downloads models if missing; runs memory guard.
+retrieval-up:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    # Download to a .part file, verify the pinned sha256, and only then move it into place: a failed or tampered
+    # download can never be mistaken for a model on the next run.
+    fetch() {  # file url sha256
+        if [ -f ".models/$1" ] && [ "$(sha256sum ".models/$1" | cut -d' ' -f1)" = "$3" ]; then
+            echo "retrieval-up: $1 present, sha256 verified"; return 0
+        fi
+        echo "retrieval-up: downloading $1 (pinned revision)"
+        rm -f ".models/$1.part"
+        curl -L -f -o ".models/$1.part" "$2"
+        got="$(sha256sum ".models/$1.part" | cut -d' ' -f1)"
+        if [ "$got" != "$3" ]; then
+            rm -f ".models/$1.part"
+            echo "retrieval-up: sha256 mismatch for $1 (expected $3, got $got); nothing installed" >&2
+            return 1
+        fi
+        mv ".models/$1.part" ".models/$1"
+        echo "retrieval-up: $1 downloaded, sha256 verified"
+    }
+    mkdir -p .models
+    fetch "{{embed_model}}" "{{embed_url}}" "{{embed_sha256}}"
+    fetch "{{rerank_model}}" "{{rerank_url}}" "{{rerank_sha256}}"
+    echo "retrieval-up: running memory guard on embedding model"
+    python3 scripts/model_mem_guard.py ".models/{{embed_model}}" || { echo "retrieval-up: memory guard failed for embedding model" >&2; exit 1; }
+    echo "retrieval-up: running memory guard on reranker model"
+    python3 scripts/model_mem_guard.py ".models/{{rerank_model}}" || { echo "retrieval-up: memory guard failed for reranker model" >&2; exit 1; }
+    echo "retrieval-up: starting embedding server (wattson-embed) on 127.0.0.1:8081"
+    podman rm -f wattson-embed >/dev/null 2>&1 || true
+    podman run -d --name wattson-embed --pull=missing --restart=on-failure:3 --read-only --cap-drop=all --security-opt=no-new-privileges --memory=2g --memory-swap=2g --cpus=1 --pids-limit=128 -p 127.0.0.1:8081:8080 -v "$PWD/.models:/models:ro,Z" {{llama_image}} -m /models/{{embed_model}} --embeddings --pooling mean -c 2048 --host 0.0.0.0 --port 8080 >/dev/null
+    echo "retrieval-up: starting reranker server (wattson-rerank) on 127.0.0.1:8082"
+    podman rm -f wattson-rerank >/dev/null 2>&1 || true
+    podman run -d --name wattson-rerank --pull=missing --restart=on-failure:3 --read-only --cap-drop=all --security-opt=no-new-privileges --memory=2g --memory-swap=2g --cpus=1 --pids-limit=128 -p 127.0.0.1:8082:8080 -v "$PWD/.models:/models:ro,Z" {{llama_image}} -m /models/{{rerank_model}} --reranking --pooling rank -c 2048 --host 0.0.0.0 --port 8080 >/dev/null
+    echo "retrieval-up: waiting for servers to become healthy"
+    for i in $(seq 1 40); do
+        e=$(curl -s -o /dev/null -w "%{http_code}" --max-time 2 http://127.0.0.1:8081/health 2>/dev/null || echo 000)
+        r=$(curl -s -o /dev/null -w "%{http_code}" --max-time 2 http://127.0.0.1:8082/health 2>/dev/null || echo 000)
+        if [ "$e" = "200" ] && [ "$r" = "200" ]; then
+            echo "retrieval-up: both servers healthy"
+            exit 0
+        fi
+        sleep 1
+    done
+    echo "retrieval-up: servers not healthy after 40s; check just retrieval-status" >&2
+    exit 1
+
+# Stop and remove the embedding and reranker containers.
+retrieval-down:
+    @echo "retrieval-down: removing wattson-embed and wattson-rerank"
+    @podman rm -f wattson-embed wattson-rerank >/dev/null 2>&1 || true
+
+# Show container state and probe both /health endpoints.
+retrieval-status:
+    @echo "retrieval-status: container state and health probes"
+    @podman ps -a --filter name=wattson-embed --filter name=wattson-rerank --format '{{"{{.Names}}  {{.Status}}  {{.Ports}}"}}'
+    @curl -sS -o /dev/null -w 'embed /health -> http %{http_code}\n' --max-time 3 http://127.0.0.1:8081/health || true
+    @curl -sS -o /dev/null -w 'rerank /health -> http %{http_code}\n' --max-time 3 http://127.0.0.1:8082/health || true
