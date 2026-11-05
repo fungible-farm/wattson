@@ -188,3 +188,65 @@ class TestRenderDeterminism:
         llm1 = stdout1.split("--- llm models ---")[1].strip()
         llm2 = stdout2.split("--- llm models ---")[1].strip()
         assert llm1 == llm2
+
+
+class TestWritableBy:
+    """writable_by is enforced against a git base: who may add, change or remove which entry."""
+
+    def _repo(self, tmp_path):
+        repo = tmp_path / "repo"
+        repo.mkdir()
+        import shutil
+        shutil.copytree(REGISTRY_DIR, repo / "registries")
+        git = ["git", "-c", "user.name=t", "-c", "user.email=t@t"]
+        subprocess.run(git + ["init", "-q"], cwd=repo, check=True)
+        subprocess.run(git + ["add", "-A"], cwd=repo, check=True)
+        subprocess.run(git + ["commit", "-q", "-m", "base"], cwd=repo, check=True)
+        return repo
+
+    def _run(self, repo, role):
+        root = os.path.join(os.path.dirname(__file__), "..")
+        return subprocess.run(
+            [sys.executable, SCRIPT, "--registry-dir", "registries", "--root", root, "--role", role, "--base", "HEAD"],
+            cwd=repo, capture_output=True, text=True)
+
+    def test_no_change_passes_for_any_role(self, tmp_path):
+        result = self._run(self._repo(tmp_path), "nobody")
+        assert result.returncode == 0, result.stdout
+        assert "PASS writable_by" in result.stdout
+
+    def test_permitted_role_may_change_entry(self, tmp_path):
+        repo = self._repo(tmp_path)
+        tools = load_yaml(repo / "registries" / "tools.yaml")
+        tools["entries"][0]["description"] = "edited by an operator"
+        write_yaml(repo / "registries" / "tools.yaml", tools)
+        result = self._run(repo, "operator")
+        assert result.returncode == 0, result.stdout
+
+    def test_unlisted_role_cannot_add_entry(self, tmp_path):
+        repo = self._repo(tmp_path)
+        tools = load_yaml(repo / "registries" / "tools.yaml")
+        tools["entries"].append({"name": "sneaky", "mcp_url": "http://169.254.1.2:3999/mcp",
+                                 "writable_by": ["intern"], "description": "x"})
+        write_yaml(repo / "registries" / "tools.yaml", tools)
+        result = self._run(repo, "someone-else")
+        assert result.returncode == 1
+        assert "entry sneaky added: role 'someone-else' not in writable_by ['intern']" in result.stdout
+
+    def test_entry_cannot_grant_itself_write_access(self, tmp_path):
+        repo = self._repo(tmp_path)
+        tools = load_yaml(repo / "registries" / "tools.yaml")
+        tools["entries"][0]["writable_by"].append("intern")
+        write_yaml(repo / "registries" / "tools.yaml", tools)
+        result = self._run(repo, "intern")
+        assert result.returncode == 1
+        assert "changed: role 'intern' not in writable_by" in result.stdout
+
+    def test_unlisted_role_cannot_remove_entry(self, tmp_path):
+        repo = self._repo(tmp_path)
+        prompts = load_yaml(repo / "registries" / "prompts.yaml")
+        removed = prompts["entries"].pop()
+        write_yaml(repo / "registries" / "prompts.yaml", prompts)
+        result = self._run(repo, "intern")
+        assert result.returncode == 1
+        assert f"entry {removed['name']} removed" in result.stdout

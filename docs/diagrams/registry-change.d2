@@ -9,6 +9,7 @@ rendered: Rendered (gateway config)
 live: Live (gateway reloaded)
 
 edited -> checked: "cmd: just registry-check | pass: prints 'PASS registries: ...'"
+edited -> checked: "cmd: just registry-check --role operator --base origin/main | pass: prints 'PASS writable_by: role ...'; a change the role may not make prints 'FAIL <file>: entry <name> <added|changed|removed>: role ... not in writable_by' and exits 1"
 checked -> rendered: "cmd: python3 scripts/registry_check.py --render | pass: prints mcp targets and llm models YAML"
 rendered -> live: "cmd: just gateway-logs | pass: log shows 'loaded config' with updated targets"
 live -> live: "cmd: just gateway-status | pass: prints 'GET /v1/models -> http 200'"

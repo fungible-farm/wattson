@@ -62,5 +62,10 @@ fixed URL, adds a tool entry, re-renders, and lists again at the same URL. Obser
 Note the contract consequence: with one target the gateway serves bare tool names; with two or more it prefixes
 `<target>_<tool>`, so adding the second tool server renames the first server's tools. Clients must not hard-code names.
 
-## Not done
+## Who may change what (enforced)
 
+`just registry-check --role ROLE --base origin/main` compares the working tree with the base ref, entry by entry
+(`tools` and `prompts` carry `writable_by`). Every added, changed or removed entry must list ROLE; changed and
+removed entries are judged by the list they had at the base, so an entry cannot grant itself access in the same change.
+Failure: `FAIL <file>: entry <name> <added|changed|removed>: role 'R' not in writable_by [...]`, exit 1.
+The role is asserted by the caller (a CI step or a reviewer's command), not authenticated here.
