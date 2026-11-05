@@ -11,14 +11,20 @@ from typing import Any, Optional
 
 import httpx
 
+# Module-level sleep so tests can patch it; the real implementation sleeps.
+_sleep = time.sleep
+
 
 class InferenceClient:
     """Client for the llama-swap OpenAI-compatible inference gateway."""
 
-    def __init__(self, base_url: str = "http://127.0.0.1:8000", timeout: float = 120.0, api_key_env: Optional[str] = None):
+    def __init__(self, base_url: str = "http://127.0.0.1:8000", timeout: float = 120.0, api_key_env: Optional[str] = None,
+                 max_retries: int = 0, backoff_seconds: float = 1.0):
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
         self.api_key_env = api_key_env
+        self.max_retries = max_retries
+        self.backoff_seconds = backoff_seconds
         if api_key_env is not None and not os.environ.get(api_key_env):
             # Refuse rather than silently send no credentials; name the variable, never print a value.
             raise ValueError(f"--api-key-env {api_key_env}: that environment variable is not set or is empty")
@@ -64,10 +70,33 @@ class InferenceClient:
             payload.update(extra)
 
         start = time.time()
-        resp = self.client.post(f"{self.base_url}/v1/chat/completions", json=payload, headers=self._headers())
-        resp.raise_for_status()
+        retries: list[dict[str, Any]] = []
+        attempt = 0
+        while True:
+            resp = self.client.post(f"{self.base_url}/v1/chat/completions", json=payload, headers=self._headers())
+            try:
+                resp.raise_for_status()
+                break
+            except httpx.HTTPStatusError as error:
+                status = resp.status_code
+                # Retry only on 429 or 5xx, up to max_retries times.
+                if attempt >= self.max_retries or (status < 500 and status != 429):
+                    raise
+                # Honour Retry-After header if present (cap at 60 s).
+                wait = self.backoff_seconds * (2 ** attempt)
+                retry_after = resp.headers.get("retry-after")
+                if retry_after is not None:
+                    try:
+                        wait = min(float(retry_after), 60.0)
+                    except ValueError:
+                        pass
+                retries.append({"status": status, "wait_seconds": wait})
+                attempt += 1
+                _sleep(wait)
         result = resp.json()
         result["elapsed_seconds"] = time.time() - start
+        if retries:
+            result["retries"] = retries
         return result
 
     def close(self):
