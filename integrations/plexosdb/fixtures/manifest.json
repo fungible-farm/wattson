@@ -1,0 +1,19 @@
+{
+  "repository": "https://github.com/NatLabRockies/plexosdb",
+  "commit": "73e7fabe5e9f951231b6120c139cec1e52d12463",
+  "path": "tests/data/numeric_object_names.xml",
+  "license": "BSD-3-Clause",
+  "sha256": "2e7e5d7f2ac6dca2dc83ce765faa7cecf1317aa722a77593e7fdd7746aa6b862",
+  "generator_names": [
+    "1133161",
+    "113_316_1"
+  ],
+  "summary": {
+    "plexosdb_version": "1.7.0",
+    "input_sha256": "2e7e5d7f2ac6dca2dc83ce765faa7cecf1317aa722a77593e7fdd7746aa6b862",
+    "objects": 2,
+    "classes": {
+      "Generator": 2
+    }
+  }
+}
