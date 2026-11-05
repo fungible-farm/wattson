@@ -54,6 +54,13 @@ secrets (rejects fields named api_key, apiKey, token, secret).
 5. The gateway's file watch picks up the change and reloads. Harness config
    (the agent's own setup) is unchanged.
 
+## Live reload (verified)
+
+`just gateway-reload-check` starts two throwaway MCP servers and a throwaway agentgateway, lists tools at one
+fixed URL, adds a tool entry, re-renders, and lists again at the same URL. Observed: `tools-before:
+['alpha_ping']` -> `tools-after: ['a_alpha_ping', 'b_beta_ping']`, container `StartedAt` unchanged.
+Note the contract consequence: with one target the gateway serves bare tool names; with two or more it prefixes
+`<target>_<tool>`, so adding the second tool server renames the first server's tools. Clients must not hard-code names.
+
 ## Not done
 
-- Live gateway reload test (verify the gateway actually picks up changes).
