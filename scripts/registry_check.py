@@ -11,6 +11,7 @@ Exit 0 on success, 1 on failure.
 import argparse
 import json
 import os
+import subprocess
 import sys
 
 import yaml
@@ -105,12 +106,42 @@ def render_backends(registry_dir):
     return {"llm": {"models": models}}
 
 
+WRITE_GATED = ("tools", "prompts")  # registries whose entries carry writable_by
+
+
+def enforce_write(registry_dir, role, base):
+    """Fail every entry added/changed/removed since git ref `base` that `role` may not write.
+
+    Deterministic and git-based: entries are compared by name between `git show <base>:<file>` and the working
+    tree. Added entries are checked against their own writable_by; changed and removed entries against the
+    writable_by they had at `base` (so an entry cannot grant itself write access in the same change).
+    """
+    failures = []
+    for name in WRITE_GATED:
+        rel = os.path.join(registry_dir, f"{name}.yaml")
+        shown = subprocess.run(["git", "show", f"{base}:{rel}"], capture_output=True, text=True)
+        old = {e["name"]: e for e in (yaml.safe_load(shown.stdout) or {}).get("entries", [])} if shown.returncode == 0 else {}
+        new = {e["name"]: e for e in load_registry(registry_dir, name).get("entries", [])}
+        for entry in sorted(set(old) | set(new)):
+            if old.get(entry) == new.get(entry):
+                continue
+            kind = "added" if entry not in old else "removed" if entry not in new else "changed"
+            allowed = (old.get(entry) or new.get(entry)).get("writable_by", [])
+            if role not in allowed:
+                failures.append((f"{name}.yaml", f"entry {entry} {kind}: role '{role}' not in writable_by {allowed}"))
+    return failures
+
+
 def main():
     parser = argparse.ArgumentParser(description="Validate gateway registries")
     parser.add_argument("--registry-dir", default="registries", help="Directory containing registry files")
     parser.add_argument("--render", action="store_true", help="Render gateway config fragments")
     parser.add_argument("--root", default=None, help="Repo root that skill/prompt paths are relative to (default: parent of --registry-dir)")
+    parser.add_argument("--role", default=None, help="Enforce writable_by: the role making this change (needs --base)")
+    parser.add_argument("--base", default=None, help="Git ref the change is measured against, e.g. origin/main")
     args = parser.parse_args()
+    if bool(args.role) != bool(args.base):
+        parser.error("--role and --base go together")
     global ROOT
     ROOT = os.path.abspath(args.root) if args.root else None
 
@@ -123,11 +154,15 @@ def main():
         registry = load_registry(args.registry_dir, name)
         counts[name] = len(registry.get("entries", []))
 
+    if args.role and not all_failures:
+        all_failures.extend(enforce_write(args.registry_dir, args.role, args.base))
     if all_failures:
         for file, reason in all_failures:
             print(f"FAIL {file}: {reason}")
         sys.exit(1)
 
+    if args.role:
+        print(f"PASS writable_by: role '{args.role}' may make every change since {args.base}")
     print(f"PASS registries: backends={counts['backends']} tools={counts['tools']} skills={counts['skills']} prompts={counts['prompts']}")
 
     if args.render:

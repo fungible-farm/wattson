@@ -260,8 +260,8 @@ gateway-reload-check:
     @uv run python scripts/gateway_reload_check.py
 
 # Validate and render the four gateway registries (backends, tools, skills, prompts).
-registry-check:
-    @python3 scripts/registry_check.py --render 2>&1 | grep -E '^(PASS|FAIL) '
+registry-check *args:
+    @python3 scripts/registry_check.py --render {{args}} 2>&1 | grep -E '^(PASS|FAIL) '
 
 # Failure behaviour of the gateway (#24): a request is logged; a stopped backend gives a 5xx, a non-zero client exit and an error record.
 gateway-failure-check:
