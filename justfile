@@ -192,6 +192,7 @@ diagrams:
     url="${WATTSON_KROKI_URL:-http://127.0.0.1:8010}"
     curl -fsS "$url/health" >/dev/null || { echo "no Kroki at $url - set WATTSON_KROKI_URL, or run one from github.com/promptexecution/kr0ki (just dev-kroki-up)" >&2; exit 1; }
     shopt -s nullglob
+    python3 scripts/justfile_diagram.py > docs/diagrams/recipes.d2   # the recipe graph is generated from this justfile
     for f in docs/diagrams/*.d2 docs/diagrams/*.dot; do
         case "$f" in *.d2) kind=d2 ;; *.dot) kind=graphviz ;; esac
         out="${f%.*}.svg"; tmp="$(mktemp)"
@@ -237,3 +238,8 @@ gateway-logs *args:
 # Refuse a model that would not fit in memory BEFORE downloading or loading it. Args: file, directory or size literal (233GB, 121GiB); optional --fraction F.
 model-guard *args:
     python3 scripts/model_mem_guard.py {{args}}
+
+# Check that every command named in the hand-written state charts exists, that every transition names a command and a pass observation, and that the generated recipe graph is current.
+diagrams-check:
+    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2
+    python3 scripts/justfile_diagram.py --check docs/diagrams/recipes.d2

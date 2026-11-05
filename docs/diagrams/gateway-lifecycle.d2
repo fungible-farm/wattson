@@ -1,0 +1,18 @@
+# procedural-chart
+# State chart: the local model gateway (agentgateway in front of llama-swap).
+direction: down
+title: "Gateway lifecycle" {shape: text}
+
+stopped: Stopped {shape: oval}
+running: Running (loopback :4000)
+serving: Serving (a model answered through it)
+failing: Backend unreachable
+
+stopped -> running: "cmd: just gateway-up | pass: prints 'gateway-up: ready'"
+running -> serving: "cmd: just gateway-status | pass: prints 'GET /v1/models -> http 200'"
+serving -> serving: "cmd: just gateway-logs | pass: one 'request' record per call, status 200"
+serving -> serving: "cmd: edit gateway/agentgateway.yaml | pass: log shows 'loaded config' and container StartedAt unchanged (no restart)"
+serving -> failing: "cmd: backend stops answering | pass: gateway returns http 503 and logs an error record"
+failing -> serving: "cmd: backend restored | pass: just gateway-status prints http 200 again"
+running -> stopped: "cmd: just gateway-down | pass: podman ps -a --filter name=wattson-gateway lists nothing"
+serving -> stopped: "cmd: just gateway-down | pass: podman ps -a --filter name=wattson-gateway lists nothing"

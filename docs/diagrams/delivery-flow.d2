@@ -1,0 +1,21 @@
+# procedural-chart
+# State chart: how a change gets from the backlog to main (CONTRIBUTING.md). Same checks every time.
+direction: down
+title: "Delivery flow" {shape: text}
+
+backlog: Backlog issue {shape: oval}
+ready: Ready (acceptance line written)
+branch: Branch open
+pr: PR open
+green: CI green
+merged: Merged
+synced: Local equals origin/main {shape: oval}
+
+backlog -> ready: "cmd: gh issue view N | pass: body contains an Acceptance line with a command and expected output"
+ready -> branch: "cmd: git switch -c type/short-name | pass: git branch --show-current prints the name"
+branch -> pr: "cmd: gh pr create | pass: prints the PR URL; body quotes verbatim evidence"
+pr -> green: "cmd: gh pr checks N | pass: no line reads pending or fail"
+pr -> branch: "cmd: gh pr checks N | pass: a check failed; fix the cause, push again"
+green -> merged: "cmd: gh pr merge N --merge | pass: gh pr view N --json state prints MERGED"
+merged -> synced: "cmd: git pull --ff-only | pass: git status -sb shows main...origin/main with no ahead or behind"
+synced -> backlog: "cmd: gh issue close N | pass: acceptance output quoted in the issue first"

@@ -1,0 +1,18 @@
+# procedural-chart
+# State chart: the WattsOn pod. Each transition = the command that causes it + the observation that proves it.
+direction: down
+title: "Pod lifecycle" {shape: text}
+
+down_s: Down {shape: oval}
+starting: Starting (model pulled, vLLM loading)
+ready: Ready (real completion verified)
+unhealthy: Unhealthy
+
+down_s -> starting: "cmd: just up granite | pass: podman pod exists wattson exits 0"
+starting -> ready: "cmd: just doctor | pass: exit 0 including one real completion from the model"
+starting -> unhealthy: "cmd: just doctor | pass: exit non-zero (it prints what is wrong and how to fix it)"
+unhealthy -> starting: "cmd: just logs vllm | pass: failure cause read from the log, then just up again"
+ready -> ready: "cmd: just ask | pass: answer graded by re-solving the network"
+ready -> ready: "cmd: just eval smoke | pass: exit 0, summary.json complete"
+ready -> down_s: "cmd: just down | pass: podman pod exists wattson exits 1; volumes kept"
+starting -> down_s: "cmd: just down | pass: podman pod exists wattson exits 1"
