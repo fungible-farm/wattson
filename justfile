@@ -171,6 +171,14 @@ kit-install:
 kit-pack-check dir allow:
     python3 scripts/kit_pack_check.py "$1" --allow-file "$2"
 
+# Publish evaluation evidence as a kit package.
+kit-evidence run ref *flags:
+    python3 scripts/kit_publish.py evidence "$1" --ref "$2" "${@:3}"
+
+# Publish the agent kit (gateway config, skills, justfile, diagrams) as a kit package.
+kit-agent ref *flags:
+    python3 scripts/kit_publish.py agent --ref "$1" "${@:2}"
+
 # Prepare core images without host Python/Rust/Node; select optional profiles explicitly.
 install profile="core":
     ./wattson install "$@"

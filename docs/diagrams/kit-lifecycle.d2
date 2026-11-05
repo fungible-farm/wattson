@@ -17,3 +17,5 @@ installed -> refused: "cmd: just kit-pack-check DIR ALLOWFILE | pass: prints 'FA
 checked -> packed: "cmd: .tools/kit/kit pack DIR -t REF | pass: prints 'Model saved: sha256:<digest>', exit 0"
 packed -> published: "cmd: .tools/kit/kit push REF | pass: prints 'Pushed sha256:<digest>' with the same digest as pack"
 published -> sized: "cmd: just model-guard --kit-ref REF | pass: one line PASS or FAIL with total= avail= limit=; exit 2 means refuse"
+installed -> published: "cmd: just kit-evidence RUN_DIR REF --push | pass: prints 'kit evidence digest=sha256:<hex> ... pushed=yes'; refuses (exit 1) if RUN_DIR holds a forbidden file; only the selected evidence files are packed"
+installed -> published: "cmd: just kit-agent REF --push | pass: prints 'kit agent digest=sha256:<hex> ... pushed=yes'; REVISION in the kit records the git sha and clean or dirty; a dirty tree is refused without --allow-dirty"
