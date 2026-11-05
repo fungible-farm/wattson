@@ -1,0 +1,20 @@
+{
+  "source_issue": "https://github.com/fungible-farm/wattson/issues/4",
+  "source_url": "https://github.com/user-attachments/files/34405142/2026.ISP.Inputs.and.Assumptions.Workbook.7.8_WITH.COMMENTS_260624_KC.xlsm",
+  "sha256": "e9c0957510783d81d9c9dd0714c3810e81383ff98a1b9f159222cee8bd5db880",
+  "bytes": 25117824,
+  "zip_members": 374,
+  "zip_uncompressed_bytes": 181328302,
+  "zip_crc_error": null,
+  "sheets": 85,
+  "vba_project_members": 0,
+  "openpyxl_version": "3.1.5",
+  "streaming_load": "PASS",
+  "full_load": "PASS_WITH_UNSUPPORTED_DATA_VALIDATION_EXTENSION_WARNING",
+  "excel_mcp_server_version": "2.2.6",
+  "upstream_cell_budget_count": 4395232,
+  "upstream_default_cell_budget": 3000000,
+  "describe_sheet": "LIMIT_EXCEEDED",
+  "read_range_formulas_Approval_sheet_A1_C3": "PASS",
+  "file_handling": "original bytes locally downloaded into ignored out directory; never saved, repaired, uploaded or vendored"
+}

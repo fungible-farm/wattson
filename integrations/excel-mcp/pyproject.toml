@@ -1,0 +1,5 @@
+[project]
+name = "wattson-excel-mcp-integration"
+version = "0.1.0"
+requires-python = ">=3.14,<3.15"
+dependencies = ["excel-mcp-server==2.2.6", "openpyxl==3.1.5"]
