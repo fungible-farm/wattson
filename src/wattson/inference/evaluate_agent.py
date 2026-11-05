@@ -12,6 +12,7 @@ import argparse
 import asyncio
 import hashlib
 import json
+import os
 from pathlib import Path
 from typing import Any, TypedDict
 
@@ -170,7 +171,9 @@ async def attempt(args: argparse.Namespace, task: dict[str, Any], grading: async
                                  namespace_tools=getattr(args, "namespace_tools", False),
                                  python_tools=getattr(args, "python_tools", False),
                                  python_report_fields=getattr(args, "python_report_fields", False),
-                                 enforce_provenance=getattr(args, "enforce_provenance", False))
+                                 enforce_provenance=getattr(args, "enforce_provenance", False),
+                                 api_key_env=getattr(args, "api_key_env", None),
+                                 extra_body=getattr(args, "extra_body", None))
     with journal.open("x") as stream:
         try:
             await probe(options, stream)
@@ -215,6 +218,9 @@ async def evaluate(args: argparse.Namespace) -> None:
                      else TOOL_SET_NAMESPACE if getattr(args, "namespace_tools", False) else TOOL_SET_STUDY),
         # Whether the runtime provenance guard was on: a guarded result is a different arm and must never be read as an unguarded one.
         "enforce_provenance": bool(getattr(args, "enforce_provenance", False)),
+        "extra_body": getattr(args, "extra_body", None),
+        # The NAME of the variable that held the key (never its value), so a hosted arm is identifiable.
+        "api_key_env": getattr(args, "api_key_env", None),
     }
     (args.out / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
     (args.out / "prompts").mkdir()
@@ -266,11 +272,22 @@ def main() -> None:
                         help="With --python-tools: the v2 shell (trial replies carry the report numbers)")
     parser.add_argument("--enforce-provenance", action="store_true",
                         help="Runtime guard: refuse a final answer containing a number no tool produced (a separate arm; recorded in the summary)")
+    parser.add_argument("--api-key-env", default=None,
+                        help="Name of an environment variable containing the API key; sends Bearer auth")
+    parser.add_argument("--extra-body", default=None,
+                        help="JSON object to merge into the chat request body (e.g. {\"reasoning_effort\":\"high\"})")
     parser.add_argument("--concurrency", type=int, default=DEFAULT_CONCURRENCY,
                         help="Attempts in flight at once; match the server's --max-num-seqs")
     args = parser.parse_args()
+    if args.extra_body is not None:
+        try:
+            args.extra_body = json.loads(args.extra_body)
+        except json.JSONDecodeError as e:
+            parser.error(f"--extra-body is not valid JSON: {e}")
     if args.concurrency < 1:
         parser.error("--concurrency must be at least 1")
+    if args.api_key_env is not None and not os.environ.get(args.api_key_env):
+        parser.error(f"--api-key-env {args.api_key_env}: that environment variable is not set or is empty")
     asyncio.run(evaluate(args))
 
 
