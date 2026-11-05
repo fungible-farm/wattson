@@ -201,3 +201,33 @@ diagrams:
         mv "$tmp" "$out"
         echo "[diagrams] wrote $out bytes=$(wc -c < "$out")" >&2
     done
+
+# --- model gateway: agentgateway in front of llama-swap ---------------------------------------------------------------------
+# Config lives in gateway/agentgateway.yaml (git). The container reaches llama-swap's loopback-only port through pasta's host-loopback map.
+
+gw_image := env("WATTSON_GATEWAY_IMAGE", "ghcr.io/agentgateway/agentgateway:v1.7.0")
+gw_port  := env("WATTSON_GATEWAY_PORT", "4000")
+gw_name  := "wattson-gateway"
+
+# Start the local model gateway on 127.0.0.1:4000 (OpenAI-compatible, forwards to llama-swap on 127.0.0.1:8000).
+gateway-up:
+    @echo "gateway-up: starting {{gw_name}} ({{gw_image}}) on 127.0.0.1:{{gw_port}} -> llama-swap 127.0.0.1:8000"
+    @podman rm -f {{gw_name}} >/dev/null 2>&1 || true
+    @podman run -d --name {{gw_name}} --pull=missing --read-only --cap-drop=all --security-opt=no-new-privileges --memory=512m --memory-swap=512m --cpus=1 --pids-limit=128 --network=pasta:--map-host-loopback,169.254.1.2 -p 127.0.0.1:{{gw_port}}:4000 -v "$PWD/gateway:/etc/agentgateway:ro,Z" {{gw_image}} -f /etc/agentgateway/agentgateway.yaml >/dev/null
+    @for i in $(seq 1 20); do curl -fs -o /dev/null --max-time 2 http://127.0.0.1:{{gw_port}}/v1/models && { echo "gateway-up: ready"; exit 0; }; sleep 0.5; done; echo "gateway-up: not answering; see just gateway-logs" >&2; exit 1
+
+# Stop and remove the gateway container.
+gateway-down:
+    @echo "gateway-down: removing {{gw_name}}"
+    @podman rm -f {{gw_name}} >/dev/null 2>&1 || true
+
+# Show whether the gateway container is running and answering.
+gateway-status:
+    @echo "gateway-status: container state and a probe of http://127.0.0.1:{{gw_port}}/v1/models"
+    @podman ps -a --filter name=^{{gw_name}}$ --format '{{"{{.Names}}  {{.Status}}  {{.Ports}}"}}'
+    @curl -sS -o /dev/null -w 'GET /v1/models -> http %{http_code}\n' --max-time 3 http://127.0.0.1:{{gw_port}}/v1/models || true
+
+# Show the gateway's request log (one 'request' record per call); pass -f to follow.
+gateway-logs *args:
+    @echo "gateway-logs: request records from {{gw_name}} (stdout access log)"
+    @podman logs {{args}} {{gw_name}} 2>&1 | grep -E '\srequest\s' || true

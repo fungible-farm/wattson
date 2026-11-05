@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://agentgateway.dev/schema/config
+# Local model gateway: OpenAI-compatible front door for llama-swap. Reloaded by file watch; see gateway/README.md.
+# Holds no secrets. llama-swap needs no key; a keyed backend should use params.apiKey.file, never a literal.
+config:
+  readinessAddr: 0.0.0.0:19001   # inside the container's own network namespace; not published
+  statsAddr: 0.0.0.0:19002       # same
+
+gateways:
+  default:
+    port: 4000                   # the host publishes this on 127.0.0.1 only (justfile)
+
+frontendPolicies:
+  accessLog:
+    preset: otel                 # one structured stdout record per request, incl. gen_ai.* fields
+
+routes:
+# llm mode answers GET /v1/models itself from a built-in catalog, so pass the model list
+# through to llama-swap, which knows what is really served.
+- name: model-list
+  matches:
+  - path:
+      exact: /v1/models
+  backends:
+  - host: 169.254.1.2:8000
+
+llm:
+  gateways: default
+  discovery: disabled
+  models:
+  # Pass every model name through unchanged to llama-swap, which picks/loads the model.
+  - name: '*'
+    provider: openAI
+    params:
+      # llama-swap, reached via the pasta loopback map (the justfile maps it with pasta --map-host-loopback). No key.
+      baseUrl: http://169.254.1.2:8000/v1
