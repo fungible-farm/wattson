@@ -255,13 +255,17 @@ gateway-logs *args:
 model-guard *args:
     python3 scripts/model_mem_guard.py {{args}}
 
+# Live half of #27: prove gateway hot-reloads MCP tool list without restart.
+gateway-reload-check:
+    @uv run python scripts/gateway_reload_check.py
+
 # Validate and render the four gateway registries (backends, tools, skills, prompts).
 registry-check:
     @python3 scripts/registry_check.py --render 2>&1 | grep -E '^(PASS|FAIL) '
 
 # Check that every command named in the hand-written state charts exists, that every transition names a command and a pass observation, and that the generated recipe graph is current.
 diagrams-check:
-    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2 docs/diagrams/kit-lifecycle.d2 docs/diagrams/retrieval-lifecycle.d2 docs/diagrams/auto-ontology-lifecycle.d2 docs/diagrams/registry-change.d2
+    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2 docs/diagrams/kit-lifecycle.d2 docs/diagrams/retrieval-lifecycle.d2 docs/diagrams/auto-ontology-lifecycle.d2 docs/diagrams/registry-change.d2 docs/diagrams/gateway-reload.d2
     python3 scripts/justfile_diagram.py --check docs/diagrams/recipes.d2
 
 # --- retrieval: embedding and reranker model servers (CPU, separate containers, behind the gateway) ---------------------------

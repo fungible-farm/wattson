@@ -1,0 +1,21 @@
+# procedural-chart
+# State chart: live half of #27 — gateway hot-reloads MCP tool list without restart.
+direction: down
+title: "Gateway reload check" {shape: text}
+
+servers: Two FastMCP servers running
+registry: Scratch registry (tool a only)
+gateway: Throwaway gateway on :14000
+listed: Client lists tools (before)
+added: Tool b appended to registry
+reloaded: Gateway reloaded config
+verified: Client sees new tools (after)
+pass: PASS
+
+servers -> registry: "cmd: uv run python server_a.py server_b.py | pass: both answer on 3101/3102"
+registry -> gateway: "cmd: python3 scripts/registry_check.py --render | pass: renders mcp targets"
+gateway -> listed: "cmd: just gateway-reload-check | pass: tools-before printed"
+listed -> added: "cmd: edit scratch tools.yaml | pass: tool b entry added"
+added -> reloaded: "cmd: re-render gateway.yaml | pass: gateway watches and reloads"
+reloaded -> verified: "cmd: poll same MCP URL | pass: tools-after contains beta_ping"
+verified -> pass: "cmd: compare StartedAt | pass: container did not restart"
