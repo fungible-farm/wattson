@@ -5,5 +5,5 @@ WORKDIR /opt/excel
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev --no-install-project --no-cache
 ENV PATH="/opt/excel/.venv/bin:$PATH" HOME=/tmp PYTHONDONTWRITEBYTECODE=1
-COPY server.py probe.py smoke.py ./
+COPY capture.py server.py probe.py smoke.py ./
 ENTRYPOINT ["python", "/opt/excel/server.py"]

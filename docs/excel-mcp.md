@@ -32,7 +32,14 @@ For a client expecting VS Code's configuration, use top-level `servers` instead 
 These are client configuration dialects, not alternative MCP protocols. Do not allocate a terminal;
 stdio stdout is reserved for MCP. No credential or cloud account is needed.
 
-The workbook is mounted alone, read-only, at `/input/<original basename>`. Other directory files,
+The workbook is mounted alone, read-only, at `/input/<original basename>`. Before MCP starts, the
+server reads it once (bounded by upstream’s 100 MiB compressed-file cap) and writes those bytes to a
+private 0700 directory on tmpfs, with the workbook mode 0400. The parser allowlist covers only that
+captured directory. Tool paths retain the original basename; direct `/input/...` paths are refused.
+The server writes capture SHA-256, size and private path to a 0400 sideband manifest
+`/tmp/excel-capture.json` inside the container, without contaminating MCP stdout. The `check` client
+uses a fresh private manifest path and includes its identity in evidence. Source edits after capture
+cannot alter the session’s parser input. Other directory files,
 the host home and credentials are not mounted. The server has a read-only root filesystem, UID
 65532, no capabilities, no privilege escalation, 2 CPU/2 GiB/128 PID limits and 256 MiB temporary
 space. Inputs must be readable by that UID; use a dedicated copy with appropriate SELinux labels
@@ -84,17 +91,21 @@ matches the recorded attachment. Other workbooks receive a generic first-sheet r
 The proof reports `PASS_STREAMING_READ_WITH_METADATA_LIMIT` while retaining the full metadata
 error separately. It asserts initialization, the exact tool set, 85-sheet enumeration for these
 bytes, the bounded actual range, an outside-path refusal, a kernel read-only file mount, and
-identical source hashes before/after. This is a successful streaming read, **not a successful
+identical source hashes before/after, plus a separately verified captured-file SHA-256 and 0400/0700 permissions. This is a successful streaming read, **not a successful
 `describe_sheet` or workbook recalculation**. Proof JSON is published atomically only after those
 checks; a failed run removes the old proof and leaves no stale successful output. `check`'s default
 evidence directory is ignored `out/excel-mcp-check`; a supplied evidence directory receives only
-`excel-proof.json`. Concurrent host edits to the mounted input are not a snapshot guarantee; use a
-stable dedicated copy for reproducible work and retain its hash.
+`excel-proof.json`. An in-place host edit after initialization does not affect subsequent reads: the captured bytes
+remain fixed for the session. A concurrent edit during the initial read can yield invalid or mixed
+input bytes, but the captured digest always identifies exactly the bytes supplied to the parser;
+a parse failure is retained rather than attributed to a different file version.
 
 ## Verification and licences
 
-`test` runs three clearly synthetic regressions: numeric row order and literal formula fidelity,
-source byte preservation, path/symlink confinement, and malformed-ZIP rejection. These synthetic
+`test` runs four clearly synthetic regressions: numeric row order and literal formula fidelity,
+source byte preservation, path/symlink confinement, malformed-ZIP rejection, and an actual MCP
+session that reads captured A, receives an in-place same-inode source overwrite to valid B, and
+still reads A with the original capture hash. These synthetic
 inputs are not substituted for the actual issue attachment proof. The real workbook proof and
 parser probes run offline on Linux aarch64 with caps; other architectures, workbook editing and
 full formula recalculation are not validated.
