@@ -1,0 +1,10 @@
+# Skills registry: agent skill definitions.
+# Validated by registries/schema/skills.schema.json.
+version: 1
+entries:
+  - name: excel-mcp
+    path: skills/excel-mcp/SKILL.md
+    description: Use the Excel MCP tool to read workbooks.
+  - name: pi-delegate
+    path: skills/pi-delegate/SKILL.md
+    description: Delegate bounded tasks to a local pi agent.

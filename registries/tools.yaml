@@ -1,0 +1,14 @@
+# Tools registry: MCP endpoints available to agents through the gateway.
+# Validated by registries/schema/tools.schema.json.
+version: 1
+entries:
+  - name: excel-read
+    mcp_url: http://169.254.1.2:3100/mcp
+    writable_by:
+      - operator
+    description: Read Excel/XLSM workbooks (read-only, deterministic).
+  - name: power-solver
+    mcp_url: http://169.254.1.2:3200/mcp
+    writable_by:
+      - operator
+    description: Solve power flow problems (AC/DC Newton-Raphson).

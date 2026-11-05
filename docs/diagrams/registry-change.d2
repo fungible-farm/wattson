@@ -1,0 +1,14 @@
+# procedural-chart
+# State chart: editing a registry file through validation, rendering, and gateway reload.
+direction: down
+title: "Registry change lifecycle" {shape: text}
+
+edited: Edited (registry YAML)
+checked: Validated
+rendered: Rendered (gateway config)
+live: Live (gateway reloaded)
+
+edited -> checked: "cmd: just registry-check | pass: prints 'PASS registries: ...'"
+checked -> rendered: "cmd: python3 scripts/registry_check.py --render | pass: prints mcp targets and llm models YAML"
+rendered -> live: "cmd: just gateway-logs | pass: log shows 'loaded config' with updated targets"
+live -> live: "cmd: just gateway-status | pass: prints 'GET /v1/models -> http 200'"
