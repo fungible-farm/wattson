@@ -133,6 +133,7 @@ spec:
         - {name: RERANK_ENDPOINT, value: "http://169.254.1.2:8082/v1"}
         - {name: RERANK_API_KEY, value: "none"}
         - {name: RERANK_MODEL, value: "bge-reranker-v2-m3"}
+        - {name: CONNECTION_STRINGS, value: "postgresql://postgres:@PG_PASSWORD@@127.0.0.1:5432/demo"}
       volumeMounts:
         - {name: tmp-ingestion, mountPath: /tmp}
       ports:

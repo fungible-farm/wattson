@@ -7,10 +7,13 @@ absent: Not fetched {shape: oval}
 fetched: Source at the pinned commit
 built: Image built (localhost/auto-ontology)
 up: Pod up (Postgres, migrated backend, ingestion; loopback only)
+seeded: Fixture database demo.orders present
 
 absent -> fetched: "cmd: just ao-fetch | pass: prints 'ao-fetch: verified at 2a24f5d3...'; any other commit exits 1"
 fetched -> built: "cmd: just ao-build | pass: prints 'ao-build: done' (or 'image already exists, skipping'), exit 0"
 built -> up: "cmd: just ao-up | pass: prints 'ao-up: both endpoints healthy after N s'; refuses with exit 1 unless just retrieval-up is serving on 8081 and 8082"
 up -> up: "cmd: just ao-smoke | pass: two PASS lines (backend 127.0.0.1:13001, ingestion 127.0.0.1:13002) and exit 0"
 up -> up: "cmd: just ao-status | pass: both lines read 'http 200'"
+up -> seeded: "cmd: just ao-fixture | pass: prints 'ao-fixture: demo.orders rows=5', exit 0"
+seeded -> built: "cmd: just ao-down | pass: podman pod ps lists no auto-ontology pod; ports 13001 and 13002 are free"
 up -> built: "cmd: just ao-down | pass: podman pod ps lists no auto-ontology pod; ports 13001 and 13002 are free"
