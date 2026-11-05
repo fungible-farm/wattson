@@ -257,7 +257,7 @@ model-guard *args:
 
 # Check that every command named in the hand-written state charts exists, that every transition names a command and a pass observation, and that the generated recipe graph is current.
 diagrams-check:
-    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2 docs/diagrams/kit-lifecycle.d2 docs/diagrams/retrieval-lifecycle.d2
+    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2 docs/diagrams/kit-lifecycle.d2 docs/diagrams/retrieval-lifecycle.d2 docs/diagrams/auto-ontology-lifecycle.d2
     python3 scripts/justfile_diagram.py --check docs/diagrams/recipes.d2
 
 # --- retrieval: embedding and reranker model servers (CPU, separate containers, behind the gateway) ---------------------------
@@ -324,6 +324,140 @@ retrieval-up:
     done
     echo "retrieval-up: servers not healthy after 40s; check just retrieval-status" >&2
     exit 1
+
+# --- auto-ontology: NVIDIA's SQL-generation backend + ingestion service --------------------------------
+# Pinned upstream: github.com/NVIDIA/auto-ontology @ 2a24f5d34ef6b6e168a7f22d308504d3ab36a198 (Apache-2.0).
+# Build takes ~10 min (942 MB image). Requires `just retrieval-up` running first (ports 8081/8082).
+# The backend listens on 127.0.0.1:13001, the ingestion service on 127.0.0.1:13002.
+
+ao_sha := "2a24f5d34ef6b6e168a7f22d308504d3ab36a198"
+
+# Clone upstream into .tools/auto-ontology and check out exactly the pinned commit (idempotent).
+ao-fetch:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "ao-fetch: fetching NVIDIA/auto-ontology @ {{ao_sha}}"
+    if [ -d .tools/auto-ontology ]; then
+        cd .tools/auto-ontology
+        current=$(git rev-parse HEAD)
+        if [ "$current" = "{{ao_sha}}" ]; then
+            echo "ao-fetch: already at pinned commit"
+            exit 0
+        fi
+        git fetch origin {{ao_sha}} --depth=1 2>/dev/null || true
+        git checkout {{ao_sha}}
+    else
+        git clone https://github.com/NVIDIA/auto-ontology.git .tools/auto-ontology
+        (cd .tools/auto-ontology && git checkout {{ao_sha}} && git reset --hard {{ao_sha}})
+    fi
+    cd .tools/auto-ontology
+    actual=$(git rev-parse HEAD)
+    if [ "$actual" != "{{ao_sha}}" ]; then
+        echo "ao-fetch: ERROR: checked out $actual, expected {{ao_sha}}" >&2
+        exit 1
+    fi
+    echo "ao-fetch: verified at $actual"
+
+# Build the auto-ontology image (skips if already built).
+ao-build:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "ao-build: building localhost/auto-ontology:{{ao_sha}}"
+    if podman image inspect localhost/auto-ontology:{{ao_sha}} >/dev/null 2>&1; then
+        echo "ao-build: image already exists, skipping"
+        exit 0
+    fi
+    podman build --memory=8g -t localhost/auto-ontology:{{ao_sha}} -f .tools/auto-ontology/Dockerfile .tools/auto-ontology
+    echo "ao-build: done"
+
+# Generate secrets (idempotent) and render the pod spec.
+ao-secrets:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "ao-secrets: generating secrets into .secrets/ao.env"
+    mkdir -p .secrets
+    if [ -f .secrets/ao.env ]; then
+        echo "ao-secrets: .secrets/ao.env already exists, reusing"
+    else
+        python3 -c 'import secrets; open(".secrets/ao.env","w").write(f"AO_PG_PASSWORD={secrets.token_urlsafe(24)}\nAO_AUTH_SECRET={secrets.token_urlsafe(32)}\nAO_ADMIN_PASSWORD={secrets.token_urlsafe(16)}\n")'
+        chmod 0600 .secrets/ao.env
+        echo "ao-secrets: generated"
+    fi
+
+# Start the auto-ontology pod (requires retrieval servers on 8081/8082).
+ao-up: ao-fetch ao-build ao-secrets
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "ao-up: checking retrieval servers on 8081/8082"
+    for port in 8081 8082; do
+        code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 3 http://127.0.0.1:$port/health 2>/dev/null || echo 000)
+        if [ "$code" != "200" ]; then
+            echo "ao-up: retrieval server on port $port not answering (got $code). Run 'just retrieval-up' first." >&2
+            exit 1
+        fi
+    done
+    echo "ao-up: retrieval servers healthy"
+    echo "ao-up: rendering pod spec"
+    source .secrets/ao.env
+    mkdir -p out
+    sed -e "s|@AO_SHA@|{{ao_sha}}|g" \
+        -e "s|@PG_PASSWORD@|$AO_PG_PASSWORD|g" \
+        -e "s|@AUTH_SECRET@|$AO_AUTH_SECRET|g" \
+        -e "s|@ADMIN_PASSWORD@|$AO_ADMIN_PASSWORD|g" \
+        kube/auto-ontology.yaml > out/auto-ontology.rendered.yaml
+    echo "ao-up: starting pod"
+    podman kube play --replace --network=pasta:--map-host-loopback,169.254.1.2 out/auto-ontology.rendered.yaml
+    echo "ao-up: waiting for health endpoints (up to 120s)"
+    for i in $(seq 1 24); do
+        backend=$(curl -s -o /dev/null -w "%{http_code}" --max-time 3 http://127.0.0.1:13001/api/health 2>/dev/null || echo 000)
+        ingestion=$(curl -s -o /dev/null -w "%{http_code}" --max-time 3 http://127.0.0.1:13002/health 2>/dev/null || echo 000)
+        if [ "$backend" = "200" ] && [ "$ingestion" = "200" ]; then
+            echo "ao-up: both endpoints healthy after $((i * 5))s"
+            exit 0
+        fi
+        sleep 5
+    done
+    echo "ao-up: endpoints not healthy after 120s; check pod logs with 'just ao-logs <container>'" >&2
+    exit 1
+
+# Smoke test: both health endpoints must return 200.
+ao-smoke:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo "ao-smoke: testing backend health"
+    backend=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://127.0.0.1:13001/api/health 2>/dev/null || echo 000)
+    if [ "$backend" = "200" ]; then
+        echo "ao-smoke: backend health: PASS (200)"
+    else
+        echo "ao-smoke: backend health: FAIL ($backend)"
+        exit 1
+    fi
+    echo "ao-smoke: testing ingestion health"
+    ingestion=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://127.0.0.1:13002/health 2>/dev/null || echo 000)
+    if [ "$ingestion" = "200" ]; then
+        echo "ao-smoke: ingestion health: PASS (200)"
+    else
+        echo "ao-smoke: ingestion health: FAIL ($ingestion)"
+        exit 1
+    fi
+    echo "ao-smoke: all checks passed"
+
+# Show pod and container state.
+ao-status:
+    @echo "ao-status: pod and container state"
+    @podman ps -a --filter pod=auto-ontology --format "table {{{{.Names}}}}\t{{{{.Status}}}}\t{{{{.Ports}}}}" || true
+    @curl -sS -o /dev/null -w 'backend /api/health -> http %{http_code}\n' --max-time 3 http://127.0.0.1:13001/api/health || true
+    @curl -sS -o /dev/null -w 'ingestion /health -> http %{http_code}\n' --max-time 3 http://127.0.0.1:13002/health || true
+
+# Follow a container's log: postgres | backend | ingestion (the migration runs inside the backend container)
+ao-logs service="backend":
+    podman logs --follow "auto-ontology-$1"
+
+# Stop and remove the auto-ontology pod (keeps retrieval servers running).
+ao-down:
+    @echo "ao-down: removing auto-ontology pod"
+    @podman pod rm --force auto-ontology >/dev/null 2>&1 || true
+    @echo "ao-down: done"
 
 # Stop and remove the embedding and reranker containers.
 retrieval-down:

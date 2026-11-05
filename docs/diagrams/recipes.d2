@@ -1,5 +1,13 @@
 direction: down
 
+"ao-build": "ao-build\nBuild the auto-ontology image (skips if already..."
+"ao-down": "ao-down\nStop and remove the auto-ontology pod (keeps re..."
+"ao-fetch": "ao-fetch\nClone upstream into .tools/auto-ontology and ch..."
+"ao-logs": "ao-logs\nFollow a container's log: postgres | backend | ..."
+"ao-secrets": "ao-secrets\nGenerate secrets (idempotent) and render the po..."
+"ao-smoke": "ao-smoke\nSmoke test: both health endpoints must return 200."
+"ao-status": "ao-status\nShow pod and container state."
+"ao-up": "ao-up\nStart the auto-ontology pod (requires retrieval..."
 "ask": "ask\nOne question through the real tool harness. Add..."
 "build": "build\nBuild all four images from this checkout."
 "cases": "cases\nFetch the CSIRO case files into the wattson-cas..."
@@ -45,5 +53,8 @@ direction: down
 "shell": "shell\nA shell in the harness container."
 "up": "up\nStart the pod with a released student: granite ..."
 
+"ao-fetch" -> "ao-up"
+"ao-build" -> "ao-up"
+"ao-secrets" -> "ao-up"
 "cases" -> "lab"
 "cases" -> "labs"

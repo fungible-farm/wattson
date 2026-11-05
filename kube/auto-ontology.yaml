@@ -1,0 +1,166 @@
+# Auto Ontology backend + ingestion pod for `podman kube play`.
+# The justfile fills the markers written between two at-signs; you rarely edit this by hand.
+#
+#   postgres:  pgvector/pgvector:pg17 (pinned by index digest)
+#   backend:   waits for Postgres, runs the Alembic migration, then serves on 127.0.0.1:13001->3001
+#   ingestion: waits for the backend, then serves on 127.0.0.1:13002->3002
+# There is deliberately NO init container: init containers finish before the main containers (Postgres) start, so a
+# migration there could never reach the database. Ordering is done inside the containers instead.
+#
+# All containers run non-root with read-only root filesystems, all capabilities dropped, and no-new-privileges; the only
+# writable paths are the emptyDirs for /tmp (all three) and Postgres' data and run directories.
+# Postgres data is ephemeral (emptyDir) — not persisted across pod restarts.
+#
+# Model endpoints point at the LOCAL retrieval servers through host loopback
+# 169.254.1.2 (pasta network option). Start them first with `just retrieval-up`.
+# Secrets are never committed: the justfile renders them from .secrets/ao.env.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: auto-ontology
+  labels:
+    app: auto-ontology
+spec:
+  restartPolicy: Never
+  containers:
+    - name: postgres
+      image: docker.io/pgvector/pgvector@sha256:7d0a41464797aeb9862dfdc0bbf1526b82cfd324cdd8036df19e3545f4a9ccb8
+      env:
+        - {name: POSTGRES_USER, value: "postgres"}
+        - {name: POSTGRES_PASSWORD, value: "@PG_PASSWORD@"}
+        - {name: POSTGRES_DB, value: "auto_ontology"}
+      ports:
+        - {containerPort: 5432}
+      volumeMounts:
+        - {name: pgdata, mountPath: /var/lib/postgresql/data}
+        - {name: pgrun, mountPath: /var/run/postgresql}
+        - {name: tmp-pg, mountPath: /tmp}
+      resources:
+        limits:
+          memory: 1Gi
+      securityContext:
+        runAsUser: 999
+        runAsNonRoot: true
+        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: ["ALL"]
+      readinessProbe:
+        exec:
+          command: ["pg_isready", "-U", "postgres", "-d", "auto_ontology"]
+        periodSeconds: 5
+        failureThreshold: 10
+    - name: backend
+      image: localhost/auto-ontology:@AO_SHA@
+      command: ["/usr/bin/tini", "--", "/bin/sh", "-c"]
+      args:
+        - |
+          until python -c "import socket; socket.create_connection(('127.0.0.1', 5432), 2).close()"; do echo "backend: waiting for postgres"; sleep 2; done
+          /usr/local/bin/entrypoint.sh migrate && exec /usr/local/bin/entrypoint.sh server
+      env:
+        - {name: POSTGRES_HOST, value: "127.0.0.1"}
+        - {name: POSTGRES_PORT, value: "5432"}
+        - {name: POSTGRES_USER, value: "postgres"}
+        - {name: POSTGRES_PASSWORD, value: "@PG_PASSWORD@"}
+        - {name: POSTGRES_DATABASE, value: "auto_ontology"}
+        - {name: AUTH_SECRET, value: "@AUTH_SECRET@"}
+        - {name: APP_URL, value: "http://localhost:3000"}
+        - {name: AUTO_ONTOLOGY_MCP_PUBLIC_URL, value: "http://localhost:3003"}
+        - {name: INGESTION_SERVICE_URL, value: "http://127.0.0.1:3002"}
+        - {name: AUTO_ONTOLOGY_ADMIN_EMAIL, value: "admin@nvidia.com"}
+        - {name: AUTO_ONTOLOGY_ADMIN_PASSWORD, value: "@ADMIN_PASSWORD@"}
+        - {name: REASONING_ENDPOINT, value: "http://169.254.1.2:8000/v1"}
+        - {name: REASONING_API_KEY, value: "none"}
+        - {name: REASONING_MODEL, value: "qwen3.8-flash-next"}
+        - {name: NON_REASONING_ENDPOINT, value: "http://169.254.1.2:8000/v1"}
+        - {name: NON_REASONING_API_KEY, value: "none"}
+        - {name: NON_REASONING_MODEL, value: "qwen3.8-flash-next"}
+        - {name: EMBED_ENDPOINT, value: "http://169.254.1.2:8081/v1"}
+        - {name: EMBED_API_KEY, value: "none"}
+        - {name: EMBED_MODEL, value: "nomic-embed-text-v1.5"}
+        - {name: RERANK_ENDPOINT, value: "http://169.254.1.2:8082/v1"}
+        - {name: RERANK_API_KEY, value: "none"}
+        - {name: RERANK_MODEL, value: "bge-reranker-v2-m3"}
+      volumeMounts:
+        - {name: tmp-backend, mountPath: /tmp}
+      ports:
+        - {containerPort: 3001, hostPort: 13001, hostIP: 127.0.0.1}
+      resources:
+        limits:
+          memory: 2Gi
+      securityContext:
+        runAsUser: 1000
+        runAsNonRoot: true
+        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: ["ALL"]
+      readinessProbe:
+        httpGet:
+          path: /api/health/live
+          port: 3001
+        periodSeconds: 10
+        failureThreshold: 12
+    - name: ingestion
+      image: localhost/auto-ontology:@AO_SHA@
+      command: ["/usr/bin/tini", "--", "/bin/sh", "-c"]
+      args:
+        - |
+          until python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:3001/api/health/live', timeout=2)"; do echo "ingestion: waiting for backend"; sleep 2; done
+          exec /usr/local/bin/entrypoint.sh ingestion_service
+      env:
+        - {name: POSTGRES_HOST, value: "127.0.0.1"}
+        - {name: POSTGRES_PORT, value: "5432"}
+        - {name: POSTGRES_USER, value: "postgres"}
+        - {name: POSTGRES_PASSWORD, value: "@PG_PASSWORD@"}
+        - {name: POSTGRES_DATABASE, value: "auto_ontology"}
+        - {name: AUTH_SECRET, value: "@AUTH_SECRET@"}
+        - {name: APP_URL, value: "http://localhost:3000"}
+        - {name: AUTO_ONTOLOGY_MCP_PUBLIC_URL, value: "http://localhost:3003"}
+        - {name: INGESTION_SERVICE_URL, value: "http://127.0.0.1:3002"}
+        - {name: AUTO_ONTOLOGY_ADMIN_EMAIL, value: "admin@nvidia.com"}
+        - {name: AUTO_ONTOLOGY_ADMIN_PASSWORD, value: "@ADMIN_PASSWORD@"}
+        - {name: REASONING_ENDPOINT, value: "http://169.254.1.2:8000/v1"}
+        - {name: REASONING_API_KEY, value: "none"}
+        - {name: REASONING_MODEL, value: "qwen3.8-flash-next"}
+        - {name: NON_REASONING_ENDPOINT, value: "http://169.254.1.2:8000/v1"}
+        - {name: NON_REASONING_API_KEY, value: "none"}
+        - {name: NON_REASONING_MODEL, value: "qwen3.8-flash-next"}
+        - {name: EMBED_ENDPOINT, value: "http://169.254.1.2:8081/v1"}
+        - {name: EMBED_API_KEY, value: "none"}
+        - {name: EMBED_MODEL, value: "nomic-embed-text-v1.5"}
+        - {name: RERANK_ENDPOINT, value: "http://169.254.1.2:8082/v1"}
+        - {name: RERANK_API_KEY, value: "none"}
+        - {name: RERANK_MODEL, value: "bge-reranker-v2-m3"}
+      volumeMounts:
+        - {name: tmp-ingestion, mountPath: /tmp}
+      ports:
+        - {containerPort: 3002, hostPort: 13002, hostIP: 127.0.0.1}
+      resources:
+        limits:
+          memory: 2Gi
+      securityContext:
+        runAsUser: 1000
+        runAsNonRoot: true
+        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: ["ALL"]
+      readinessProbe:
+        httpGet:
+          path: /health/live
+          port: 3002
+        periodSeconds: 10
+        failureThreshold: 12
+  volumes:
+    - name: pgdata
+      emptyDir: {}
+    - name: pgrun
+      emptyDir: {}
+    - name: tmp-pg
+      emptyDir: {}
+    - name: tmp-backend
+      emptyDir: {}
+    - name: tmp-ingestion
+      emptyDir: {}
