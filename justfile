@@ -126,3 +126,21 @@ build:
     podman build -f containers/Containerfile --target harness -t {{image}} .
     podman build -f containers/hf/Containerfile -t {{hf_image}} .
     podman build -f containers/csiro/Containerfile -t {{csiro_image}} .
+
+# --- independent dbt MCP integration (CPU, no model or cloud credentials) -------------------------------------------------
+
+# Build pinned upstream dbt MCP + dbt Core/DuckDB in an independent environment.
+dbt-mcp-build:
+    integrations/dbt-mcp/run.sh build
+
+# Prove stdio initialization, the tool allowlist, and a real offline DuckDB build.
+dbt-mcp-check:
+    integrations/dbt-mcp/run.sh smoke
+
+# Start stdio MCP for an agent; do not allocate a terminal or mix stdout with logs.
+dbt-mcp-stdio:
+    @integrations/dbt-mcp/run.sh serve
+
+# Baseline real build followed by injected build failure; require no stale success proof.
+dbt-mcp-regression:
+    integrations/dbt-mcp/run.sh regression

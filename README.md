@@ -83,3 +83,10 @@ Synthetic-NEM-2000bus case files are fetched, not redistributed (CC BY 4.0, CSIR
 
 Extracted from the PowerCoder lab (`fungible-farm/nem-poweragent-lab`), renamed. Evidence, backlog notes and the experiment
 history stay there; the labs' environment is described in that repository's README, which now points here.
+
+## Independent local dbt MCP example
+
+[Containerized dbt MCP](integrations/dbt-mcp/README.md) runs the pinned upstream server and a small
+DuckDB sample offline, with read-only source mounts and a writable output volume. Start with
+`just dbt-mcp-build` and `just dbt-mcp-check`; it needs no model or cloud credentials. Its dependencies
+and lockfile are separate from WattsOn's runtime; inherited license-metadata gaps are documented.
