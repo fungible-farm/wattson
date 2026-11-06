@@ -1,0 +1,16 @@
+# procedural-chart
+# State chart: two harnesses, one gateway (#28). Real gateway on 127.0.0.1:4000; Open Notebook as a throwaway pod on 127.0.0.1:15055.
+direction: down
+title: "Harness adapters through the gateway" {shape: text}
+
+idle: Nothing running {shape: oval}
+ready: Gateway up + Open Notebook pod healthy
+notebook: Open Notebook called the model through the gateway
+pi: pi called the model through the gateway
+compared: Gateway log records compared
+
+idle -> ready: "cmd: just harness-compare | pass: prints 'open-notebook: healthy' and the gateway answers GET /v1/models 200"
+ready -> notebook: "cmd: just harness-compare | pass: prints 'open-notebook: model test success=True' and a gateway record 'POST /v1/chat/completions 200'"
+notebook -> pi: "cmd: just harness-compare | pass: prints 'pi: delegate rc=0' and a gateway record 'POST /v1/chat/completions 200'"
+pi -> compared: "cmd: just harness-compare | pass: prints 'difference: only-open-notebook=... only-pi=...' then 'PASS harness-compare'"
+compared -> idle: "cmd: just harness-compare | pass: podman pod ps lists no wattson-open-notebook and podman ps lists no wattson-gateway"
