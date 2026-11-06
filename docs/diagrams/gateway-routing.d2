@@ -1,0 +1,14 @@
+# procedural-chart
+# State chart: model-name routing through the real gateway config (#24). candle-qwen3-0.6b goes to Candle, other names to llama-swap.
+direction: down
+title: "Gateway model routing" {shape: text}
+
+idle: Nothing started {shape: oval}
+up: Candle (3301) and the real gateway (4000) up
+candle: candle-qwen3-0.6b answered by Candle
+both: A llama-swap model answered by llama-swap
+
+idle -> up: "cmd: just gateway-routing-check | pass: just candle-up prints 'candle-up: ready' and the gateway answers GET /v1/models 200 (started only if not already up)"
+up -> candle: "cmd: just gateway-routing-check | pass: prints 'route candle-qwen3-0.6b: http=200 endpoint=169.254.1.2:3301 completion_tokens=<n>'"
+candle -> both: "cmd: just gateway-routing-check | pass: prints 'route <model>: http=200 endpoint=169.254.1.2:8000' (SKIPPED, not passed, if the model is not already resident)"
+both -> idle: "cmd: just gateway-routing-check | pass: prints 'PASS gateway-routing' and what the script started is stopped (just candle-down, just gateway-down)"

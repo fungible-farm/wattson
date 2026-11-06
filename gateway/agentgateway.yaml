@@ -41,7 +41,15 @@ llm:
   gateways: default
   discovery: disabled
   models:
-  # Pass every model name through unchanged to llama-swap, which picks/loads the model.
+  # First match wins, so specific names go above '*'.
+  # A Candle (mistral.rs) CPU server for small jobs, started by `just candle-up` on host port 3301. The alias is what clients ask for;
+  # the backend serves its model under the id `default`.
+  - name: candle-qwen3-0.6b
+    provider: openAI
+    params:
+      model: default
+      baseUrl: http://169.254.1.2:3301/v1
+  # Pass every other model name through unchanged to llama-swap, which picks/loads the model.
   - name: '*'
     provider: openAI
     params:
