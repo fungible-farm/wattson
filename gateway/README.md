@@ -17,7 +17,7 @@ No code here: just `agentgateway.yaml`.
 
 - A crash of the gateway process is recovered: the container runs with `--restart=on-failure:3` (3 retries).
 - Stopped by hand stays stopped: `just gateway-down`, `podman stop`, `podman kill` bypass the policy.
-- A host reboot does NOT bring it back; for that enable `podman-restart.service` or use a systemd user unit.
+- A host reboot does NOT bring back a hand-started gateway. For that, `gateway/wattson-gateway.container` is a Quadlet for your user systemd (`just gateway-quadlet` prints it with the install commands; `just gateway-quadlet-check` verifies it generates a service equal to `gateway-up` without installing anything). Installing it is a host change and is yours to run; surviving an actual reboot has not been observed.
 
 ## Add a backend or a model rule
 
