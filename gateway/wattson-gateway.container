@@ -1,0 +1,28 @@
+# Quadlet for the local model gateway: the same container as `just gateway-up`, but started by the user's systemd, so it
+# comes back after a reboot (lingering is on for this user). Rendered by `just gateway-quadlet`; the three @...@ markers are
+# filled from the justfile (digest-pinned image, port) and the checkout path. Nothing here is installed by a recipe:
+# `just gateway-quadlet` prints the file and the exact install commands, and you run them.
+[Unit]
+Description=WattsOn local model gateway (agentgateway in front of llama-swap)
+After=network-online.target
+
+[Container]
+Image=@IMAGE@
+ContainerName=wattson-gateway
+PublishPort=127.0.0.1:@PORT@:4000
+Volume=@REPO@/gateway:/etc/agentgateway:ro,Z
+Network=pasta:--map-host-loopback,169.254.1.2
+ReadOnly=true
+DropCapability=ALL
+NoNewPrivileges=true
+Memory=512m
+PidsLimit=128
+PodmanArgs=--cpus=1 --memory-swap=512m
+Exec=-f /etc/agentgateway/agentgateway.yaml
+
+[Service]
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

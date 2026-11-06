@@ -1,0 +1,14 @@
+# procedural-chart
+# State chart: the gateway under systemd so it survives a reboot (#24). Verified by the generator dry run; installation is the owner's.
+direction: down
+title: "Gateway at boot (Quadlet)" {shape: text}
+
+hand: Started by hand (just gateway-up) {shape: oval}
+rendered: Quadlet rendered for this checkout
+generated: systemd service generated and equal to gateway-up
+installed: Installed under the user's systemd (owner runs the commands)
+
+hand -> rendered: "cmd: just gateway-quadlet | pass: prints the Quadlet with the pinned image digest, port and this checkout's path, then the install commands"
+rendered -> generated: "cmd: just gateway-quadlet-check | pass: prints 'ok' for all nine properties then 'PASS gateway-quadlet'"
+generated -> installed: "cmd: just gateway-quadlet | pass: the owner runs the printed mkdir/cp/daemon-reload/start commands; systemctl --user is-active wattson-gateway.service prints 'active'"
+installed -> hand: "cmd: just gateway-down | pass: podman ps -a lists no wattson-gateway (after systemctl --user stop wattson-gateway.service)"

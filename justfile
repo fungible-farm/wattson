@@ -283,9 +283,17 @@ harness-compare:
 gateway-mcp-log-check:
     @uv run python scripts/gateway_mcp_log_check.py
 
+# Print the gateway as a Quadlet (starts at boot under your user systemd) and the install commands. Installs nothing.
+gateway-quadlet:
+    @python3 scripts/gateway_quadlet_check.py --print
+
+# Reboot survival (#24), checked without installing: podman's generator turns the Quadlet into a service equal to gateway-up.
+gateway-quadlet-check:
+    @python3 scripts/gateway_quadlet_check.py
+
 # Check that every command named in the hand-written state charts exists, that every transition names a command and a pass observation, and that the generated recipe graph is current.
 diagrams-check:
-    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2 docs/diagrams/kit-lifecycle.d2 docs/diagrams/retrieval-lifecycle.d2 docs/diagrams/auto-ontology-lifecycle.d2 docs/diagrams/registry-change.d2 docs/diagrams/gateway-reload.d2 docs/diagrams/gateway-failure.d2 docs/diagrams/gateway-mcp-log.d2 docs/diagrams/gpu-lease.d2 docs/diagrams/kit-supply.d2 docs/diagrams/harness-compare.d2 docs/diagrams/kit-import.d2
+    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2 docs/diagrams/kit-lifecycle.d2 docs/diagrams/retrieval-lifecycle.d2 docs/diagrams/auto-ontology-lifecycle.d2 docs/diagrams/registry-change.d2 docs/diagrams/gateway-reload.d2 docs/diagrams/gateway-failure.d2 docs/diagrams/gateway-boot.d2 docs/diagrams/gateway-mcp-log.d2 docs/diagrams/gpu-lease.d2 docs/diagrams/kit-supply.d2 docs/diagrams/harness-compare.d2 docs/diagrams/kit-import.d2
     python3 scripts/justfile_diagram.py --check docs/diagrams/recipes.d2
 
 # --- retrieval: embedding and reranker model servers (CPU, separate containers, behind the gateway) ---------------------------
