@@ -72,13 +72,14 @@ spec:
         - {name: AUTO_ONTOLOGY_ADMIN_PASSWORD, value: "@ADMIN_PASSWORD@"}
         - {name: REASONING_ENDPOINT, value: "http://169.254.1.2:8000/v1"}
         - {name: REASONING_API_KEY, value: "none"}
-        - {name: REASONING_MODEL, value: "qwen3.8-flash-next"}
+        - {name: REASONING_MODEL, value: "@CHAT_MODEL@"}
         - {name: NON_REASONING_ENDPOINT, value: "http://169.254.1.2:8000/v1"}
         - {name: NON_REASONING_API_KEY, value: "none"}
-        - {name: NON_REASONING_MODEL, value: "qwen3.8-flash-next"}
-        - {name: EMBED_ENDPOINT, value: "http://169.254.1.2:8081/v1"}
+        - {name: NON_REASONING_MODEL, value: "@CHAT_MODEL@"}
+        - {name: EMBED_ENDPOINT, value: "http://169.254.1.2:@EMBED_PORT@/v1"}
         - {name: EMBED_API_KEY, value: "none"}
-        - {name: EMBED_MODEL, value: "nomic-embed-text-v1.5"}
+        - {name: EMBED_MODEL, value: "@EMBED_MODEL@"}
+        - {name: CONNECTION_STRINGS, value: "postgresql://postgres:@PG_PASSWORD@@127.0.0.1:5432/demo"}
         - {name: RERANK_ENDPOINT, value: "http://169.254.1.2:8082/v1"}
         - {name: RERANK_API_KEY, value: "none"}
         - {name: RERANK_MODEL, value: "bge-reranker-v2-m3"}
@@ -123,13 +124,13 @@ spec:
         - {name: AUTO_ONTOLOGY_ADMIN_PASSWORD, value: "@ADMIN_PASSWORD@"}
         - {name: REASONING_ENDPOINT, value: "http://169.254.1.2:8000/v1"}
         - {name: REASONING_API_KEY, value: "none"}
-        - {name: REASONING_MODEL, value: "qwen3.8-flash-next"}
+        - {name: REASONING_MODEL, value: "@CHAT_MODEL@"}
         - {name: NON_REASONING_ENDPOINT, value: "http://169.254.1.2:8000/v1"}
         - {name: NON_REASONING_API_KEY, value: "none"}
-        - {name: NON_REASONING_MODEL, value: "qwen3.8-flash-next"}
-        - {name: EMBED_ENDPOINT, value: "http://169.254.1.2:8081/v1"}
+        - {name: NON_REASONING_MODEL, value: "@CHAT_MODEL@"}
+        - {name: EMBED_ENDPOINT, value: "http://169.254.1.2:@EMBED_PORT@/v1"}
         - {name: EMBED_API_KEY, value: "none"}
-        - {name: EMBED_MODEL, value: "nomic-embed-text-v1.5"}
+        - {name: EMBED_MODEL, value: "@EMBED_MODEL@"}
         - {name: RERANK_ENDPOINT, value: "http://169.254.1.2:8082/v1"}
         - {name: RERANK_API_KEY, value: "none"}
         - {name: RERANK_MODEL, value: "bge-reranker-v2-m3"}
