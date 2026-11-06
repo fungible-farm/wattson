@@ -8,6 +8,8 @@ fetched: Source at the pinned commit
 built: Image built (localhost/auto-ontology)
 up: Pod up (Postgres, migrated backend, ingestion; loopback only)
 seeded: Fixture database demo.orders present
+embedded: 2048-dim embedder serving and demo.orders embedded
+answered: A question answered over demo.orders (semantic layer compiled)
 
 absent -> fetched: "cmd: just ao-fetch | pass: prints 'ao-fetch: verified at 2a24f5d3...'; any other commit exits 1"
 fetched -> built: "cmd: just ao-build | pass: prints 'ao-build: done' (or 'image already exists, skipping'), exit 0"
@@ -17,3 +19,7 @@ up -> up: "cmd: just ao-status | pass: both lines read 'http 200'"
 up -> seeded: "cmd: just ao-fixture | pass: prints 'ao-fixture: demo.orders rows=5', exit 0"
 seeded -> built: "cmd: just ao-down | pass: podman pod ps lists no auto-ontology pod; ports 13001 and 13002 are free"
 up -> built: "cmd: just ao-down | pass: podman pod ps lists no auto-ontology pod; ports 13001 and 13002 are free"
+up -> embedded: "cmd: just embed2048-up | pass: prints 'embed2048-up: ready'; an embeddings call returns a vector of length 2048; ingestion logs show the rows embedded (Qwen Research License, non-commercial: NOTICE.md)"
+seeded -> seeded: "cmd: just ao-enable-semantic | pass: prints 'ao-enable-semantic: semantic_compilation_enabled=true' (the opt-in flag the absent frontend would have written)"
+seeded -> answered: "cmd: just ao-ask-check | pass: prints 'semantic-status' finishing, then 'PASS ao-ask: the model wrote SQL, the database returned 5'"
+answered -> built: "cmd: just ao-down | pass: podman pod ps lists no auto-ontology pod; ports 13001 and 13002 are free"

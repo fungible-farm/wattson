@@ -384,6 +384,37 @@ candle-down:
     @echo "candle-down: removing wattson-candle"
     @podman rm -f wattson-candle >/dev/null 2>&1 || true
 
+# --- a 2048-dimension embedder for Auto Ontology (its vector column is vector(2048); nomic emits 768) -------------------------
+# jina-embeddings-v4 (text-retrieval GGUF, llama.cpp, no remote code): LICENCE is the Qwen Research License, non-commercial: see NOTICE.md.
+# Spike use only. Needs `--pooling mean`; inputs ideally carry a "Query: " / "Passage: " prefix, which Auto Ontology does not add.
+jina_repo := "jinaai/jina-embeddings-v4-text-retrieval-GGUF"
+jina_rev := "6c6ba828f6ad0faee901b4bce25d96faade908d1"
+jina_model := "jina-embeddings-v4-text-retrieval-Q4_K_M.gguf"
+jina_sha256 := "4e24d1b6631fe21139b360001da86b519d40e1881a2c06f1183dda8aa0ba7fc1"
+
+# Start the 2048-dim embedder on 127.0.0.1:8083 (downloads about 1.9 GB, sha256-verified, into .models). Use with WATTSON_EMBED_PORT=8083 WATTSON_EMBED_MODEL=jina-embeddings-v4 just ao-up.
+embed2048-up:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mkdir -p .models
+    f=".models/{{jina_model}}"
+    if [ ! -f "$f" ] || [ "$(sha256sum "$f" | cut -d' ' -f1)" != "{{jina_sha256}}" ]; then
+        echo "embed2048-up: downloading {{jina_model}} (pinned revision {{jina_rev}}; Qwen Research License, see NOTICE.md)"
+        rm -f "$f.part"; curl -L -f -o "$f.part" "https://huggingface.co/{{jina_repo}}/resolve/{{jina_rev}}/{{jina_model}}"
+        [ "$(sha256sum "$f.part" | cut -d' ' -f1)" = "{{jina_sha256}}" ] || { rm -f "$f.part"; echo "embed2048-up: sha256 mismatch; nothing installed" >&2; exit 1; }
+        mv "$f.part" "$f"
+    fi
+    python3 scripts/model_mem_guard.py "$f" || { echo "embed2048-up: memory guard failed" >&2; exit 1; }
+    podman rm -f wattson-embed2048 >/dev/null 2>&1 || true
+    podman run -d --name wattson-embed2048 --pull=missing --restart=on-failure:3 --read-only --cap-drop=all --security-opt=no-new-privileges --memory=6g --memory-swap=6g --cpus=4 --pids-limit=128 -p 127.0.0.1:8083:8080 -v "$PWD/.models:/models:ro,Z" {{llama_image}} -m "/models/{{jina_model}}" --embedding --pooling mean -c 8192 -b 8192 -ub 8192 --host 0.0.0.0 --port 8080 >/dev/null
+    for i in $(seq 1 60); do [ "$(curl -s -o /dev/null -w '%{http_code}' --max-time 2 http://127.0.0.1:8083/health)" = 200 ] && { echo "embed2048-up: ready"; exit 0; }; sleep 2; done
+    echo "embed2048-up: not ready after 120 s; see podman logs wattson-embed2048" >&2; exit 1
+
+# Stop and remove the 2048-dim embedder.
+embed2048-down:
+    @echo "embed2048-down: removing wattson-embed2048"
+    @podman rm -f wattson-embed2048 >/dev/null 2>&1 || true
+
 # Start the embedding and reranker servers as separate containers (ports 8081, 8082). Downloads models if missing; runs memory guard.
 retrieval-up:
     #!/usr/bin/env bash
@@ -495,8 +526,9 @@ ao-secrets:
 ao-up: ao-fetch ao-build ao-secrets
     #!/usr/bin/env bash
     set -euo pipefail
-    echo "ao-up: checking retrieval servers on 8081/8082"
-    for port in 8081 8082; do
+    embed_port="${WATTSON_EMBED_PORT:-8081}"
+    echo "ao-up: checking the embedding server on $embed_port and the reranker on 8082"
+    for port in "$embed_port" 8082; do
         code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 3 http://127.0.0.1:$port/health 2>/dev/null || echo 000)
         if [ "$code" != "200" ]; then
             echo "ao-up: retrieval server on port $port not answering (got $code). Run 'just retrieval-up' first." >&2
@@ -508,6 +540,7 @@ ao-up: ao-fetch ao-build ao-secrets
     source .secrets/ao.env
     mkdir -p out
     sed -e "s|@AO_SHA@|{{ao_sha}}|g" \
+        -e "s|@EMBED_PORT@|$embed_port|g" -e "s|@EMBED_MODEL@|${WATTSON_EMBED_MODEL:-nomic-embed-text-v1.5}|g" -e "s|@CHAT_MODEL@|${WATTSON_CHAT_MODEL:-qwen3.8-flash-next}|g" \
         -e "s|@PG_PASSWORD@|$AO_PG_PASSWORD|g" \
         -e "s|@AUTH_SECRET@|$AO_AUTH_SECRET|g" \
         -e "s|@ADMIN_PASSWORD@|$AO_ADMIN_PASSWORD|g" \
@@ -549,6 +582,11 @@ ao-smoke:
     fi
     echo "ao-smoke: all checks passed"
 
+# Auto Ontology answers a question over the demo database (#20): compiles the semantic layer, asks, checks the returned count. Pod must be up (ao-up) and seeded (ao-fixture).
+# Needs a chat model: WATTSON_CHAT_MODEL=<llama-swap model> when the pod was started (a small one such as granite-4.2-8b avoids a 100 GB load).
+ao-ask-check:
+    @python3 scripts/ao_ask_check.py
+
 # Show pod and container state.
 ao-status:
     @echo "ao-status: pod and container state"
@@ -575,6 +613,15 @@ ao-fixture:
         echo "ao-fixture: ERROR expected 5 rows, got $count" >&2
         exit 1
     fi
+
+# Turn semantic compilation on (#20). It is an opt-in flag in frontend.configurations, a table the Next.js frontend owns; this pod has no
+# frontend, so without this row POST /semantic/compile returns 202 and does nothing, and chat answers 409. Idempotent.
+ao-enable-semantic:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    podman exec auto-ontology-postgres psql -U postgres -d auto_ontology -v ON_ERROR_STOP=1 -q -c "CREATE SCHEMA IF NOT EXISTS frontend" -c "CREATE TABLE IF NOT EXISTS frontend.configurations (key text PRIMARY KEY, value text NOT NULL, updated_at timestamptz NOT NULL DEFAULT now())" -c "INSERT INTO frontend.configurations (key, value) VALUES ('semantic_compilation_enabled', 'true') ON CONFLICT (key) DO UPDATE SET value = 'true', updated_at = now()"
+    v=$(podman exec auto-ontology-postgres psql -U postgres -d auto_ontology -t -A -c "SELECT value FROM frontend.configurations WHERE key = 'semantic_compilation_enabled'")
+    [ "$v" = "true" ] && echo "ao-enable-semantic: semantic_compilation_enabled=true" || { echo "ao-enable-semantic: ERROR flag reads '$v'" >&2; exit 1; }
 
 # Stop and remove the auto-ontology pod (keeps retrieval servers running).
 ao-down:
