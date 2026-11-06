@@ -1,0 +1,14 @@
+# procedural-chart
+# State chart: measuring each engine's memory footprint (#29). Instruments: podman stats (cgroup) and /proc/meminfo; nothing is estimated.
+direction: down
+title: "Engine footprint measurement" {shape: text}
+
+idle: No engine running {shape: oval}
+up: One engine started by its own recipe
+probed: One real request answered (200)
+measured: Container and host memory read
+
+idle -> up: "cmd: just engine-footprint | pass: the engine's recipe exits 0 ('retrieval-up', 'candle-up') after a MemAvailable check of at least 8 GiB"
+up -> probed: "cmd: just engine-footprint | pass: the probe request (embeddings, rerank, chat) returns http 200"
+probed -> measured: "cmd: just engine-footprint | pass: a table row with 'container MiB' read from podman stats (n/a fails the run)"
+measured -> idle: "cmd: just engine-footprint | pass: prints 'PASS engine-footprint' and podman ps -a lists no wattson-embed, wattson-rerank or wattson-candle"
