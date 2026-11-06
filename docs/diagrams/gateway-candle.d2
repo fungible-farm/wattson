@@ -1,0 +1,14 @@
+# procedural-chart
+# State chart: a Candle (mistral.rs CPU) backend behind the gateway (#24). Throwaway backend :3301 and gateway :14001 on loopback.
+direction: down
+title: "Candle backend behind the gateway" {shape: text}
+
+idle: Nothing running {shape: oval}
+serving: Backend ready (mistral.rs CPU, Qwen3-0.6B) and gateway up
+answered: Completion answered through the gateway and logged
+stopped: Backend stopped, error logged
+
+idle -> serving: "cmd: just gateway-candle-check | pass: prints 'backend: mistral.rs (Candle) cpu serving Qwen/Qwen3-0.6B' and the gateway answers HTTP"
+serving -> answered: "cmd: just gateway-candle-check | pass: prints 'request-ok: http=200 curl_rc=0 completion_tokens=<n>' with only 200 records"
+answered -> stopped: "cmd: just gateway-candle-check | pass: prints 'request-failed: http=5xx curl_rc=<non-zero>' with only 5xx records (no silent failover)"
+stopped -> idle: "cmd: just gateway-candle-check | pass: prints 'PASS gateway-candle' and podman ps -a lists no wattson-candle-backend or wattson-gw-candle"
