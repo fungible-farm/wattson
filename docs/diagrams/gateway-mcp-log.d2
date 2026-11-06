@@ -1,0 +1,12 @@
+# procedural-chart
+# State chart: what the gateway access log records for an MCP tool call (#28). Throwaway MCP server and gateways on 127.0.0.1:14002.
+direction: down
+title: "Gateway MCP tool-call log" {shape: text}
+
+idle: Nothing running {shape: oval}
+default_log: Default log record (tool name and target, no arguments)
+opt_in_log: Opt-in log record (arguments added)
+
+idle -> default_log: "cmd: just gateway-mcp-log-check | pass: prints 'default-record: tool_name_and_target=True arguments_present=False'"
+default_log -> opt_in_log: "cmd: just gateway-mcp-log-check | pass: prints 'opt-in-record: tool_arguments={...}' containing the canary argument"
+opt_in_log -> idle: "cmd: just gateway-mcp-log-check | pass: prints 'PASS gateway-mcp-log' and podman ps -a lists no wattson-gw-mcplog"
