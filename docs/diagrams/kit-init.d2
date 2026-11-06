@@ -1,0 +1,14 @@
+# procedural-chart
+# State chart: the model-supply init container (#48). wattson-kit verifies the cosign signature of a digest-pinned kit, then unpacks it.
+direction: down
+title: "Model-supply init container" {shape: text}
+
+image: wattson-kit image built {shape: oval}
+refused: Tag, unsigned digest or wrong key refused (nothing unpacked)
+supplied: Signed digest unpacked into the models volume (.model-digest written)
+
+image -> refused: "cmd: just kit-init-check | pass: prints 'unsigned-digest: rc=1 unpacked=False', 'tag-not-digest: rc=2' and 'wrong-public-key: rc=1 unpacked=False'"
+image -> supplied: "cmd: just kit-init-check | pass: prints 'signed-digest: rc=0 weights_present=True sha256_matches=True model_digest_file=True'"
+supplied -> image: "cmd: just kit-init-check | pass: prints 'PASS kit-init' and podman ps -a lists no wattson-cosign-registry; the check volume is removed"
+refused -> image: "cmd: just kit-image-build | pass: podman build exits 0 and the image answers 'pull-kit --help'"
+image -> image: "cmd: just pod-render-check | pass: prints 'hugging-face mode: ... pull_model_blocks=1', 'kit mode: ... ref_pinned=True key_mounted_ro=True', 'refusals: tag rc=2 missing_key rc=2' then 'PASS pod-render'"

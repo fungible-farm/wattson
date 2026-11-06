@@ -23,6 +23,7 @@ host_port := env("WATTSON_PORT", "8000")
 image     := registry + "/wattson-harness:" + tag
 lab_image := registry + "/wattson:" + tag
 hf_image  := registry + "/wattson-hf:" + tag
+kit_image := env("WATTSON_KIT_IMAGE", registry + "/wattson-kit:" + tag)
 csiro_image := registry + "/wattson-csiro:" + tag
 
 default:
@@ -53,19 +54,42 @@ check:
 up model="granite":
     #!/usr/bin/env bash
     set -euo pipefail
+    mkdir -p "$PWD/out"
+    for v in wattson-models wattson-cases; do podman volume exists "$v" || podman volume create "$v" >/dev/null; done
+    just pod-render "$1" "$PWD/out/wattson.rendered.yaml"
+    podman kube play --replace "$PWD/out/wattson.rendered.yaml"
+    echo "pod started. The first run downloads the model; watch it with:  just logs pull-model"
+    echo "ready when:  just doctor"
+
+# Render the pod spec to a file. With WATTSON_MODEL_KIT=<registry/repo@sha256:...> (and WATTSON_COSIGN_PUBKEY=<path to the cosign public key>)
+# the pull-model init container is wattson-kit (signature verified, digest-pinned); otherwise it is the Hugging Face downloader.
+# WATTSON_KIT_INSECURE=1 for a plain-HTTP development registry. Nothing is started.
+pod-render model="granite" out="out/wattson.rendered.yaml":
+    #!/usr/bin/env bash
+    set -euo pipefail
     case "$1" in
       granite) repo=PromptExecutionAU/wattson-granite-4.2-8b-py; dir=granite-4.2-8b-py; reasoning=nemotron_v3 ;;
       qwen)    repo=PromptExecutionAU/wattson-qwen3.5-4b-pyt;    dir=qwen3.5-4b-pyt;    reasoning=qwen3 ;;
       *) echo "unknown model '$1': use granite or qwen" >&2; exit 2 ;;
     esac
-    mkdir -p "$PWD/out"
-    for v in wattson-models wattson-cases; do podman volume exists "$v" || podman volume create "$v" >/dev/null; done
-    sed -e "s|@IMAGE@|{{image}}|g" -e "s|@HF_IMAGE@|{{hf_image}}|g" -e "s|@CSIRO_IMAGE@|{{csiro_image}}|g" -e "s|@VLLM_IMAGE@|{{vllm}}|g" -e "s|@MODEL_REPO@|$repo|g" -e "s|@MODEL_DIR@|$dir|g" \
+    kit="${WATTSON_MODEL_KIT:-}"; pub="${WATTSON_COSIGN_PUBKEY:-}"
+    if [ -n "$kit" ]; then
+        case "$kit" in *@sha256:*) ;; *) echo "WATTSON_MODEL_KIT must be pinned by digest (registry/repo@sha256:...), not a tag" >&2; exit 2 ;; esac
+        [ -r "$pub" ] || { echo "WATTSON_COSIGN_PUBKEY must name a readable cosign public key when WATTSON_MODEL_KIT is set" >&2; exit 2; }
+        drop='/@HF-BEGIN@/,/@HF-END@/d'
+    else
+        drop='/@KIT-BEGIN@/,/@KIT-END@/d'
+    fi
+    sed -e "$drop" kube/wattson.yaml | sed -e "/@HF-BEGIN@/d;/@HF-END@/d;/@KIT-BEGIN@/d;/@KIT-END@/d" \
+        -e "s|@IMAGE@|{{image}}|g" -e "s|@HF_IMAGE@|{{hf_image}}|g" -e "s|@KIT_IMAGE@|{{kit_image}}|g" -e "s|@CSIRO_IMAGE@|{{csiro_image}}|g" -e "s|@VLLM_IMAGE@|{{vllm}}|g" -e "s|@MODEL_REPO@|$repo|g" -e "s|@MODEL_DIR@|$dir|g" \
+        -e "s|@MODEL_KIT@|$kit|g" -e "s|@COSIGN_PUB@|$pub|g" -e "s|@KIT_INSECURE@|${WATTSON_KIT_INSECURE:-0}|g" \
         -e "s|@REASONING@|$reasoning|g" -e "s|@GPU_UTIL@|{{gpu_util}}|g" -e "s|@MAX_LEN@|{{max_len}}|g" \
-        -e "s|@LOG_LEVEL@|{{log_level}}|g" -e "s|@HOST_PORT@|{{host_port}}|g" -e "s|@WORK@|$PWD|g" kube/wattson.yaml > "$PWD/out/wattson.rendered.yaml"
-    podman kube play --replace "$PWD/out/wattson.rendered.yaml"
-    echo "pod started. The first run downloads the model; watch it with:  just logs pull-model"
-    echo "ready when:  just doctor"
+        -e "s|@LOG_LEVEL@|{{log_level}}|g" -e "s|@HOST_PORT@|{{host_port}}|g" -e "s|@WORK@|$PWD|g" > "$2"
+    echo "pod-render: wrote $2 ($([ -n "$kit" ] && echo "model from kit $kit" || echo "model from Hugging Face $repo"))"
+
+# The pod spec renders both ways (Hugging Face / signed kit), keeps exactly one pull-model init container, and refuses a tag or a missing key. Starts nothing.
+pod-render-check:
+    @python3 scripts/pod_render_check.py
 
 # Stop and remove the pod. The wattson-models and wattson-cases volumes stay, so the next `just up` does not download again.
 down:
@@ -186,6 +210,14 @@ cosign-install:
 # Signed model supply (#47): cosign verifies a signed kit and refuses an unsigned or tampered one and a wrong key. Throwaway local registry. Needs kit-install and cosign-install.
 cosign-supply-check:
     @python3 scripts/cosign_supply_check.py
+
+# Build the init-container image that pulls a signed, digest-pinned ModelKit (#48): wattson-kit (kit + cosign + pull-kit).
+kit-image-build:
+    podman build -f containers/kit/Containerfile -t localhost/wattson-kit:local .
+
+# The model-supply init container end to end (#48): signed digest unpacks; unsigned digest, a tag and a wrong key are refused. Needs kit-install, cosign-install, kit-image-build.
+kit-init-check:
+    @python3 scripts/kit_init_check.py
 
 # Publish evaluation evidence as a kit package.
 kit-evidence run ref *flags:
@@ -317,7 +349,7 @@ pi-mcp-check:
 
 # Check that every command named in the hand-written state charts exists, that every transition names a command and a pass observation, and that the generated recipe graph is current.
 diagrams-check:
-    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2 docs/diagrams/kit-lifecycle.d2 docs/diagrams/retrieval-lifecycle.d2 docs/diagrams/auto-ontology-lifecycle.d2 docs/diagrams/registry-change.d2 docs/diagrams/gateway-reload.d2 docs/diagrams/gateway-failure.d2 docs/diagrams/engine-footprint.d2 docs/diagrams/gateway-routing.d2 docs/diagrams/gateway-candle.d2 docs/diagrams/gateway-boot.d2 docs/diagrams/gateway-mcp-log.d2 docs/diagrams/gpu-lease.d2 docs/diagrams/kit-supply.d2 docs/diagrams/cosign-supply.d2 docs/diagrams/harness-compare.d2 docs/diagrams/kit-import.d2 docs/diagrams/pi-mcp.d2
+    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2 docs/diagrams/kit-lifecycle.d2 docs/diagrams/retrieval-lifecycle.d2 docs/diagrams/auto-ontology-lifecycle.d2 docs/diagrams/registry-change.d2 docs/diagrams/gateway-reload.d2 docs/diagrams/gateway-failure.d2 docs/diagrams/engine-footprint.d2 docs/diagrams/gateway-routing.d2 docs/diagrams/gateway-candle.d2 docs/diagrams/gateway-boot.d2 docs/diagrams/gateway-mcp-log.d2 docs/diagrams/gpu-lease.d2 docs/diagrams/kit-supply.d2 docs/diagrams/cosign-supply.d2 docs/diagrams/kit-init.d2 docs/diagrams/harness-compare.d2 docs/diagrams/kit-import.d2 docs/diagrams/pi-mcp.d2
     python3 scripts/justfile_diagram.py --check docs/diagrams/recipes.d2
 
 # --- retrieval: embedding and reranker model servers (CPU, separate containers, behind the gateway) ---------------------------
