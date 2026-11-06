@@ -1,0 +1,14 @@
+# procedural-chart
+# State chart: model supply from a digest-pinned ModelKit (#48), with the tamper demonstration (#47). Throwaway registry on 127.0.0.1:5001.
+direction: down
+title: "Kit model supply" {shape: text}
+
+none: No registry {shape: oval}
+published: Fixture ModelKit published (digest recorded)
+supplied: Weights unpacked by digest (hash equals original)
+guarded: Wrong digest refused; overwritten tag changes nothing
+
+none -> published: "cmd: just kit-supply-check | pass: prints 'published: localhost:5001/wattson/fixture@sha256:...'"
+published -> supplied: "cmd: just kit-supply-check | pass: prints 'unpack-by-digest: rc=0 weights_sha256=<hash>' equal to the original's hash"
+supplied -> guarded: "cmd: just kit-supply-check | pass: prints 'wrong-digest: rc=<non-zero> unpacked=False' and 'pinned-after-tamper: rc=0' with the original hash"
+guarded -> none: "cmd: just kit-supply-check | pass: prints 'PASS kit-supply' and podman ps -a lists no wattson-kit-registry"
