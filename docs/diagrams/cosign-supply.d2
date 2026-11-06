@@ -1,0 +1,14 @@
+# procedural-chart
+# State chart: signed model supply with cosign (#47). Throwaway registry on 127.0.0.1:5001, a fresh key pair, no transparency log (offline).
+direction: down
+title: "Signed kit supply (cosign)" {shape: text}
+
+unsigned: Kit pushed, not signed {shape: oval}
+signed: Kit signed with the private key
+trusted: Signature verifies with the public key
+guarded: Unsigned or tampered kit and a wrong key are refused
+
+unsigned -> signed: "cmd: just cosign-supply-check | pass: cosign sign exits 0 for the pushed digest (key pair generated in a scratch directory)"
+signed -> trusted: "cmd: just cosign-supply-check | pass: prints 'signed-verifies: rc=0 digest=sha256:...'"
+trusted -> guarded: "cmd: just cosign-supply-check | pass: prints 'unsigned-or-tampered: rc=<non-zero> no_signatures_found=True', 'signed-digest-after-tag-overwrite: rc=0' and 'wrong-public-key: rc=<non-zero>'"
+guarded -> unsigned: "cmd: just cosign-supply-check | pass: prints 'PASS cosign-supply' and podman ps -a lists no wattson-cosign-registry"
