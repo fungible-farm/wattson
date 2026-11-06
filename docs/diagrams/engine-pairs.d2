@@ -1,0 +1,14 @@
+# procedural-chart
+# State chart: the concurrent-hosting gate (#15, #29). Owner rule: PASS if peak resident memory <= 85% of MemTotal and zero failed requests (>= 48 at 4 concurrent).
+direction: down
+title: "Engine-pair gate" {shape: text}
+
+idle: No engine running {shape: oval}
+up: Embedding, reranker and Candle started by their own recipes
+set: One engine set started (the others stopped)
+judged: Set judged against the owner rule
+
+idle -> up: "cmd: just engine-pairs | pass: retrieval-up and candle-up exit 0, and memory in use is at most 50% before the run"
+up -> set: "cmd: just engine-pairs | pass: every engine in the set answers GET /v1/models 200"
+set -> judged: "cmd: just engine-pairs | pass: a table row with requests, failed, peak GiB, peak % and PASS or FAIL read from /proc/meminfo and HTTP status codes"
+judged -> idle: "cmd: just engine-pairs | pass: prints 'PASS engine-pairs' (every set met the rule) or 'FAIL engine-pairs' (the table is the evidence); retrieval-down and candle-down ran"
