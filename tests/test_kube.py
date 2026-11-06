@@ -9,11 +9,18 @@ import yaml
 REPO: Path = Path(__file__).resolve().parents[1]
 FILLED: dict[str, str] = {
     "@IMAGE@": "img:t", "@HF_IMAGE@": "hf:t", "@CSIRO_IMAGE@": "csiro:t", "@VLLM_IMAGE@": "vllm:t", "@MODEL_REPO@": "o/n", "@MODEL_DIR@": "dir", "@REASONING@": "qwen3", "@GPU_UTIL@": "0.5",
-    "@MAX_LEN@": "32768", "@LOG_LEVEL@": "INFO", "@HOST_PORT@": "8000", "@WORK@": "/w"}
+    "@MAX_LEN@": "32768", "@LOG_LEVEL@": "INFO", "@HOST_PORT@": "8000", "@WORK@": "/w",
+    "@KIT_IMAGE@": "kit:t", "@MODEL_KIT@": "r/m@sha256:" + "ab" * 32, "@COSIGN_PUB@": "/k/cosign.pub", "@KIT_INSECURE@": "0"}
 
 
-def pod() -> dict:
+def pod(kit: bool = False) -> dict:
+    """The template as `just pod-render` renders it: exactly one of the Hugging Face / kit pull-model blocks survives."""
+    import re
+
     text = (REPO / "kube" / "wattson.yaml").read_text()
+    drop = "HF" if kit else "KIT"
+    text = re.sub(rf"^[ \t]*# @{drop}-BEGIN@.*?# @{drop}-END@\n", "", text, flags=re.S | re.M)
+    text = re.sub(r"^[ \t]*# @(HF|KIT)-(BEGIN|END)@\n", "", text, flags=re.M)
     for marker, value in FILLED.items():
         text = text.replace(marker, value)
     return yaml.safe_load(text)
@@ -89,3 +96,16 @@ def test_each_concern_has_its_own_single_purpose_image() -> None:
     assert len(set(images)) == 4
     assert [m["name"] for m in init["pull-model"]["volumeMounts"]] == ["models"], "the model puller sees only the models volume"
     assert [m["name"] for m in init["fetch-cases"]["volumeMounts"]] == ["cases"], "the case fetcher sees only the cases volume"
+
+
+def test_the_kit_variant_has_one_pull_model_pinned_by_digest_with_the_key_mounted_read_only() -> None:
+    spec = pod(kit=True)["spec"]
+    pulls = [c for c in spec["initContainers"] if c["name"] == "pull-model"]
+    assert len(pulls) == 1 and pulls[0]["image"] == "kit:t"
+    assert pulls[0]["args"][:2] == ["pull", FILLED["@MODEL_KIT@"]] and "@sha256:" in pulls[0]["args"][1]
+    mount = next(m for m in pulls[0]["volumeMounts"] if m["name"] == "cosign-pub")
+    assert mount["mountPath"] == "/keys/cosign.pub" and mount["readOnly"] is True
+    assert any(v["name"] == "cosign-pub" and v["hostPath"]["type"] == "File" for v in spec["volumes"])
+    hf = pod()["spec"]
+    assert not any(v["name"] == "cosign-pub" for v in hf["volumes"])
+    assert [c["image"] for c in hf["initContainers"] if c["name"] == "pull-model"] == ["hf:t"]
