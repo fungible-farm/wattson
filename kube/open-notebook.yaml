@@ -1,0 +1,29 @@
+# Open Notebook (a second, unrelated harness) as a throwaway pod, for the harness-adapter comparison (#28).
+# SurrealDB and the app share the pod's network namespace, so the app reaches the database at 127.0.0.1:8000; that port is
+# NOT published, which keeps it clear of llama-swap on the host's :8000. Only the app's UI (8502) and REST API (5055) are
+# published, on 127.0.0.1 only. The database is in memory: nothing persists. @ON_KEY@ is filled by scripts/harness_compare.py
+# with a fresh random secret (it encrypts credentials stored in the database).
+apiVersion: v1
+kind: Pod
+metadata:
+  name: wattson-open-notebook
+  labels:
+    app: open-notebook
+spec:
+  restartPolicy: Never
+  containers:
+    - name: surrealdb
+      image: docker.io/surrealdb/surrealdb:v2@sha256:e5d7387e3727bbe2f7cd6d869e48cd34777272258572ead37c9656b25f745723
+      args: ["start", "--log", "info", "--user", "root", "--pass", "root", "memory"]
+    - name: app
+      image: docker.io/lfnovo/open_notebook:v1-latest@sha256:e4e18f12653df5bf48674b7b187c4252be52238b4d706330fd30d9b177b95812
+      env:
+        - {name: OPEN_NOTEBOOK_ENCRYPTION_KEY, value: "@ON_KEY@"}
+        - {name: SURREAL_URL, value: "ws://127.0.0.1:8000/rpc"}
+        - {name: SURREAL_USER, value: "root"}
+        - {name: SURREAL_PASSWORD, value: "root"}
+        - {name: SURREAL_NAMESPACE, value: "open_notebook"}
+        - {name: SURREAL_DATABASE, value: "open_notebook"}
+      ports:
+        - {containerPort: 8502, hostPort: 15502, hostIP: 127.0.0.1}
+        - {containerPort: 5055, hostPort: 15055, hostIP: 127.0.0.1}
