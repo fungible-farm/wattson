@@ -94,3 +94,32 @@ def test_concurrent_attempts_commit_in_benchmark_order(tmp_path: Path, monkeypat
     assert order == [t["example_id"] for t in tasks]
     assert flight["max"] == 3
     assert json.loads((args.out / "manifest.json").read_text())["concurrency"] == 3
+
+
+@pytest.mark.parametrize("env, expected", [({"WATTSON_MODEL_DIGEST": "sha256:" + "ab" * 32}, "sha256:" + "ab" * 32), ({}, None)])
+def test_manifest_records_the_model_digest_when_the_weights_came_by_digest(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, env: dict, expected: str | None) -> None:
+    """#48: the run manifest names the ModelKit digest of the served weights, or null when none was given."""
+    import argparse
+    import asyncio
+
+    from wattson.inference import evaluate_agent
+
+    tasks = [{"example_id": "ex_0", "subfamily": "pf-report", "task": {"prompt": "p0"}}]
+    monkeypatch.delenv("WATTSON_MODEL_DIGEST", raising=False)
+    for key, value in env.items():
+        monkeypatch.setenv(key, value)
+    monkeypatch.setattr(evaluate_agent, "frozen_task_count", lambda _path: 1)
+    monkeypatch.setattr(evaluate_agent, "load_rows", lambda _path: tasks)
+    monkeypatch.setattr(evaluate_agent, "audit_rows", lambda *_args: {"clean": True})
+
+    async def fake_attempt(_args: argparse.Namespace, task: dict, _grading: asyncio.Lock) -> dict:
+        return {"example_id": task["example_id"], "passed": False}
+
+    monkeypatch.setattr(evaluate_agent, "attempt", fake_attempt)
+    tasks_file = tmp_path / "tasks.jsonl"
+    tasks_file.write_text("")
+    args = argparse.Namespace(tasks=tasks_file, exclude=tasks_file, out=tmp_path / "run", model="m", base_url="http://x",
+                              concurrency=1, first_turn_tool_choice="auto", server_tool_strict_level="auto")
+    asyncio.run(evaluate_agent.evaluate(args))
+    assert json.loads((args.out / "manifest.json").read_text())["model_digest"] == expected
