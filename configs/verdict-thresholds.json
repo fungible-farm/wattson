@@ -1,5 +1,5 @@
 {
-  "confirmed_by_owner": false,
+  "confirmed_by_owner": true,
   "derived_total": 40,
   "smoke_total": 20,
   "contender": {

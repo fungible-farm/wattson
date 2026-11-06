@@ -6,7 +6,7 @@ import tempfile
 
 PY = sys.executable
 SCRIPT = os.path.join(os.path.dirname(__file__), "..", "scripts", "verdict.py")
-THRESHOLDS_PATH = os.path.join(os.path.dirname(__file__), "..", "configs", "verdict-thresholds.proposed.json")
+THRESHOLDS_PATH = os.path.join(os.path.dirname(__file__), "..", "configs", "verdict-thresholds.json")
 
 
 def load_thresholds():
@@ -102,7 +102,9 @@ def test_smoke_19_of_20_blocks_contender():
 
 
 def test_unconfirmed_header():
-    rc, out, _ = run_verdict_files(make_results("a", make_arm(derived_pass=38)))
+    thresholds = load_thresholds()
+    thresholds["confirmed_by_owner"] = False  # the shipped file is confirmed; this exercises the header for an unconfirmed one
+    rc, out, _ = run_verdict_files(make_results("a", make_arm(derived_pass=38)), thresholds)
     assert rc == 0
     assert "THRESHOLDS UNCONFIRMED" in out
 
@@ -160,7 +162,7 @@ def test_invalid_json_exits_2():
 
 def test_sample_thresholds_loads():
     data = load_thresholds()
-    assert data["confirmed_by_owner"] is False
+    assert data["confirmed_by_owner"] is True  # owner confirmed 2026-11-06 (#15, #36)
     assert data["derived_total"] == 40
     assert data["smoke_total"] == 20
     assert data["contender"]["derived_pass_min"] == 38
@@ -271,11 +273,11 @@ def test_protocol_rate_boundary_exact_arithmetic():
     assert "NOT_CONTENDER" not in out
 
 
-def test_proposed_thresholds_load_and_unconfirmed_header():
+def test_confirmed_thresholds_load_and_confirmed_header():
     thresholds = load_thresholds()
-    assert thresholds["confirmed_by_owner"] is False
+    assert thresholds["confirmed_by_owner"] is True
     assert thresholds["derived_total"] == 40
     assert thresholds["smoke_total"] == 20
     rc, out, _ = run_verdict_files(make_results("a", make_arm(derived_pass=38)), thresholds)
     assert rc == 0
-    assert "THRESHOLDS UNCONFIRMED" in out
+    assert "THRESHOLDS CONFIRMED" in out
