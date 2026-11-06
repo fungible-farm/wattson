@@ -1,0 +1,33 @@
+# wattson-kit: model supply from a signed, digest-pinned ModelKit, and nothing else (#48, #47).
+#
+# One job: `pull-kit pull REF@sha256:... --dest DIR` verifies the kit's cosign signature against a public key you supply, unpacks it,
+# and writes the digest next to the weights. It replaces the Hugging Face downloader when a kit has been published. The two tools are
+# downloaded at build time and checked against their publishers' checksum files BEFORE they are installed (a corruption/swap check,
+# not a signature check on the tools themselves).
+#
+# Build:  podman build -f containers/kit/Containerfile -t wattson-kit:local .
+# Run:    podman run --rm -v wattson-models:/models -v ./cosign.pub:/keys/cosign.pub:ro -e WATTSON_COSIGN_PUBKEY=/keys/cosign.pub \
+#           wattson-kit:local pull ghcr.io/ORG/model@sha256:<digest> --dest /models/NAME
+FROM docker.io/library/alpine:3.22@sha256:bfe7ceb9f09ec0566c48fb93356e45a47a00be5a1dd14fa5b909e7709c66b034
+ARG TARGETARCH
+ARG KIT_VERSION=1.16.0
+ARG COSIGN_VERSION=v3.1.4
+RUN set -eu; \
+    case "${TARGETARCH:-$(uname -m)}" in arm64|aarch64) kit_arch=arm64; cosign_arch=arm64 ;; amd64|x86_64) kit_arch=x86_64; cosign_arch=amd64 ;; *) echo "unsupported arch" >&2; exit 1 ;; esac; \
+    cd /tmp; \
+    wget -q "https://github.com/kitops-ml/kitops/releases/download/v${KIT_VERSION}/kitops_v${KIT_VERSION}_checksums.txt" -O kit.sums; \
+    wget -q "https://github.com/kitops-ml/kitops/releases/download/v${KIT_VERSION}/kitops-linux-${kit_arch}.tar.gz"; \
+    grep " kitops-linux-${kit_arch}.tar.gz\$" kit.sums | sha256sum -c -; \
+    tar -xzf "kitops-linux-${kit_arch}.tar.gz" kit; install -m 0755 kit /usr/local/bin/kit; \
+    wget -q "https://github.com/sigstore/cosign/releases/download/${COSIGN_VERSION}/cosign_checksums.txt" -O cosign.sums; \
+    wget -q "https://github.com/sigstore/cosign/releases/download/${COSIGN_VERSION}/cosign-linux-${cosign_arch}"; \
+    grep " cosign-linux-${cosign_arch}\$" cosign.sums | sha256sum -c -; \
+    install -m 0755 "cosign-linux-${cosign_arch}" /usr/local/bin/cosign; \
+    rm -f /tmp/*; \
+    adduser -D -u 1000 wattson; mkdir -p /models; chown wattson:wattson /models
+COPY containers/kit/pull-kit.sh /usr/local/bin/pull-kit
+USER wattson
+WORKDIR /models
+VOLUME ["/models"]
+ENTRYPOINT ["/usr/local/bin/pull-kit"]
+CMD ["--help"]

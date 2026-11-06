@@ -35,9 +35,10 @@ for placeholder in $(grep -o '@[A-Z_]*@' "$HERE/kube/wattson.yaml" | sort -u); d
 done
 
 # 2. render with dummy values and reduce to the part that needs no GPU
-sed -e "s|@IMAGE@|$IMAGE|g" -e "s|@HF_IMAGE@|unused|g" -e "s|@CSIRO_IMAGE@|$CSIRO_IMAGE|g" -e "s|@VLLM_IMAGE@|unused|g" -e "s|@MODEL_REPO@|unused/unused|g" -e "s|@MODEL_DIR@|unused|g" \
+sed -e '/@KIT-BEGIN@/,/@KIT-END@/d' "$HERE/kube/wattson.yaml" | sed -e '/@HF-BEGIN@/d;/@HF-END@/d' \
+    -e "s|@IMAGE@|$IMAGE|g" -e "s|@HF_IMAGE@|unused|g" -e "s|@CSIRO_IMAGE@|$CSIRO_IMAGE|g" -e "s|@VLLM_IMAGE@|unused|g" -e "s|@MODEL_REPO@|unused/unused|g" -e "s|@MODEL_DIR@|unused|g" \
     -e "s|@REASONING@|qwen3|g" -e "s|@GPU_UTIL@|0.5|g" -e "s|@MAX_LEN@|32768|g" -e "s|@LOG_LEVEL@|DEBUG|g" -e "s|@HOST_PORT@|18000|g" -e "s|@WORK@|$WORK|g" \
-    "$HERE/kube/wattson.yaml" > "$WORK/rendered.yaml"
+    > "$WORK/rendered.yaml"
 if grep -q '@[A-Z_]*@' "$WORK/rendered.yaml"; then fail "unfilled placeholder in the rendered YAML"; else pass "rendered YAML has no placeholder left"; fi
 check "reduce the pod (no GPU, no download)" bash -c "podman run --rm -i --entrypoint python '$IMAGE' /app/scripts/pod_filter.py '$POD' < '$WORK/rendered.yaml' > '$WORK/reduced.yaml' && test -s '$WORK/reduced.yaml'"
 

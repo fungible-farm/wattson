@@ -19,7 +19,9 @@ metadata:
 spec:
   restartPolicy: Never
   initContainers:
-    # One image per concern. pull-model is wattson-hf (Hugging Face models only); fetch-cases is wattson-csiro (CSIRO case data only).
+    # One image per concern. pull-model is EITHER wattson-hf (Hugging Face models) OR wattson-kit (a signed, digest-pinned ModelKit,
+    # used when `just up` is given WATTSON_MODEL_KIT); `just pod-render` keeps one of the two blocks. fetch-cases is wattson-csiro.
+    # @HF-BEGIN@
     - name: pull-model
       image: @HF_IMAGE@
       args: ["pull", "@MODEL_REPO@", "--dest", "/models/@MODEL_DIR@"]
@@ -27,6 +29,18 @@ spec:
         - {name: WATTSON_LOG_LEVEL, value: "@LOG_LEVEL@"}
       volumeMounts:
         - {name: models, mountPath: /models}
+    # @HF-END@
+    # @KIT-BEGIN@
+    - name: pull-model
+      image: @KIT_IMAGE@
+      args: ["pull", "@MODEL_KIT@", "--dest", "/models/@MODEL_DIR@"]
+      env:
+        - {name: WATTSON_COSIGN_PUBKEY, value: "/keys/cosign.pub"}
+        - {name: WATTSON_KIT_INSECURE, value: "@KIT_INSECURE@"}
+      volumeMounts:
+        - {name: models, mountPath: /models}
+        - {name: cosign-pub, mountPath: /keys/cosign.pub, readOnly: true}
+    # @KIT-END@
     - name: fetch-cases
       image: @CSIRO_IMAGE@
       args: ["fetch"]
@@ -91,6 +105,10 @@ spec:
       persistentVolumeClaim: {claimName: wattson-models}
     - name: cases
       persistentVolumeClaim: {claimName: wattson-cases}
+    # @KIT-BEGIN@
+    - name: cosign-pub
+      hostPath: {path: "@COSIGN_PUB@", type: File}
+    # @KIT-END@
     - name: work
       hostPath: {path: "@WORK@", type: Directory}
     - name: shm
