@@ -1,0 +1,14 @@
+# procedural-chart
+# State chart: pi calls a tool over the gateway MCP route and the gateway journal agrees (#28). Throwaway MCP server and gateway on loopback.
+direction: down
+title: "pi tool call over the gateway MCP route" {shape: text}
+
+idle: Nothing running {shape: oval}
+configured: pi configured with only the gateway MCP URL (pi mcp add)
+called: pi called the tool with the canary argument
+agreed: Gateway journal matches pi's record
+
+idle -> configured: "cmd: just pi-mcp-check | pass: prints 'pi mcp list: rc=0 tools=[...alpha_ping...]'"
+configured -> called: "cmd: just pi-mcp-check | pass: prints 'pi: tool_calls=1 args={message: canary-...} received_pong=True'"
+called -> agreed: "cmd: just pi-mcp-check | pass: prints 'gateway: tools/call records=1 tool=[alpha_ping] arguments=[{...canary...}]'"
+agreed -> idle: "cmd: just pi-mcp-check | pass: prints 'PASS pi-mcp' and podman ps -a lists no wattson-gw-pimcp"
