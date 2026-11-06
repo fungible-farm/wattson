@@ -204,6 +204,9 @@ async def evaluate(args: argparse.Namespace) -> None:
     args.out.mkdir(parents=True, exist_ok=False)
     manifest = {
         "model": args.model, "base_url": args.base_url,
+        # The ModelKit digest the served weights came from (sha256:...), set by whoever started the server (#48); None when the
+        # weights were not supplied by digest. It is a public content hash, never a credential.
+        "model_digest": os.environ.get("WATTSON_MODEL_DIGEST") or None,
         "independence_audit": audit,
         "inputs": {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in (args.tasks, args.exclude)},
         "max_turns": MAX_TURNS, "max_tool_calls": MAX_TOOL_CALLS, "max_tokens": MAX_TOKENS,
