@@ -1,0 +1,14 @@
+# procedural-chart
+# State chart: bringing a released student into the kit world and proving the bytes (#48). Private kit store, deleted at the end.
+direction: down
+title: "Kit import of a released student" {shape: text}
+
+hub: Student on Hugging Face (commit pinned) {shape: oval}
+imported: Packaged as a ModelKit (kit import --ref <commit>)
+unpacked: Unpacked from the ModelKit
+verified: Every file hash equals the Hub original
+
+hub -> imported: "cmd: just kit-import-check | pass: prints 'repo=... commit=<sha> files=N' then 'imported: wattson/import-check:v1'"
+imported -> unpacked: "cmd: just kit-import-check | pass: kit unpack exits 0 (no FAIL line)"
+unpacked -> verified: "cmd: just kit-import-check | pass: prints 'import-hash: files=N matched=N mismatched=0 missing=0'"
+verified -> hub: "cmd: just kit-import-check | pass: prints 'PASS kit-import: ...' and the scratch store is removed"
