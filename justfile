@@ -175,6 +175,10 @@ kit-pack-check dir allow:
 kit-supply-check:
     @python3 scripts/kit_supply_check.py
 
+# Import a released student from Hugging Face as a ModelKit and hash-compare every unpacked file with the Hub originals (#48). About 9 GB for the default; needs kit-install.
+kit-import-check *repo:
+    @python3 scripts/kit_import_check.py {{repo}}
+
 # Publish evaluation evidence as a kit package.
 kit-evidence run ref *flags:
     python3 scripts/kit_publish.py evidence "$1" --ref "$2" "${@:3}"
@@ -273,7 +277,7 @@ gateway-failure-check:
 
 # Check that every command named in the hand-written state charts exists, that every transition names a command and a pass observation, and that the generated recipe graph is current.
 diagrams-check:
-    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2 docs/diagrams/kit-lifecycle.d2 docs/diagrams/retrieval-lifecycle.d2 docs/diagrams/auto-ontology-lifecycle.d2 docs/diagrams/registry-change.d2 docs/diagrams/gateway-reload.d2 docs/diagrams/gateway-failure.d2 docs/diagrams/gpu-lease.d2 docs/diagrams/kit-supply.d2
+    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2 docs/diagrams/kit-lifecycle.d2 docs/diagrams/retrieval-lifecycle.d2 docs/diagrams/auto-ontology-lifecycle.d2 docs/diagrams/registry-change.d2 docs/diagrams/gateway-reload.d2 docs/diagrams/gateway-failure.d2 docs/diagrams/gpu-lease.d2 docs/diagrams/kit-supply.d2 docs/diagrams/kit-import.d2
     python3 scripts/justfile_diagram.py --check docs/diagrams/recipes.d2
 
 # --- retrieval: embedding and reranker model servers (CPU, separate containers, behind the gateway) ---------------------------
