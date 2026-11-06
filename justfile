@@ -295,9 +295,13 @@ gateway-quadlet-check:
 gateway-candle-check:
     @python3 scripts/gateway_candle_check.py
 
+# Model-name routing through the REAL gateway config (#24): candle-qwen3-0.6b goes to Candle, other names to llama-swap. Starts and stops what it needs.
+gateway-routing-check:
+    @python3 scripts/gateway_routing_check.py
+
 # Check that every command named in the hand-written state charts exists, that every transition names a command and a pass observation, and that the generated recipe graph is current.
 diagrams-check:
-    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2 docs/diagrams/kit-lifecycle.d2 docs/diagrams/retrieval-lifecycle.d2 docs/diagrams/auto-ontology-lifecycle.d2 docs/diagrams/registry-change.d2 docs/diagrams/gateway-reload.d2 docs/diagrams/gateway-failure.d2 docs/diagrams/gateway-candle.d2 docs/diagrams/gateway-boot.d2 docs/diagrams/gateway-mcp-log.d2 docs/diagrams/gpu-lease.d2 docs/diagrams/kit-supply.d2 docs/diagrams/harness-compare.d2 docs/diagrams/kit-import.d2
+    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2 docs/diagrams/kit-lifecycle.d2 docs/diagrams/retrieval-lifecycle.d2 docs/diagrams/auto-ontology-lifecycle.d2 docs/diagrams/registry-change.d2 docs/diagrams/gateway-reload.d2 docs/diagrams/gateway-failure.d2 docs/diagrams/gateway-routing.d2 docs/diagrams/gateway-candle.d2 docs/diagrams/gateway-boot.d2 docs/diagrams/gateway-mcp-log.d2 docs/diagrams/gpu-lease.d2 docs/diagrams/kit-supply.d2 docs/diagrams/harness-compare.d2 docs/diagrams/kit-import.d2
     python3 scripts/justfile_diagram.py --check docs/diagrams/recipes.d2
 
 # --- retrieval: embedding and reranker model servers (CPU, separate containers, behind the gateway) ---------------------------
@@ -316,6 +320,21 @@ rerank_rev := "3093af03b1a635e67b084b1d8c03c5f5e020fd05"
 rerank_sha256 := "e186a244ed455b4ab66ec64339ce7427a6ae13f5c0b5e544de96e50f0f8b3673"
 rerank_url := "https://huggingface.co/" + rerank_repo + "/resolve/" + rerank_rev + "/" + rerank_model
 llama_image := env("WATTSON_LLAMA_IMAGE", "ghcr.io/ggml-org/llama.cpp:server@sha256:c0a11067c72bb1eb330b8bddbf9869274c195e596bf4fae55fd527102e644b85")
+
+# --- Candle (mistral.rs) CPU backend for small jobs, behind the gateway as model `candle-qwen3-0.6b` (about 3 GB, about 10 tokens/s) ---
+candle_image := env("WATTSON_CANDLE_IMAGE", "ghcr.io/ericlbuehler/mistral.rs:cpu-latest@sha256:aec36c75207e094d6ab6a86d35697268141b96ffcbd0fb980440fd3001d8e0e6")
+
+# Start the Candle CPU server on 127.0.0.1:3301 (first run downloads about 1.2 GB into .models/hf-cache).
+candle-up:
+    @mkdir -p .models/hf-cache && chmod 777 .models/hf-cache
+    @podman rm -f wattson-candle >/dev/null 2>&1 || true
+    @podman run -d --name wattson-candle --pull=missing -p 127.0.0.1:3301:1234 -e HF_HOME=/cache -v "$PWD/.models/hf-cache:/cache:z" {{candle_image}} serve --cpu --host 0.0.0.0 -p 1234 -m Qwen/Qwen3-0.6B >/dev/null
+    @for i in $(seq 1 300); do [ "$(curl -s -o /dev/null -w '%{http_code}' --max-time 2 http://127.0.0.1:3301/v1/models)" = 200 ] && { echo "candle-up: ready"; exit 0; }; sleep 3; done; echo "candle-up: not ready after 900 s; see podman logs wattson-candle" >&2; exit 1
+
+# Stop and remove the Candle CPU server.
+candle-down:
+    @echo "candle-down: removing wattson-candle"
+    @podman rm -f wattson-candle >/dev/null 2>&1 || true
 
 # Start the embedding and reranker servers as separate containers (ports 8081, 8082). Downloads models if missing; runs memory guard.
 retrieval-up:
