@@ -1,0 +1,9 @@
+# procedural-chart
+# Unit lookup: DUID to region and station, checked for coverage against the units that actually dispatched (#119).
+direction: right
+absent: no unit parquet
+fetched: DISPATCHLOAD and DUDETAILSUMMARY parquet written
+mapped: per-region units and cleared energy printed, coverage measured
+
+absent -> fetched: "cmd: just nemosis-fetch DISPATCHLOAD \"2025/09/01 00:00:00\" \"2025/09/02 00:00:00\" && just nemosis-fetch DUDETAILSUMMARY \"2025/09/01 00:00:00\" \"2025/09/02 00:00:00\" | pass: each prints 'nemosis-fetch: <TABLE> rows=<N> sha256=<prefix>'"
+fetched -> mapped: "cmd: just nem-unit-lookup | pass: prints a row per region then 'nem-unit-lookup: dispatched_duids=N mapped=M coverage=C' and 'PASS nem-unit-lookup' when coverage is at least 0.99"
