@@ -676,6 +676,23 @@ ao-enable-semantic:
     v=$(podman exec auto-ontology-postgres psql -U postgres -d auto_ontology -t -A -c "SELECT value FROM frontend.configurations WHERE key = 'semantic_compilation_enabled'")
     [ "$v" = "true" ] && echo "ao-enable-semantic: semantic_compilation_enabled=true" || { echo "ao-enable-semantic: ERROR flag reads '$v'" >&2; exit 1; }
 
+# Load the NEM price-and-demand CSVs (out/nem, from `just nem-data`) into the AO pod's Postgres as demo.price_demand (same columns as the DuckDB table), for demo 3 arm 2. Idempotent.
+ao-load-nem:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    pg() { podman exec -i auto-ontology-postgres psql -U postgres -v ON_ERROR_STOP=1 -q "$@"; }
+    pg -c "CREATE DATABASE demo" 2>/dev/null || true
+    pg -d demo -c "DROP TABLE IF EXISTS price_demand; CREATE TABLE price_demand (region text, settlement_ts timestamp, total_demand_mw double precision, rrp double precision, period_type text);" >/dev/null
+    for f in out/nem/PRICE_AND_DEMAND_*.csv; do
+        { echo "CREATE TEMP TABLE IF NOT EXISTS stage (region text, ts text, d text, r text, p text);"; echo "\\copy stage FROM STDIN CSV HEADER"; tr -d '\r' < "$f" | sed -e '$a\'; printf '\\.\n'; echo "INSERT INTO price_demand SELECT region, to_timestamp(ts, 'YYYY/MM/DD HH24:MI:SS')::timestamp, d::double precision, r::double precision, p FROM stage; TRUNCATE stage;"; } | pg -d demo >/dev/null
+    done
+    n=$(pg -d demo -t -A -c "SELECT count(*) FROM price_demand")
+    [ "$n" = "43200" ] && echo "ao-load-nem: demo.price_demand rows=43200" || { echo "ao-load-nem: ERROR expected 43200 rows, got $n" >&2; exit 1; }
+
+# Demo 3 arm 2: the same ten questions asked of Auto Ontology over the same data. Pod up, ao-load-nem and ao-enable-semantic done, ingestion run.
+demo-timeseries-ao:
+    @python3 scripts/demo_timeseries_ao.py
+
 # Stop and remove the auto-ontology pod (keeps retrieval servers running).
 ao-down:
     @echo "ao-down: removing auto-ontology pod"
