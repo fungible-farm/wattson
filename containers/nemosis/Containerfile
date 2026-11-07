@@ -1,0 +1,18 @@
+# wattson-nemosis: the GPL-3.0 NEMOSIS package, isolated in its own container (#116).
+#
+# NEMOSIS (UNSW-CEEM) is GPL-3.0; wattson is Apache-2.0/MIT. Nothing in wattson imports it: this image downloads AEMO MMS tables and
+# writes PARQUET to a volume, and wattson code only reads parquet. The image carries NEMOSIS under its own licence (see /licenses).
+#
+# One job: `fetch --table T --start S --end E [--filter COL=V,V]` -> /data/<T>.parquet plus a /data/<T>.provenance.json (nemosis version, args, row count, sha256).
+# Needs network (it downloads from AEMO NEMWeb); run it via `just nemosis-fetch`, never on the host.
+#
+# Build:  podman build -f containers/nemosis/Containerfile -t wattson-nemosis:local .
+FROM docker.io/library/python:3.12-slim
+RUN pip install --no-cache-dir nemosis==3.8.1 pyarrow \
+ && mkdir -p /licenses && python -c "import importlib.metadata as m; d=m.distribution('nemosis'); open('/licenses/NEMOSIS-GPL-3.0-NOTICE.txt','w').write('NEMOSIS '+d.version+' is licensed under GPL-3.0 (https://github.com/UNSW-CEEM/NEMOSIS/blob/master/LICENSE).\n')" \
+ && useradd --create-home --uid 1000 wattson && mkdir -p /data /cache && chown wattson:wattson /data /cache
+COPY scripts/nemosis_fetch.py /opt/nemosis/nemosis_fetch.py
+USER wattson
+WORKDIR /data
+ENTRYPOINT ["python", "/opt/nemosis/nemosis_fetch.py"]
+CMD ["--help"]
