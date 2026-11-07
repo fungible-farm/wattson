@@ -25,7 +25,7 @@ Run ONE read-only SQL statement over the parquet or over `out/nem/nem.duckdb` (`
 |---|---|---|
 | Price and demand, spike and negative-price events | DISPATCHPRICE, DISPATCHREGIONSUM | fetch + reconcile validated |
 | Fuel mix, capacity factor | DISPATCHLOAD, DISPATCH_UNIT_SCADA, static Generators and Scheduled Loads | planned |
-| Interconnector flow and congestion | DISPATCHINTERCONNECTORRES | planned |
+| Interconnector flow and congestion | DISPATCHINTERCONNECTORRES | `just nem-interconnector` (chart `docs/diagrams/nem-interconnector.d2`) |
 | Binding-constraint analysis | DISPATCHCONSTRAINT, GENCONDATA, SPD* | planned |
 | Bid stack, supply curve (gap March 2021 to July 2024) | BIDPEROFFER_D, BIDDAYOFFER_D | planned |
 | FCAS price and causer-pays | DISPATCHPRICE (FCAS columns), FCAS_4_SECOND | planned |
