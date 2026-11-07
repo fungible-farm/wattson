@@ -400,6 +400,10 @@ nem-data:
 demo-timeseries-qa:
     @python3 scripts/demo_timeseries_qa.py
 
+# Arm 1 on the proposed hard question set (#95): does it discriminate? A measurement, not a pass/fail gate on the product.
+demo-timeseries-qa-hard:
+    @python3 scripts/demo_timeseries_qa.py --questions configs/nem-hard-questions.proposed.json
+
 # Check that every command named in the hand-written state charts exists, that every transition names a command and a pass observation, and that the generated recipe graph is current.
 diagrams-check:
     python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2 docs/diagrams/kit-lifecycle.d2 docs/diagrams/retrieval-lifecycle.d2 docs/diagrams/auto-ontology-lifecycle.d2 docs/diagrams/registry-change.d2 docs/diagrams/gateway-reload.d2 docs/diagrams/gateway-failure.d2 docs/diagrams/engine-footprint.d2 docs/diagrams/engine-pairs.d2 docs/diagrams/gateway-routing.d2 docs/diagrams/gateway-candle.d2 docs/diagrams/gateway-boot.d2 docs/diagrams/gateway-mcp-log.d2 docs/diagrams/gpu-lease.d2 docs/diagrams/kit-supply.d2 docs/diagrams/cosign-supply.d2 docs/diagrams/kit-init.d2 docs/diagrams/kit-pod.d2 docs/diagrams/demo-timeseries-qa.d2 docs/diagrams/demo-isp-qa.d2 docs/diagrams/demo-grid-study.d2 docs/diagrams/harness-compare.d2 docs/diagrams/kit-import.d2 docs/diagrams/pi-mcp.d2

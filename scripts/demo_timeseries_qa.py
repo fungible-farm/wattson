@@ -96,6 +96,7 @@ def same(expected, got):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--only", default="")
+    parser.add_argument("--questions", default=None, help="JSON file of {id, question, sql}; default is the built-in set")
     parser.add_argument("--base-url", default=None)
     parser.add_argument("--model", default=None)
     args = parser.parse_args()
@@ -106,7 +107,8 @@ def main():
     spec.loader.exec_module(delegate)
     base_url, model = args.base_url or delegate.DEFAULT_URL, args.model or delegate.DEFAULT_MODEL
     print(f"arm 1 (plain text-to-SQL, schema in the prompt); model under test: {model} at {base_url}")
-    questions = [q for q in QUESTIONS if not args.only or q[0] in args.only.split(",")]
+    pool = QUESTIONS if not args.questions else [(q["id"], q["question"], q["sql"]) for q in json.load(open(args.questions))]
+    questions = [q for q in pool if not args.only or q[0] in args.only.split(",")]
     truth = {}
     for qid, _, sql in questions:
         result = run_sql(sql)
