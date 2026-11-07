@@ -29,7 +29,7 @@ Run ONE read-only SQL statement over the parquet or over `out/nem/nem.duckdb` (`
 | Binding-constraint analysis | DISPATCHCONSTRAINT, GENCONDATA, SPD* | planned |
 | Bid stack, supply curve (gap March 2021 to July 2024) | BIDPEROFFER_D, BIDDAYOFFER_D | planned |
 | FCAS price and causer-pays | DISPATCHPRICE (FCAS columns), FCAS_4_SECOND | planned |
-| Unit lookup, DUID to CSIRO synthetic network | DUDETAIL, DUDETAILSUMMARY | planned |
+| Unit lookup, DUID to region and station | DUDETAILSUMMARY (+ DISPATCHLOAD for coverage) | `just nem-unit-lookup` (chart `docs/diagrams/nem-unit-lookup.d2`); mapping onto the CSIRO synthetic network is still planned |
 
 ## Verify
 
