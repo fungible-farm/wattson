@@ -45,3 +45,28 @@ def test_the_lease_is_free_again_after_the_first_engine_ends_even_when_it_fails(
 def test_a_command_is_required(tmp_path):
     result = subprocess.run([sys.executable, SCRIPT, "x", "--lock-dir", str(tmp_path)], capture_output=True, text=True)
     assert result.returncode == 2
+
+
+def test_a_stop_request_reaches_the_engine_and_frees_the_lease(tmp_path):
+    """SIGTERM to the wrapper is forwarded to the command (so `podman kube play --wait` can clean its pod up), then the lease is free."""
+    import signal
+
+    marker = tmp_path / "child-got-sigterm"
+    child = ("import signal, sys, time, pathlib\n"
+             f"signal.signal(signal.SIGTERM, lambda *a: (pathlib.Path({str(marker)!r}).write_text('x'), sys.exit(0)))\n"
+             "time.sleep(30)\n")
+    holder = subprocess.Popen([sys.executable, SCRIPT, "vllm-qwen", "--lock-dir", str(tmp_path), "--", sys.executable, "-c", child],
+                              stderr=subprocess.PIPE, text=True)
+    try:
+        for _ in range(100):
+            if (tmp_path / "gpu.lock").exists() and (tmp_path / "gpu.lock").read_text().startswith("vllm-qwen:"):
+                break
+            time.sleep(0.1)
+        time.sleep(0.5)  # let the child install its handler
+        holder.send_signal(signal.SIGTERM)
+        holder.wait(timeout=20)
+    finally:
+        if holder.poll() is None:
+            holder.kill()
+    assert marker.exists(), "the stop request did not reach the command"
+    assert run(tmp_path, "next", "true").returncode == 0  # the lease is free again

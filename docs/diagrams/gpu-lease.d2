@@ -12,3 +12,6 @@ held -> refused: "cmd: uv run pytest tests/inference/test_gpu_lease.py -q | pass
 held -> free: "cmd: uv run pytest tests/inference/test_gpu_lease.py -q | pass: test_lease_is_free_again_after_release passes"
 free -> held: "cmd: just gpu-run llm-chat sleep 30 | pass: stderr prints 'gpu-run: lease acquired for llm-chat'; the command runs in the foreground"
 held -> refused: "cmd: just gpu-run image-gen true | pass: exit status 75 and stderr 'gpu-run: refused: the GPU lease is held by [llm-chat:...]; nothing was started'"
+free -> held: "cmd: just up-leased qwen | pass: stderr prints 'gpu-run: lease acquired for vllm-qwen' and the pod runs in the foreground (podman kube play --wait)"
+held -> refused: "cmd: just up-leased granite | pass: exit status 75 and stderr 'gpu-run: refused: the GPU lease is held by [vllm-qwen:...]; nothing was started'"
+held -> free: "cmd: Ctrl-C or SIGTERM to the holder | pass: the pod is removed (podman pod ps lists no wattson pod) and stderr prints 'gpu-run: lease released for vllm-qwen'"
