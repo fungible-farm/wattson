@@ -78,6 +78,7 @@ def main():
     parser.add_argument("--only", default="")
     parser.add_argument("--questions", default=None, help="JSON file of {id, question, sql}; default is the built-in set")
     parser.add_argument("--compile-timeout-minutes", type=int, default=30)
+    parser.add_argument("--question-timeout", type=int, default=900, help="seconds per question before it counts as a failure")
     args = parser.parse_args()
     arm1 = load_arm1()
     pool = arm1.QUESTIONS if not args.questions else [(q["id"], q["question"], q["sql"]) for q in json.load(open(args.questions))]
@@ -106,7 +107,7 @@ def main():
     print(f"{'id':4} {'verdict':7} {'steps':>5} {'sec':>6}  question")
     passed, total_steps, total_seconds = 0, 0, 0.0
     for qid, text, _ in questions:
-        steps, sql, values, error, seconds = ask(text, timeout=900)
+        steps, sql, values, error, seconds = ask(text, timeout=args.question_timeout)
         ok = error is None and all(any(arm1.same(e, g) for g in values) for e in truth[qid])
         passed += ok
         total_steps += steps
