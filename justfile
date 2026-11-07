@@ -404,6 +404,12 @@ nemosis-reconcile:
 nem-interconnector:
     @python3 scripts/nem_interconnector.py
 
+# NEMOSIS static table (e.g. "Generators and Scheduled Loads": DUID, station, region, fuel, registered capacity) into out/nemosis as parquet plus provenance (#118).
+nemosis-static table:
+    mkdir -p out/nemosis out/nemosis-cache
+    podman build -q -f containers/nemosis/Containerfile -t localhost/wattson-nemosis:local .
+    podman run --rm --userns=keep-id:uid=1000,gid=1000 -v "$PWD/out/nemosis:/data:z" -v "$PWD/out/nemosis-cache:/cache:z" localhost/wattson-nemosis:local static --table "{{table}}"
+
 # Demo 3 data (#100): a container fetches the public AEMO price-and-demand CSVs (Sept 2025, 5 regions) into out/nem and verifies configs/nem-priceanddemand.sha256; another builds out/nem/nem.duckdb. No host download.
 nem-data:
     mkdir -p out/nem
