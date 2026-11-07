@@ -1,0 +1,14 @@
+# procedural-chart
+# State chart: the pod served from a signed, digest-pinned ModelKit (#48 acceptance). Throwaway registry on 127.0.0.1:5001.
+direction: down
+title: "Pod from a signed kit" {shape: text}
+
+hub: Student on Hugging Face (commit pinned) {shape: oval}
+published: Kit pushed (digest recorded) and signed
+serving: Pod up; init container verified the signature and unpacked by digest
+checked: Digest file equals the pinned digest and doctor passes
+
+hub -> published: "cmd: just kit-pod-check | pass: prints 'student: <repo> @ <commit>' and 'kit digest: sha256:...'"
+published -> serving: "cmd: just kit-pod-check | pass: prints 'vllm: http=200'"
+serving -> checked: "cmd: just kit-pod-check | pass: prints 'model-digest file: sha256:...' equal to the kit digest, 'doctor: PASS  model-files ...' and 'doctor: PASS  model-endpoint ...' with no FAIL line"
+checked -> hub: "cmd: just kit-pod-check | pass: prints 'PASS kit-pod' and the pod and registry are removed"
