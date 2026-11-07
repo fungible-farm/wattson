@@ -391,16 +391,16 @@ demo-grid-study-nem:
 
 # NEMOSIS (GPL-3.0, isolated in its own container) fetches ONE AEMO MMS table into out/nemosis as parquet plus a provenance record (#116). wattson code only reads the parquet.
 # Example: just nemosis-fetch DISPATCHPRICE "2025/09/01 00:00:00" "2025/09/02 00:00:00" REGIONID=SA1
-nemosis-fetch table start end filter="":
+nemosis-fetch table start end filter="" extra="":
     mkdir -p out/nemosis out/nemosis-cache
     podman build -q -f containers/nemosis/Containerfile -t localhost/wattson-nemosis:local .
-    podman run --rm --userns=keep-id:uid=1000,gid=1000 -v "$PWD/out/nemosis:/data:z" -v "$PWD/out/nemosis-cache:/cache:z" localhost/wattson-nemosis:local fetch --table {{table}} --start "{{start}}" --end "{{end}}" {{ if filter != "" { "--filter " + filter } else { "" } }}
+    podman run --rm --userns=keep-id:uid=1000,gid=1000 -v "$PWD/out/nemosis:/data:z" -v "$PWD/out/nemosis-cache:/cache:z" localhost/wattson-nemosis:local fetch --table {{table}} --start "{{start}}" --end "{{end}}" {{ if filter != "" { "--filter " + filter } else { "" } }} {{ if extra != "" { "--extra-columns " + extra } else { "" } }}
 
 # Reconcile NEMOSIS DISPATCHPRICE against the AEMO CSV data already loaded for demo 3: two independent routes to the same prices must agree (#116). Needs `just nem-data` and `just nemosis-fetch DISPATCHPRICE ...` first.
 nemosis-reconcile:
     @python3 scripts/nemosis_reconcile.py
 
-# Interconnector flow and congestion (intervals at a limit) from NEMOSIS DISPATCHINTERCONNECTORRES parquet; needs `just nem-data` and `just nemosis-fetch DISPATCHINTERCONNECTORRES START END` first (#117).
+# Interconnector flow and congestion (intervals at a limit) from NEMOSIS DISPATCHINTERCONNECTORRES parquet; needs `just nem-data` and `just nemosis-fetch DISPATCHINTERCONNECTORRES START END "" EXPORTLIMIT,IMPORTLIMIT` first (#117).
 nem-interconnector:
     @python3 scripts/nem_interconnector.py
 
