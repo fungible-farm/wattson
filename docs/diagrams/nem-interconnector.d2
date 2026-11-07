@@ -6,4 +6,4 @@ fetched: DISPATCHINTERCONNECTORRES parquet and provenance written
 summarised: per-interconnector flow and at-limit counts printed
 
 absent -> fetched: "cmd: just nemosis-fetch DISPATCHINTERCONNECTORRES \"2025/09/01 00:00:00\" \"2025/09/08 00:00:00\" \"\" EXPORTLIMIT,IMPORTLIMIT | pass: prints 'nemosis-fetch: DISPATCHINTERCONNECTORRES rows=<N> sha256=<prefix>'"
-fetched -> summarised: "cmd: just nem-interconnector | pass: prints a row per interconnector then 'PASS nem-interconnector: one consistent interval count per interconnector'"
+fetched -> summarised: "cmd: just nem-interconnector | pass: prints a row per interconnector then 'PASS nem-interconnector: one consistent interval count per interconnector; N of M interval-flows outside their limits (at most 1% tolerated)'"

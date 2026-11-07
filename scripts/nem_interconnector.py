@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Interconnector flow and congestion from NEMOSIS DISPATCHINTERCONNECTORRES parquet (`just nemosis-fetch DISPATCHINTERCONNECTORRES ...`).
 
-For each interconnector: intervals, mean and peak flow each way, and the number of intervals AT a limit (|flow| within 0.5 MW of EXPORTLIMIT for flow>0, or of IMPORTLIMIT for flow<0).
+For each interconnector: intervals, mean and peak flow each way, and the number of intervals AT a limit. EXPORTLIMIT and IMPORTLIMIT are SIGNED bounds on the flow (IMPORTLIMIT is typically negative: the maximum reverse flow), so
+at_forward_limit is flow >= EXPORTLIMIT - 0.5 and at_reverse_limit is flow <= IMPORTLIMIT + 0.5. `outside_bounds` counts intervals more than 0.5 MW outside [IMPORTLIMIT, EXPORTLIMIT]; Real data does exceed its stated limits in rare system events (measured 2025-09-01..07: 48 of 12096 interval-flows, 0.4%, up to 158 MW, clustered at the same timestamps across interconnectors),
+so PASS requires outside_bounds to be at most 1% of all interval-flows: rare events are reported and tolerated, while a sign error (which puts about half the intervals outside) fails.
 All numbers come from one deterministic SQL statement run read-only in the wattson-nem container (no network, no model). Prints
 `nem-interconnector: interconnectors=N intervals=M` and PASS when the table is non-empty and every interconnector has the same interval count.
 """
@@ -38,8 +40,9 @@ def main():
     flt = "WHERE INTERVENTION = 0" if "INTERVENTION" in names else ""
     result = sql(f"""SELECT INTERCONNECTORID AS interconnector, count(*) AS intervals,
         round(avg(MWFLOW), 1) AS mean_mw, round(max(MWFLOW), 1) AS max_forward_mw, round(min(MWFLOW), 1) AS max_reverse_mw,
-        sum(CASE WHEN MWFLOW > 0 AND MWFLOW >= EXPORTLIMIT - 0.5 THEN 1 ELSE 0 END) AS at_forward_limit,
-        sum(CASE WHEN MWFLOW < 0 AND MWFLOW <= -IMPORTLIMIT + 0.5 THEN 1 ELSE 0 END) AS at_reverse_limit
+        sum(CASE WHEN MWFLOW >= EXPORTLIMIT - 0.5 THEN 1 ELSE 0 END) AS at_forward_limit,
+        sum(CASE WHEN MWFLOW <= IMPORTLIMIT + 0.5 THEN 1 ELSE 0 END) AS at_reverse_limit,
+        sum(CASE WHEN MWFLOW > EXPORTLIMIT + 0.5 OR MWFLOW < IMPORTLIMIT - 0.5 THEN 1 ELSE 0 END) AS outside_bounds
         FROM {SRC} {flt} GROUP BY 1 ORDER BY 1""")
     if "error" in result:
         print(f"FAIL nem-interconnector: {result['error']}")
@@ -48,9 +51,11 @@ def main():
     for row in result["rows"]:
         print(" | ".join(str(v) for v in row))
     counts = {r[1] for r in result["rows"]}
-    ok = bool(result["rows"]) and len(counts) == 1
+    outside = sum(r[-1] for r in result["rows"])
+    total = sum(r[1] for r in result["rows"])
+    ok = bool(result["rows"]) and len(counts) == 1 and outside <= 0.01 * total
     print(f"nem-interconnector: interconnectors={len(result['rows'])} intervals={sorted(counts)}")
-    print(f"{'PASS' if ok else 'FAIL'} nem-interconnector: {'one consistent interval count per interconnector' if ok else 'empty table or unequal interval counts'}")
+    print(f"{'PASS' if ok else 'FAIL'} nem-interconnector: {f'one consistent interval count per interconnector; {outside} of {total} interval-flows outside their limits (at most 1% tolerated)' if ok else f'empty table, unequal interval counts, or {outside} of {total} flows outside their limits (more than 1%)'}")
     sys.exit(0 if ok else 1)
 
 
