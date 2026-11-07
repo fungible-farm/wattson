@@ -126,6 +126,7 @@ def main():
     parser.add_argument("--network", default="ieee39")
     parser.add_argument("--base-url", default=None, help="OpenAI-compatible endpoint for the model (default: the delegate endpoint); e.g. the pod's vLLM at http://127.0.0.1:8000/v1")
     parser.add_argument("--model", default=None, help="model name at that endpoint (the released student is served as 'wattson')")
+    parser.add_argument("--report", default=None, help="append a readable Markdown record of this run (question, journal, answer, ground truth, verdict) to PATH")
     parser.add_argument("--case-dir", default=None, help="directory holding the CSIRO case files (sets WATTSON_CASE_DIR for the solver and the server)")
     args = parser.parse_args()
     if args.case_dir:
@@ -207,14 +208,35 @@ def main():
     print("gateway journal (tools/call): " + "; ".join(f"{n} {a}" for n, a in journal))
     called = [a for n, a in journal if n == "run_power_flow" and args.network in a]
     if not called:
+        if args.report:
+            os.makedirs(os.path.dirname(os.path.abspath(args.report)), exist_ok=True)
+            with open(args.report, "a") as f:
+                f.write(f"## Audited grid study: {args.network} ({time.strftime('%Y-%m-%d %H:%M:%S')})\n\n- **Verdict:** FAIL: the gateway journal has no run_power_flow call for the network; answer given: {final.strip()!r}\n\n")
         fail("the gateway journal has no run_power_flow call for the network")
+
+    def write_report(verdict):
+        if not args.report:
+            return
+        os.makedirs(os.path.dirname(os.path.abspath(args.report)), exist_ok=True)
+        with open(args.report, "a") as f:
+            f.write(f"## Audited grid study: {args.network} ({time.strftime('%Y-%m-%d %H:%M:%S')})\n\n")
+            f.write(f"- **Model under test:** {args.model or delegate_default_model()} at {args.base_url or 'the delegate endpoint'}\n")
+            f.write(f"- **Question:** {question}\n")
+            f.write("- **Gateway journal (what the AI actually called):**\n")
+            for n, a in journal:
+                f.write(f"  - `{n}` {a}\n")
+            f.write(f"- **Answer given:** {final.strip()!r}\n")
+            f.write(f"- **Ground truth (the solver, no model):** max line loading {loading:.1f}%, {violations} buses outside the voltage limits\n")
+            f.write(f"- **Verdict:** {verdict}\n\n")
 
     numbers = [float(x) for x in re.findall(r"\d+(?:\.\d+)?", final)]
     loading_ok = any(abs(x - loading) < 0.06 for x in numbers)
     violations_ok = any(x == violations for x in numbers)
     print(f"answer vs solver: line_loading_matches={loading_ok} (solver {loading:.1f}) violation_count_matches={violations_ok} (solver {violations})")
     if not (loading_ok and violations_ok):
+        write_report("FAIL: the numbers in the answer do not equal the solver's")
         fail("the numbers in the answer do not equal the solver's")
+    write_report("PASS: the answer equals the solver's numbers and the journal shows the solver call")
     print("PASS demo-grid-study: the AI planned, the solver computed, the gateway journalled the call, and the answer equals the solver's numbers")
 
 
