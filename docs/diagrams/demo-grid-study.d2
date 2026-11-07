@@ -1,0 +1,14 @@
+# procedural-chart
+# State chart: demo 1, the audited grid study (#98). The AI plans, the solver computes, the gateway journals every call.
+direction: down
+title: "Demo 1: audited grid study" {shape: text}
+
+asked: Question asked (pi sees only the gateway MCP URL) {shape: oval}
+computed: Deterministic solver ran behind the gateway
+journalled: Gateway journal holds the tool call (name and arguments)
+verified: Answer equals the solver's own numbers
+
+asked -> computed: "cmd: just demo-grid-study | pass: prints 'ground-truth (solver, no model): network=ieee39 max_line_loading_percent=... voltage_violations=...' and starts the MCP server and gateway"
+computed -> journalled: "cmd: just demo-grid-study | pass: prints 'gateway journal (tools/call): run_power_flow {...ieee39...}'"
+journalled -> verified: "cmd: just demo-grid-study | pass: prints 'answer vs solver: line_loading_matches=True ... violation_count_matches=True'"
+verified -> asked: "cmd: just demo-grid-study | pass: prints 'PASS demo-grid-study' and podman ps -a lists no wattson-gw-demo1"
