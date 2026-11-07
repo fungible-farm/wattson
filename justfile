@@ -695,11 +695,11 @@ ao-load-nem:
 
 # Demo 3 arm 2: the same ten questions asked of Auto Ontology over the same data. Pod up, ao-load-nem and ao-enable-semantic done, ingestion run.
 demo-timeseries-ao:
-    @python3 scripts/demo_timeseries_ao.py
+    @python3 -u scripts/demo_timeseries_ao.py
 
 # Arm 2 on the proposed hard question set (#95); a measurement, not a product gate.
 demo-timeseries-ao-hard:
-    @python3 scripts/demo_timeseries_ao.py --questions configs/nem-hard-questions.proposed.json
+    @python3 -u scripts/demo_timeseries_ao.py --questions configs/nem-hard-questions.proposed.json --question-timeout 600
 
 # Stop and remove the auto-ontology pod (keeps retrieval servers running).
 ao-down:
