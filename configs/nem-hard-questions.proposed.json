@@ -12,7 +12,7 @@
  {
   "id": "H3",
   "question": "On which calendar day (market day starts 04:00, an interval stamped 04:00 belongs to the previous day) was the total NEM demand (sum over regions, average over intervals) highest, and what was that average in MW?",
-  "sql": "SELECT cast(date_trunc('day', settlement_ts - INTERVAL 4 HOUR - INTERVAL 1 MINUTE) AS DATE) d, round(avg(t),2) FROM (SELECT settlement_ts, sum(total_demand_mw) t FROM price_demand GROUP BY 1) GROUP BY 1 ORDER BY 2 DESC LIMIT 1"
+  "sql": "SELECT strftime(date_trunc('day', settlement_ts - INTERVAL 4 HOUR - INTERVAL 1 MINUTE), '%Y-%m-%d') d, round(avg(t),2) FROM (SELECT settlement_ts, sum(total_demand_mw) t FROM price_demand GROUP BY 1) GROUP BY 1 ORDER BY 2 DESC LIMIT 1"
  },
  {
   "id": "H4",
