@@ -8,7 +8,7 @@ loaded: Public AEMO CSVs verified and loaded to DuckDB
 truth: Ground truth computed by deterministic SQL (no model)
 scored: Model's SQL executed read-only and compared with the truth
 
-absent -> loaded: "cmd: just nem-data | pass: five 'PRICE_AND_DEMAND_202509_<region>.csv: OK' lines against data/nem/MANIFEST.sha256, then '<region>: 8640 intervals' for each region"
+absent -> loaded: "cmd: just nem-data | pass: five 'PRICE_AND_DEMAND_202509_<region>.csv: OK' lines against configs/nem-priceanddemand.sha256, then '<region>: 8640 intervals' for each region"
 loaded -> truth: "cmd: just demo-timeseries-qa | pass: prints 'ground truth (deterministic SQL, no model): Q1=[...]; ...' before any question is asked"
 truth -> scored: "cmd: just demo-timeseries-qa | pass: a row per question with PASS or FAIL; failing rows show expected values, returned values and the SQL"
 scored -> absent: "cmd: just demo-timeseries-qa | pass: prints 'summary: arm 1 (plain text-to-SQL), <model>: N/10 questions match the ground truth'"

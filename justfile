@@ -376,10 +376,10 @@ demo-grid-study-nem:
     podman run --rm --pull=missing -v "$PWD/out/cases:/cases:z" --userns=keep-id:uid=1000,gid=1000 {{csiro_image}} fetch
     uv run python scripts/demo_grid_study.py --network snem-sa-2000 --case-dir out/cases
 
-# Demo 3 data (#100): a container fetches the public AEMO price-and-demand CSVs (Sept 2025, 5 regions) into out/nem and verifies data/nem/MANIFEST.sha256; another builds out/nem/nem.duckdb. No host download.
+# Demo 3 data (#100): a container fetches the public AEMO price-and-demand CSVs (Sept 2025, 5 regions) into out/nem and verifies configs/nem-priceanddemand.sha256; another builds out/nem/nem.duckdb. No host download.
 nem-data:
     mkdir -p out/nem
-    podman run --rm --pull=missing -v "$PWD/out/nem:/dl:z" -v "$PWD/data/nem/MANIFEST.sha256:/m.sha256:ro,z" docker.io/library/alpine:3.22@sha256:bfe7ceb9f09ec0566c48fb93356e45a47a00be5a1dd14fa5b909e7709c66b034 sh -c 'cd /dl; for r in NSW1 QLD1 SA1 TAS1 VIC1; do f=PRICE_AND_DEMAND_202509_$r.csv; [ -f $f ] || wget -q -U "Mozilla/5.0" -O $f "https://aemo.com.au/aemo/data/nem/priceanddemand/$f"; done; grep -v "^#" /m.sha256 | sha256sum -c -'
+    podman run --rm --pull=missing -v "$PWD/out/nem:/dl:z" -v "$PWD/configs/nem-priceanddemand.sha256:/m.sha256:ro,z" docker.io/library/alpine:3.22@sha256:bfe7ceb9f09ec0566c48fb93356e45a47a00be5a1dd14fa5b909e7709c66b034 sh -c 'cd /dl; for r in NSW1 QLD1 SA1 TAS1 VIC1; do f=PRICE_AND_DEMAND_202509_$r.csv; [ -f $f ] || wget -q -U "Mozilla/5.0" -O $f "https://aemo.com.au/aemo/data/nem/priceanddemand/$f"; done; grep -v "^#" /m.sha256 | sha256sum -c -'
     podman build -q -f containers/nem/Containerfile -t localhost/wattson-nem:local .
     podman run --rm --network=none --userns=keep-id:uid=1000,gid=1000 -v "$PWD/out/nem:/data:z" localhost/wattson-nem:local load
 
