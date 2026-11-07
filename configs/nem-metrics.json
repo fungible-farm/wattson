@@ -1,0 +1,17 @@
+{
+ "_note": "Governed metric catalogue for arm 3 (#95). The model only chooses a metric and its arguments; the SQL below is fixed, reviewed, and rendered by code with whitelisted arguments. Designed generically from the table, not from the question sets.",
+ "columns": {"demand": "total_demand_mw", "price": "rrp"},
+ "regions": ["NSW1", "QLD1", "SA1", "TAS1", "VIC1"],
+ "metrics": {
+  "peak": {"description": "Highest value of a column in one region (or ALL regions) with where and when it occurred. args: column(demand|price), region(region|ALL)",
+           "sql": "SELECT {col}, region, settlement_ts FROM price_demand {where} ORDER BY {col} DESC, settlement_ts LIMIT 1"},
+  "count_where": {"description": "Number of 5-minute intervals in one region where a column is above or below a threshold. args: region, column(demand|price), op(above|below), threshold(number)",
+           "sql": "SELECT count(*) FROM price_demand WHERE region = '{region}' AND {col} {op} {threshold}"},
+  "average": {"description": "Simple average of a column in one region, optionally over a window (start exclusive, end inclusive, settlement timestamps). args: region, column, start(optional 'YYYY-MM-DD HH:MM:SS'), end(optional)",
+           "sql": "SELECT avg({col}) FROM price_demand WHERE region = '{region}' {window}"},
+  "weighted_average_price": {"description": "Demand-weighted average price in one region. args: region",
+           "sql": "SELECT sum(rrp * total_demand_mw) / sum(total_demand_mw) FROM price_demand WHERE region = '{region}'"},
+  "top_region_by_average": {"description": "The region with the highest simple average of a column. args: column",
+           "sql": "SELECT region FROM price_demand GROUP BY region ORDER BY avg({col}) DESC LIMIT 1"}
+ }
+}

@@ -697,6 +697,14 @@ ao-load-nem:
 demo-timeseries-ao:
     @python3 -u scripts/demo_timeseries_ao.py
 
+# Demo 3 arm 3 (#95): the model picks a governed metric from configs/nem-metrics.json and fixed, whitelisted SQL templates compute. Uncovered questions fail by design.
+demo-timeseries-metrics:
+    @python3 -u scripts/demo_timeseries_metrics.py
+
+# Arm 3 on the proposed hard question set (#95).
+demo-timeseries-metrics-hard:
+    @python3 -u scripts/demo_timeseries_metrics.py --questions configs/nem-hard-questions.proposed.json
+
 # Arm 2 on the proposed hard question set (#95); a measurement, not a product gate.
 demo-timeseries-ao-hard:
     @python3 -u scripts/demo_timeseries_ao.py --questions configs/nem-hard-questions.proposed.json --question-timeout 600

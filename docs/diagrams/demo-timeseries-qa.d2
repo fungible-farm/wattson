@@ -13,3 +13,4 @@ loaded -> truth: "cmd: just demo-timeseries-qa | pass: prints 'ground truth (det
 truth -> scored: "cmd: just demo-timeseries-qa | pass: a row per question with PASS or FAIL; failing rows show expected values, returned values and the SQL"
 scored -> absent: "cmd: just demo-timeseries-qa | pass: prints 'summary: arm 1 (plain text-to-SQL), <model>: N/10 questions match the ground truth'"
 loaded -> scored: "cmd: just ao-load-nem && just demo-timeseries-ao | pass: prints 'ao-load-nem: demo.price_demand rows=43200', then a row per question with PASS or FAIL, steps and seconds, and 'summary: arm 2 (Auto Ontology): N/10 questions match the ground truth' (arm 2)"
+loaded -> scored: "cmd: just demo-timeseries-metrics | pass: a row per question with PASS or FAIL, and 'summary: arm 3 (governed metric catalogue), <model>: N/10 questions match the ground truth' (arm 3: the model picks a metric from configs/nem-metrics.json, fixed SQL computes)"
