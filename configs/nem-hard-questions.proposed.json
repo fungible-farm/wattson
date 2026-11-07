@@ -1,0 +1,52 @@
+[
+ {
+  "id": "H1",
+  "question": "For each region, the share of 5-minute intervals in September 2025 where the price exceeded the average price of all five regions in that same interval. Which region has the highest share, and what is it (as a fraction, 4 decimals)?",
+  "sql": "WITH a AS (SELECT settlement_ts, avg(rrp) m FROM price_demand GROUP BY 1) SELECT region, round(avg(CASE WHEN rrp>m THEN 1.0 ELSE 0 END),4) s FROM price_demand JOIN a USING (settlement_ts) GROUP BY 1 ORDER BY s DESC LIMIT 1"
+ },
+ {
+  "id": "H2",
+  "question": "How many intervals had all five regions priced within 1 $/MWh of each other (max rrp - min rrp <= 1)?",
+  "sql": "SELECT count(*) FROM (SELECT settlement_ts FROM price_demand GROUP BY 1 HAVING max(rrp)-min(rrp)<=1)"
+ },
+ {
+  "id": "H3",
+  "question": "On which calendar day (market day starts 04:00, an interval stamped 04:00 belongs to the previous day) was the total NEM demand (sum over regions, average over intervals) highest, and what was that average in MW?",
+  "sql": "SELECT cast(date_trunc('day', settlement_ts - INTERVAL 4 HOUR - INTERVAL 1 MINUTE) AS DATE) d, round(avg(t),2) FROM (SELECT settlement_ts, sum(total_demand_mw) t FROM price_demand GROUP BY 1) GROUP BY 1 ORDER BY 2 DESC LIMIT 1"
+ },
+ {
+  "id": "H4",
+  "question": "What is the longest run of consecutive 5-minute intervals in SA1 with price above 100 $/MWh, and when (settlement time) did that run end?",
+  "sql": "WITH x AS (SELECT settlement_ts, rrp>100 hi, row_number() OVER (ORDER BY settlement_ts) rn FROM price_demand WHERE region='SA1'), g AS (SELECT settlement_ts, rn - row_number() OVER (ORDER BY settlement_ts) grp FROM x WHERE hi) SELECT count(*) n, max(settlement_ts) FROM g GROUP BY grp ORDER BY n DESC, 2 LIMIT 1"
+ },
+ {
+  "id": "H5",
+  "question": "What is the Pearson correlation between total demand and price in VIC1 over September 2025 (3 decimals)?",
+  "sql": "SELECT round(corr(total_demand_mw, rrp),3) FROM price_demand WHERE region='VIC1'"
+ },
+ {
+  "id": "H6",
+  "question": "How many intervals had a negative price in at least two regions at once?",
+  "sql": "SELECT count(*) FROM (SELECT settlement_ts FROM price_demand GROUP BY 1 HAVING sum(CASE WHEN rrp<0 THEN 1 ELSE 0 END)>=2)"
+ },
+ {
+  "id": "H7",
+  "question": "For QLD1, what is the average price in the top 5% of intervals by demand (use the 95th percentile of demand as the cut, intervals strictly above it), 2 decimals?",
+  "sql": "SELECT round(avg(rrp),2) FROM price_demand WHERE region='QLD1' AND total_demand_mw > (SELECT quantile_cont(total_demand_mw,0.95) FROM price_demand WHERE region='QLD1')"
+ },
+ {
+  "id": "H8",
+  "question": "Which hour of the day (0-23, by settlement time) has the highest average NSW1 price, and what is it (2 decimals)?",
+  "sql": "SELECT hour(settlement_ts) h, round(avg(rrp),2) FROM price_demand WHERE region='NSW1' GROUP BY 1 ORDER BY 2 DESC LIMIT 1"
+ },
+ {
+  "id": "H9",
+  "question": "How many intervals did SA1 price exceed NSW1 price by more than 50 $/MWh?",
+  "sql": "SELECT count(*) FROM price_demand s JOIN price_demand n USING (settlement_ts) WHERE s.region='SA1' AND n.region='NSW1' AND s.rrp-n.rrp>50"
+ },
+ {
+  "id": "H10",
+  "question": "Across the whole NEM, what fraction of total demand-weighted spend (sum of demand*price/12) came from the single most expensive 1% of intervals (by NEM-wide interval spend)? 3 decimals.",
+  "sql": "WITH i AS (SELECT settlement_ts, sum(total_demand_mw*rrp/12) sp FROM price_demand GROUP BY 1), c AS (SELECT quantile_cont(sp,0.99) q FROM i) SELECT round(sum(CASE WHEN sp>q THEN sp END)/sum(sp),3) FROM i, c"
+ }
+]
