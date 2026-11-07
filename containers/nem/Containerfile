@@ -1,0 +1,13 @@
+# wattson-nem: DuckDB over the public AEMO price-and-demand CSVs, and nothing else (demo 3, #100).
+#
+# One job: `load` turns the CSVs in /data into /data/nem.duckdb; `query` runs ONE read-only SQL statement from stdin and prints JSON.
+# The CSVs are fetched by `just nem-data` (a separate, network-enabled step); this image runs with --network=none.
+#
+# Build:  podman build -f containers/nem/Containerfile -t wattson-nem:local .
+FROM docker.io/library/python:3.14-slim
+RUN pip install --no-cache-dir duckdb==2.0.0 && useradd --create-home --uid 1000 wattson && mkdir -p /data && chown wattson:wattson /data
+COPY scripts/nem_sql.py /opt/nem/nem_sql.py
+USER wattson
+WORKDIR /data
+ENTRYPOINT ["python", "/opt/nem/nem_sql.py"]
+CMD ["--help"]
