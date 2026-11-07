@@ -10,7 +10,8 @@ What it does, end to end, on loopback (everything is torn down at the end):
   5. checks: the gateway journal contains a `run_power_flow` call for that network, and the numbers in pi's final answer equal the
      solver's (line loading to one decimal place, the violation count exactly).
 The pass/fail comes from the solver's numbers and the journal, never from a model's say-so.
-Usage: python3 scripts/demo_grid_study.py [--network ieee39]
+Usage: python3 scripts/demo_grid_study.py [--network ieee39] [--case-dir DIR]   (--case-dir: where the CSIRO case files are, for snem-sa-2000;
+`just demo-grid-study-nem` fetches them with the wattson-csiro container and passes it)
 """
 import argparse
 import importlib.util
@@ -119,7 +120,10 @@ def main():
     global server_pid, scratch
     parser = argparse.ArgumentParser()
     parser.add_argument("--network", default="ieee39")
+    parser.add_argument("--case-dir", default=None, help="directory holding the CSIRO case files (sets WATTSON_CASE_DIR for the solver and the server)")
     args = parser.parse_args()
+    if args.case_dir:
+        os.environ["WATTSON_CASE_DIR"] = os.path.abspath(args.case_dir)  # read lazily by the solver; inherited by the server subprocess
     scratch = tempfile.mkdtemp(prefix="dg-", dir="/tmp")
     os.chmod(scratch, 0o755)
     pi = shutil.which("pi")
