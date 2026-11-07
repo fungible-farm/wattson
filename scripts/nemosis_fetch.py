@@ -19,11 +19,29 @@ def tables():
     print(json.dumps({"dynamic": sorted(defaults.dynamic_tables), "static": sorted(defaults.static_tables)}))
 
 
+REGISTRATION_URL = "https://www.aemo.com.au/-/media/Files/Electricity/NEM/Participant_Information/NEM-Registration-and-Exemption-List.xls"
+REGISTRATION_FILE = "NEM Registration and Exemption List.xls"
+
+
+def require_registration_workbook(table, cache):
+    """AEMO answers an automated download of the registration list with an 83-byte error page, and we do not disguise the client to get around that.
+    The workbook must be downloaded by a person in a browser from REGISTRATION_URL and saved in the cache directory under REGISTRATION_FILE."""
+    if table != "Generators and Scheduled Loads":
+        return
+    path = os.path.join(cache, REGISTRATION_FILE)
+    if not os.path.exists(path) or os.path.getsize(path) < 100_000:
+        if os.path.exists(path):
+            os.remove(path)  # an error page left by an earlier automated attempt
+        sys.exit(f"nemosis-fetch: the AEMO registration workbook is missing. Download it in a browser from {REGISTRATION_URL} and save it as "
+                 f"out/nemosis-cache/{REGISTRATION_FILE}, then rerun.")
+
+
 def static(args):
     import hashlib as _h
     import importlib.metadata as md
     from nemosis import static_table
     os.makedirs(args.cache, exist_ok=True)
+    require_registration_workbook(args.table, args.cache)
     df = static_table(args.table, args.cache)
     name = args.table.replace(" ", "_")
     path = os.path.join(args.out, f"{name}.parquet")
