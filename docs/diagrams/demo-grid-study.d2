@@ -12,3 +12,4 @@ asked -> computed: "cmd: just demo-grid-study | pass: prints 'ground-truth (solv
 computed -> journalled: "cmd: just demo-grid-study | pass: prints 'gateway journal (tools/call): run_power_flow {...ieee39...}'"
 journalled -> verified: "cmd: just demo-grid-study | pass: prints 'answer vs solver: line_loading_matches=True ... violation_count_matches=True'"
 verified -> asked: "cmd: just demo-grid-study | pass: prints 'PASS demo-grid-study' and podman ps -a lists no wattson-gw-demo1"
+asked -> asked: "cmd: just demo-grid-study-nem | pass: the wattson-csiro container reports the two case files verified in out/cases, then the demo prints 'PASS demo-grid-study' for network=snem-sa-2000"
