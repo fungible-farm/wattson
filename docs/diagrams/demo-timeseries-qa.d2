@@ -1,0 +1,14 @@
+# procedural-chart
+# State chart: demo 3, natural-language Q&A over relational time series (#100), arm 1. Data fetched and checksummed by containers; SQL runs in a no-network container.
+direction: down
+title: "Demo 3: time-series Q&A (arm 1)" {shape: text}
+
+absent: No data {shape: oval}
+loaded: Public AEMO CSVs verified and loaded to DuckDB
+truth: Ground truth computed by deterministic SQL (no model)
+scored: Model's SQL executed read-only and compared with the truth
+
+absent -> loaded: "cmd: just nem-data | pass: five 'PRICE_AND_DEMAND_202509_<region>.csv: OK' lines against configs/nem-priceanddemand.sha256, then '<region>: 8640 intervals' for each region"
+loaded -> truth: "cmd: just demo-timeseries-qa | pass: prints 'ground truth (deterministic SQL, no model): Q1=[...]; ...' before any question is asked"
+truth -> scored: "cmd: just demo-timeseries-qa | pass: a row per question with PASS or FAIL; failing rows show expected values, returned values and the SQL"
+scored -> absent: "cmd: just demo-timeseries-qa | pass: prints 'summary: arm 1 (plain text-to-SQL), <model>: N/10 questions match the ground truth'"

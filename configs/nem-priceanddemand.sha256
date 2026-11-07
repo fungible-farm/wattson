@@ -1,0 +1,7 @@
+# Public AEMO aggregated price and demand, September 2025, 5-minute intervals (8640 per region). Source: https://aemo.com.au/aemo/data/nem/priceanddemand/
+# Fetched by `just nem-data` inside a container and verified against these sha256 values; the files are not stored in the repository.
+2216c9a6d76c16c76d3af1b459cef3b4d1e64a2ff79d8a4caabe156056f318b2  PRICE_AND_DEMAND_202509_NSW1.csv
+8e8d3d49092593d7498e7a57a3a8eb77257057d3103a434cf0428372570606b7  PRICE_AND_DEMAND_202509_QLD1.csv
+f5bf4c96bd869e34bb1bb056edf0c4288bcdb5ab79f765b8cfbc12fea7ae383b  PRICE_AND_DEMAND_202509_SA1.csv
+11a735bd86d7ae6255f2f65a0b871359976a5941ce6a9c61430de220443f8ff1  PRICE_AND_DEMAND_202509_TAS1.csv
+955f5077ef1f864768177604fc3187b8fc267fef7e3bd71ba33d623760a643cf  PRICE_AND_DEMAND_202509_VIC1.csv
