@@ -11,7 +11,7 @@ from mcp.client.stdio import stdio_client
 
 SOURCE: Path = Path('/input') / os.environ.get('EXCEL_WORKBOOK_NAME', 'workbook.xlsm')
 EXPECTED_SHA256: str = 'e9c0957510783d81d9c9dd0714c3810e81383ff98a1b9f159222cee8bd5db880'
-EXPECTED_TOOLS: set[str] = {'describe_workbook', 'describe_sheet', 'read_range'}
+EXPECTED_TOOLS: set[str] = {'describe_workbook', 'describe_sheet', 'read_range', 'read_cells'}
 
 
 def payload(result: object) -> dict:
@@ -59,6 +59,15 @@ async def main() -> None:
             if is_issue4:
                 assert read['values'][0] == ['Tab','Inputs','Responsible team'], read
                 assert read['values'][1][0] == 'ONSG', read
+            # read_cells (ours) returns every non-empty cell WITH ITS ADDRESS; the same cells upstream's bare grid gives positionally
+            cells = payload(await session.call_tool('read_cells', {'path':SOURCE.name,'sheet':names[0],'range':'A1:C3','max_cells':9}))
+            by_address = {c['cell']: c['value'] for c in cells['cells']}
+            if is_issue4:
+                assert by_address.get('B1') == 'Inputs' and by_address.get('A2') == 'ONSG', by_address
+            wrong_workbook = payload(await session.call_tool('read_cells', {'path':'/etc/passwd','sheet':names[0],'range':'A1:C3'}))
+            assert 'error' in wrong_workbook, wrong_workbook
+            too_big = payload(await session.call_tool('read_cells', {'path':SOURCE.name,'sheet':names[0],'range':'A1:Z500','max_cells':50}))
+            assert 'error' in too_big, too_big
             refusal = (await session.call_tool('describe_workbook', {'path':'/etc/passwd'})).model_dump(by_alias=True)
             assert refusal.get('isError'), refusal
             source_refusal = (await session.call_tool('describe_workbook', {'path':str(SOURCE)})).model_dump(by_alias=True)

@@ -366,9 +366,13 @@ kit-pod-check:
 demo-grid-study:
     @uv run python scripts/demo_grid_study.py
 
+# Demo 2 (#99): questions answered from the AEMO ISP workbook through the containerised Excel MCP, each answer citing the exact cell and checked against a direct read. Needs the workbook in out/isp/ (or WATTSON_ISP_WORKBOOK=...) and the sm3lly model endpoint.
+demo-isp-qa:
+    @uv run python scripts/demo_isp_qa.py
+
 # Check that every command named in the hand-written state charts exists, that every transition names a command and a pass observation, and that the generated recipe graph is current.
 diagrams-check:
-    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2 docs/diagrams/kit-lifecycle.d2 docs/diagrams/retrieval-lifecycle.d2 docs/diagrams/auto-ontology-lifecycle.d2 docs/diagrams/registry-change.d2 docs/diagrams/gateway-reload.d2 docs/diagrams/gateway-failure.d2 docs/diagrams/engine-footprint.d2 docs/diagrams/engine-pairs.d2 docs/diagrams/gateway-routing.d2 docs/diagrams/gateway-candle.d2 docs/diagrams/gateway-boot.d2 docs/diagrams/gateway-mcp-log.d2 docs/diagrams/gpu-lease.d2 docs/diagrams/kit-supply.d2 docs/diagrams/cosign-supply.d2 docs/diagrams/kit-init.d2 docs/diagrams/kit-pod.d2 docs/diagrams/demo-grid-study.d2 docs/diagrams/harness-compare.d2 docs/diagrams/kit-import.d2 docs/diagrams/pi-mcp.d2
+    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2 docs/diagrams/kit-lifecycle.d2 docs/diagrams/retrieval-lifecycle.d2 docs/diagrams/auto-ontology-lifecycle.d2 docs/diagrams/registry-change.d2 docs/diagrams/gateway-reload.d2 docs/diagrams/gateway-failure.d2 docs/diagrams/engine-footprint.d2 docs/diagrams/engine-pairs.d2 docs/diagrams/gateway-routing.d2 docs/diagrams/gateway-candle.d2 docs/diagrams/gateway-boot.d2 docs/diagrams/gateway-mcp-log.d2 docs/diagrams/gpu-lease.d2 docs/diagrams/kit-supply.d2 docs/diagrams/cosign-supply.d2 docs/diagrams/kit-init.d2 docs/diagrams/kit-pod.d2 docs/diagrams/demo-isp-qa.d2 docs/diagrams/demo-grid-study.d2 docs/diagrams/harness-compare.d2 docs/diagrams/kit-import.d2 docs/diagrams/pi-mcp.d2
     python3 scripts/justfile_diagram.py --check docs/diagrams/recipes.d2
 
 # --- retrieval: embedding and reranker model servers (CPU, separate containers, behind the gateway) ---------------------------

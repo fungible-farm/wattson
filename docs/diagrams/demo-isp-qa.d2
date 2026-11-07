@@ -1,0 +1,14 @@
+# procedural-chart
+# State chart: demo 2, ISP workbook Q&A with the exact cell cited (#99). The workbook is mounted read-only into the Excel MCP container.
+direction: down
+title: "Demo 2: ISP workbook Q&A" {shape: text}
+
+fixed: Question list fixed and ground truth read from the cells (no model) {shape: oval}
+asked: pi asks each question with only the Excel MCP tools
+checked: Each answer checked for value, cited cell and a read_range call
+tabled: Table of PASS/FAIL per question
+
+fixed -> asked: "cmd: just demo-isp-qa | pass: prints 'ground truth read directly from the cells (no model): ...' before any question is asked"
+asked -> checked: "cmd: just demo-isp-qa | pass: each row shows value, cell and called as True or False"
+checked -> tabled: "cmd: just demo-isp-qa | pass: prints 'summary: N/M questions answered correctly with the cell cited and the tool called'"
+tabled -> fixed: "cmd: just demo-isp-qa | pass: prints 'PASS demo-isp-qa' (every question) or exits non-zero with the failing rows"
