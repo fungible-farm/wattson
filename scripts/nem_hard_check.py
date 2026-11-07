@@ -2,6 +2,8 @@
 """Run every proposed hard question's ground-truth SQL in the wattson-nem container and print the answers (a proposal check, not a benchmark)."""
 import json, os, subprocess, sys
 IMAGE = "localhost/wattson-nem:local"
+if subprocess.run(["podman", "image", "exists", IMAGE]).returncode:
+    subprocess.run(["podman", "build", "-q", "-f", "containers/nem/Containerfile", "-t", IMAGE, "."], check=True)
 bad = 0
 for q in json.load(open("configs/nem-hard-questions.proposed.json")):
     out = subprocess.run(["podman", "run", "--rm", "-i", "--network=none", "--userns=keep-id:uid=1000,gid=1000", "-v", os.path.abspath("out/nem") + ":/data:ro,z", IMAGE, "query"],
