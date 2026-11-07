@@ -106,6 +106,10 @@ def http_code(url):
     return sh(["curl", "-s", "-o", "/dev/null", "--max-time", "2", "-w", "%{http_code}", url]).stdout.strip()
 
 
+def delegate_default_model():
+    return "neo-coder"
+
+
 def ground_truth(network):
     """The same solver, called directly through the same function the MCP server uses: the two numbers the answer must match."""
     from wattson.inference.mcp_server import respond
@@ -120,6 +124,8 @@ def main():
     global server_pid, scratch
     parser = argparse.ArgumentParser()
     parser.add_argument("--network", default="ieee39")
+    parser.add_argument("--base-url", default=None, help="OpenAI-compatible endpoint for the model (default: the delegate endpoint); e.g. the pod's vLLM at http://127.0.0.1:8000/v1")
+    parser.add_argument("--model", default=None, help="model name at that endpoint (the released student is served as 'wattson')")
     parser.add_argument("--case-dir", default=None, help="directory holding the CSIRO case files (sets WATTSON_CASE_DIR for the solver and the server)")
     args = parser.parse_args()
     if args.case_dir:
@@ -130,6 +136,7 @@ def main():
     if not pi:
         fail("pi is not installed")
 
+    print(f"model under test: {args.model or delegate_default_model()} at {args.base_url or 'the delegate endpoint'}")
     loading, violations = ground_truth(args.network)
     print(f"ground-truth (solver, no model): network={args.network} max_line_loading_percent={loading:.1f} voltage_violations={violations}")
 
@@ -167,7 +174,7 @@ def main():
     spec.loader.exec_module(delegate)
     question = (f"For the network {args.network}: run an AC power flow with the Newton-Raphson method and tell me the maximum line "
                 f"loading in percent and how many buses are outside the voltage limits.")
-    ns = Namespace(pi=pi, base_url=delegate.DEFAULT_URL, model=delegate.DEFAULT_MODEL, max_tokens=1024, allow_actions=False,
+    ns = Namespace(pi=pi, base_url=args.base_url or delegate.DEFAULT_URL, model=args.model or delegate.DEFAULT_MODEL, max_tokens=1024, allow_actions=False,
                    directory=Path(scratch), max_turns=8, max_tool_calls=6, timeout=300, prompt=question)
     command, env = delegate.configure(ns, Path(scratch) / "pi-out")
     added = sh([pi, "mcp", "add", "gateway", "--url", URL, "--exposure", "direct"], env=env)
