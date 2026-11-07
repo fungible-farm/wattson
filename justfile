@@ -697,6 +697,10 @@ ao-load-nem:
 demo-timeseries-ao:
     @python3 scripts/demo_timeseries_ao.py
 
+# Arm 2 on the proposed hard question set (#95); a measurement, not a product gate.
+demo-timeseries-ao-hard:
+    @python3 scripts/demo_timeseries_ao.py --questions configs/nem-hard-questions.proposed.json
+
 # Stop and remove the auto-ontology pod (keeps retrieval servers running).
 ao-down:
     @echo "ao-down: removing auto-ontology pod"
