@@ -4,7 +4,8 @@
 Inputs (parquet in out/nemosis): DISPATCHLOAD.parquet (`just nemosis-fetch DISPATCHLOAD START END`) and DUDETAILSUMMARY.parquet (`just nemosis-fetch DUDETAILSUMMARY START END`).
 One deterministic SQL statement per figure, run read-only in the wattson-nem container (no network, no model). Prints per-region unit counts and cleared energy, then
 `nem-unit-lookup: dispatched_duids=N mapped=M coverage=C` and PASS when coverage >= 0.99 (a tripwire for a broken join; the measured value is printed either way).
-Cleared energy per interval is TOTALCLEARED (MW) * 5/60 (MWh).
+Cleared energy per interval is TOTALCLEARED (MW) * 5/60 (MWh). As an independent cross-check the AEMO price-and-demand CSVs (out/nem, the demo 3 data) give each region's demand energy for
+the SAME window; the ratio cleared/demand is printed per region (generation also covers losses and interchange, so it is reported, not gated).
 """
 import json
 import os
@@ -47,13 +48,21 @@ def main():
         FROM {LOAD} l LEFT JOIN {latest} d USING (DUID) WHERE l.INTERVENTION = 0 GROUP BY 1 ORDER BY 1""")
     cover = sql(f"""SELECT count(DISTINCT l.DUID) AS dispatched, count(DISTINCT d.DUID) AS mapped
         FROM {LOAD} l LEFT JOIN {latest} d USING (DUID) WHERE l.INTERVENTION = 0""")
+    window = f"SELECT min(SETTLEMENTDATE) AS a, max(SETTLEMENTDATE) AS b FROM {LOAD}"
+    w = sql(window)
+    demand = {}
+    if "error" not in w and w["rows"][0][0]:
+        a, b = w["rows"][0]
+        d = sql(f"SELECT region, round(sum(total_demand_mw) * 5 / 60, 1) FROM price_demand WHERE settlement_ts >= TIMESTAMP '{a}' AND settlement_ts <= TIMESTAMP '{b}' GROUP BY 1")
+        demand = {r[0]: r[1] for r in d.get("rows", [])}
     for r in (by_region, cover):
         if "error" in r:
             print(f"FAIL nem-unit-lookup: {r['error']}")
             sys.exit(1)
     print(" | ".join(by_region["columns"]))
     for row in by_region["rows"]:
-        print(" | ".join(str(v) for v in row))
+        extra = f" | demand_mwh={demand[row[0]]} ratio={row[2] / demand[row[0]]:.3f}" if demand.get(row[0]) else ""
+        print(" | ".join(str(v) for v in row) + extra)
     dispatched, mapped = cover["rows"][0]
     coverage = mapped / dispatched if dispatched else 0.0
     print(f"nem-unit-lookup: dispatched_duids={dispatched} mapped={mapped} coverage={coverage:.4f}")
