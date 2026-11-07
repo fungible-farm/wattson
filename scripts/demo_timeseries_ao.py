@@ -76,10 +76,12 @@ def ask(question, timeout):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--only", default="")
+    parser.add_argument("--questions", default=None, help="JSON file of {id, question, sql}; default is the built-in set")
     parser.add_argument("--compile-timeout-minutes", type=int, default=30)
     args = parser.parse_args()
     arm1 = load_arm1()
-    questions = [q for q in arm1.QUESTIONS if not args.only or q[0] in args.only.split(",")]
+    pool = arm1.QUESTIONS if not args.questions else [(q["id"], q["question"], q["sql"]) for q in json.load(open(args.questions))]
+    questions = [q for q in pool if not args.only or q[0] in args.only.split(",")]
     truth = {}
     for qid, _, sql in questions:
         result = arm1.run_sql(sql)
