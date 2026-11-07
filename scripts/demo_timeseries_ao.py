@@ -46,6 +46,8 @@ def ask(question, timeout):
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:
             for raw in r:
+                if time.time() - started > timeout:
+                    raise TimeoutError(f"question exceeded {timeout} s wall clock")
                 line = raw.decode("utf-8", "replace").strip()
                 if not line.startswith("data:"):
                     continue
