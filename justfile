@@ -94,6 +94,19 @@ pod-render model="granite" out="out/wattson.rendered.yaml":
 pod-render-check:
     @python3 scripts/pod_render_check.py
 
+# `up`, but in the FOREGROUND and holding the exclusive GPU lease (#29): a second GPU engine is refused (exit 75) instead of starting beside this one.
+# Runs until the pod exits or you press Ctrl-C / send SIGTERM (podman kube play --wait then removes the pod). Same environment switches as `up`.
+up-leased model="granite":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    # The lease is taken FIRST: a refused attempt renders nothing, creates no volume and touches no file of the running pod.
+    exec python3 scripts/gpu_lease_run.py "vllm-$1" -- bash -c 'set -euo pipefail
+        model="$1"; mkdir -p "$PWD/out"
+        for v in wattson-models wattson-cases; do podman volume exists "$v" || podman volume create "$v" >/dev/null; done
+        just pod-render "$model" "$PWD/out/wattson.rendered.yaml"
+        net=""; [ "${WATTSON_POD_HOST_LOOPBACK:-0}" = "1" ] && net="--network=pasta:--map-host-loopback,169.254.1.2"
+        exec podman kube play --replace --wait $net "$PWD/out/wattson.rendered.yaml"' _ "$1"
+
 # Stop and remove the pod. The wattson-models and wattson-cases volumes stay, so the next `just up` does not download again.
 down:
     -podman pod rm --force wattson

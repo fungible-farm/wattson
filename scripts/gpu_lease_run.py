@@ -14,6 +14,7 @@ llama-server process, `podman run` without -d, `podman kube play --wait`), not o
 import argparse
 import importlib.util
 import os
+import signal
 import subprocess
 import sys
 
@@ -47,8 +48,11 @@ def main(argv=None):
               file=sys.stderr)
         return EX_TEMPFAIL
     print(f"gpu-run: lease acquired for '{args.purpose}'", file=sys.stderr)
+    child = subprocess.Popen(command)
+    for sig in (signal.SIGTERM, signal.SIGINT):  # a stop request reaches the engine (podman kube play --wait cleans the pod up on SIGTERM)
+        signal.signal(sig, lambda number, _frame: child.send_signal(number))
     try:
-        return subprocess.run(command).returncode
+        return child.wait()
     finally:
         lease.release()
         print(f"gpu-run: lease released for '{args.purpose}'", file=sys.stderr)
