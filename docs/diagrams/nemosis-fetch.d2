@@ -1,0 +1,9 @@
+# procedural-chart
+# NEMOSIS (GPL-3.0) isolated in its own container: AEMO MMS table in, parquet plus provenance out, reconciled against the demo 3 CSV data (#116).
+direction: right
+absent: no parquet in out/nemosis
+fetched: parquet and provenance record written
+reconciled: NEMOSIS agrees with the AEMO CSV data
+
+absent -> fetched: "cmd: just nemosis-fetch DISPATCHPRICE \"2025/09/01 00:00:00\" \"2025/09/02 00:00:00\" | pass: prints 'nemosis-fetch: DISPATCHPRICE rows=<N> sha256=<prefix>' and writes out/nemosis/DISPATCHPRICE.parquet and DISPATCHPRICE.provenance.json"
+fetched -> reconciled: "cmd: just nemosis-reconcile | pass: prints 'nemosis-reconcile: joined=<N> differing=0' then 'PASS nemosis-reconcile: NEMOSIS and the AEMO CSVs agree on rrp'"
