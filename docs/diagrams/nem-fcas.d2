@@ -1,0 +1,9 @@
+# procedural-chart
+# FCAS price analysis from NEMOSIS DISPATCHPRICE (#121).
+direction: right
+absent: no price parquet
+fetched: DISPATCHPRICE parquet and provenance written
+summarised: per-region, per-service FCAS price statistics printed
+
+absent -> fetched: "cmd: just nemosis-fetch DISPATCHPRICE \"2025/09/01 00:00:00\" \"2025/09/08 00:00:00\" | pass: prints 'nemosis-fetch: DISPATCHPRICE rows=<N> sha256=<prefix>'"
+fetched -> summarised: "cmd: just nem-fcas | pass: prints a row per region and service, then 'nem-fcas: regions=5 services=8 negative_prices=0' and 'PASS nem-fcas'"
