@@ -4,9 +4,10 @@ DISPATCHPRICE, DUDETAILSUMMARY and DISPATCHREGIONSUM parquet (all `just nemosis-
 
 Usage: python3 scripts/nem_bidstack.py [REGION]   (default SA1)
 
-Energy offers only (BIDTYPE = 'ENERGY'). A unit's price bands come from its latest offer (latest OFFERDATE) for the market day; availability comes from the interval row.
+Energy generation offers only (BIDTYPE = 'ENERGY', DIRECTION = 'GEN': batteries also bid a LOAD direction). The market day runs 04:00 to 04:00, so the interval belongs to the day of (interval - 4 h - 1 min).
+A unit's price bands come from its latest offer (latest OFFERDATE, VERSIONNO) for that market day; availability comes from the interval row. The join is on (DUID, band): `dup_keys` counts keys with more than one row and must be 0.
 Prints, for the interval with the region's highest RRP: total offered MW, MW offered at or below the RRP, MW offered at or below 0, and the region's DISPATCHABLEGENERATION for reference.
-PASS requires a non-empty stack and NO unit whose price bands are not ascending (AEMO's offer rules require ascending bands: a deterministic data invariant, checked across the whole day).
+PASS requires a non-empty stack, one row per (unit, band), and NO unit whose price bands are not ascending (AEMO's offer rules require ascending bands: a deterministic data invariant, checked across the whole day).
 The offered-versus-dispatched ratio is reported, not gated (ramp limits and constraints legitimately keep dispatch below offers). No model, no network.
 """
 import json
@@ -37,9 +38,11 @@ def main():
     common = f"""
       WITH u AS (SELECT DUID, arg_max(REGIONID, START_DATE) AS region FROM dudetailsummary GROUP BY DUID),
       peak AS (SELECT SETTLEMENTDATE AS t, RRP AS rrp FROM dispatchprice WHERE REGIONID = '{region}' AND INTERVENTION = 0 ORDER BY RRP DESC, SETTLEMENTDATE LIMIT 1),
-      latest AS (SELECT * FROM (SELECT *, row_number() OVER (PARTITION BY DUID, SETTLEMENTDATE ORDER BY OFFERDATE DESC, VERSIONNO DESC) AS rn
-                                FROM biddayoffer_d WHERE BIDTYPE = 'ENERGY') WHERE rn = 1),
-      at_t AS (SELECT b.* FROM bidperoffer_d b JOIN peak ON b.INTERVAL_DATETIME = peak.t JOIN u ON u.DUID = b.DUID WHERE b.BIDTYPE = 'ENERGY' AND u.region = '{region}'),
+      md AS (SELECT date_trunc('day', t - INTERVAL 4 HOUR - INTERVAL 1 MINUTE) AS day FROM peak),
+      latest AS (SELECT * FROM (SELECT d.*, row_number() OVER (PARTITION BY d.DUID ORDER BY d.OFFERDATE DESC, d.VERSIONNO DESC) AS rn
+                                FROM biddayoffer_d d, md WHERE d.BIDTYPE = 'ENERGY' AND d.DIRECTION = 'GEN' AND d.SETTLEMENTDATE = md.day) WHERE rn = 1),
+      at_t AS (SELECT b.* FROM bidperoffer_d b JOIN peak ON b.INTERVAL_DATETIME = peak.t JOIN md ON b.SETTLEMENTDATE = md.day JOIN u ON u.DUID = b.DUID
+               WHERE b.BIDTYPE = 'ENERGY' AND b.DIRECTION = 'GEN' AND u.region = '{region}'),
       stack AS (SELECT p.DUID, p.band, p.price, a.mw FROM ({bands}) p JOIN ({avail}) a USING (DUID, band))"""
     r = sql(common + f""" SELECT peak.t, peak.rrp, count(DISTINCT stack.DUID) AS units, round(sum(stack.mw), 1) AS offered_mw,
         round(sum(CASE WHEN stack.price <= peak.rrp THEN stack.mw ELSE 0 END), 1) AS offered_at_or_below_rrp,
@@ -56,6 +59,11 @@ def main():
     row = r["rows"][0]
     print(" | ".join(str(v) for v in row))
     ratio = (row[4] / row[6]) if row[6] else float("nan")
+    dup = sql(common + " SELECT count(*) FROM (SELECT DUID, band FROM stack GROUP BY 1, 2 HAVING count(*) > 1)")
+    if "error" in dup:
+        print(f"FAIL nem-bidstack: {dup['error']}")
+        sys.exit(1)
+    dup_keys = dup["rows"][0][0]
     # Ascending-band invariant, whole day, every region.
     inv = sql("""WITH latest AS (SELECT * FROM (SELECT *, row_number() OVER (PARTITION BY DUID, SETTLEMENTDATE ORDER BY OFFERDATE DESC, VERSIONNO DESC) AS rn
                                 FROM biddayoffer_d WHERE BIDTYPE = 'ENERGY') WHERE rn = 1)
@@ -65,9 +73,9 @@ def main():
         print(f"FAIL nem-bidstack: {inv['error']}")
         sys.exit(1)
     offers, bad = inv["rows"][0]
-    print(f"nem-bidstack: region={region} interval={row[0]} rrp={row[1]} offered_at_or_below_rrp/dispatchable_generation={ratio:.3f} offers_checked={offers} non_ascending={bad}")
-    ok = bad == 0 and offers > 0
-    print(f"{'PASS' if ok else 'FAIL'} nem-bidstack: {'every energy offer has ascending price bands' if ok else f'{bad} of {offers} offers have non-ascending price bands'}")
+    print(f"nem-bidstack: region={region} interval={row[0]} rrp={row[1]} offered_at_or_below_rrp/dispatchable_generation={ratio:.3f} offers_checked={offers} non_ascending={bad} dup_keys={dup_keys}")
+    ok = bad == 0 and offers > 0 and dup_keys == 0
+    print(f"{'PASS' if ok else 'FAIL'} nem-bidstack: {'every energy offer has ascending price bands and the stack has one row per unit and band' if ok else f'{bad} of {offers} offers non-ascending, {dup_keys} duplicated unit-band keys'}")
     sys.exit(0 if ok else 1)
 
 

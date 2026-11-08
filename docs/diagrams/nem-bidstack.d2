@@ -6,4 +6,4 @@ fetched: five parquet tables and provenance written
 stacked: offered MW by price at the peak interval printed, band ordering verified
 
 absent -> fetched: "cmd: just nemosis-fetch BIDPEROFFER_D \"2025/09/01 00:00:00\" \"2025/09/02 00:00:00\" | pass: prints 'nemosis-fetch: BIDPEROFFER_D rows=<N> sha256=<prefix>' (repeat for BIDDAYOFFER_D, DISPATCHPRICE, DUDETAILSUMMARY, DISPATCHREGIONSUM)"
-fetched -> stacked: "cmd: just nem-bidstack SA1 | pass: prints the stack row then 'nem-bidstack: region=SA1 ... non_ascending=0' and 'PASS nem-bidstack'"
+fetched -> stacked: "cmd: just nem-bidstack SA1 | pass: prints the stack row then 'nem-bidstack: region=SA1 ... non_ascending=0 dup_keys=0' and 'PASS nem-bidstack'"
