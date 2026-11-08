@@ -732,6 +732,40 @@ ao-load-nem:
 demo-timeseries-ao:
     @python3 -u scripts/demo_timeseries_ao.py
 
+# Load the five NEMOSIS tables (out/nemosis parquet) into the AO pod's Postgres database `demo`, with the schema notes as table comments (arm 2 on the multi-table set, #120). Idempotent.
+# Exports parquet to CSV inside the nem container, then \copy into Postgres; checks each row count against the parquet count.
+ao-load-nemosis:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mkdir -p out/nemosis/csv
+    counts=$(podman run --rm --network=none --userns=keep-id:uid=1000,gid=1000 -v "$PWD/out/nemosis:/nemosis:z" localhost/wattson-nem:local export)
+    pg() { podman exec -i auto-ontology-postgres psql -U postgres -v ON_ERROR_STOP=1 -q "$@"; }
+    pg -c "CREATE DATABASE demo" 2>/dev/null || true
+    pg -d demo -q <<'SQL'
+    DROP TABLE IF EXISTS dispatchload, dudetailsummary, dispatchprice, dispatchregionsum, dispatchinterconnectorres;
+    CREATE TABLE dispatchload (settlementdate timestamp, duid text, intervention int, totalcleared double precision, availability double precision);
+    CREATE TABLE dudetailsummary (duid text, start_date timestamp, end_date timestamp, regionid text, stationid text, participantid text, dispatchtype text, schedule_type text);
+    CREATE TABLE dispatchprice (settlementdate timestamp, regionid text, intervention int, rrp double precision);
+    CREATE TABLE dispatchregionsum (settlementdate timestamp, regionid text, intervention int, totaldemand double precision, netinterchange double precision);
+    CREATE TABLE dispatchinterconnectorres (settlementdate timestamp, interconnectorid text, intervention int, mwflow double precision, mwlosses double precision);
+    COMMENT ON TABLE dispatchload IS 'One row per dispatch unit (duid) per 5-minute interval; totalcleared is the unit dispatched MW; energy in MWh = MW * 5 / 60. Always use intervention = 0.';
+    COMMENT ON TABLE dudetailsummary IS 'Maps each duid to its regionid and stationid. A duid can have SEVERAL rows (different start_date); the row in force is the one with the LATEST start_date for that duid. Use only that row when joining.';
+    COMMENT ON TABLE dispatchprice IS 'Regional price rrp in $/MWh, one row per region per interval. Always use intervention = 0.';
+    COMMENT ON TABLE dispatchregionsum IS 'Regional demand totaldemand in MW; netinterchange positive means the region is exporting. Always use intervention = 0.';
+    COMMENT ON TABLE dispatchinterconnectorres IS 'Flow in MW per interconnector per interval; positive mwflow is the forward direction (VIC1-NSW1 forward means from VIC1 to NSW1). Always use intervention = 0.';
+    SQL
+    for t in dispatchload dudetailsummary dispatchprice dispatchregionsum dispatchinterconnectorres; do
+        pg -d demo -c "\\copy $t FROM STDIN CSV HEADER" < "out/nemosis/csv/$t.csv"
+        want=$(printf '%s\n' "$counts" | sed -n "s/^$t rows=//p")
+        got=$(pg -d demo -t -A -c "SELECT count(*) FROM $t")
+        [ "$want" = "$got" ] || { echo "ao-load-nemosis: ERROR $t expected $want rows, got $got" >&2; exit 1; }
+        echo "ao-load-nemosis: demo.$t rows=$got"
+    done
+
+# Arm 2 (Auto Ontology) on the multi-table question set (#120); a measurement, not a gate. Pod up, ao-load-nemosis and ao-enable-semantic done.
+demo-multitable-ao:
+    @python3 -u scripts/demo_timeseries_ao.py --questions configs/nem-multitable-questions.proposed.json --question-timeout 600
+
 # Demo 3 arm 3 (#95): the model picks a governed metric from configs/nem-metrics.json and fixed, whitelisted SQL templates compute. Uncovered questions fail by design.
 demo-timeseries-metrics:
     @python3 -u scripts/demo_timeseries_metrics.py
