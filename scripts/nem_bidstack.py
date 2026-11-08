@@ -5,10 +5,10 @@ DISPATCHPRICE, DUDETAILSUMMARY and DISPATCHREGIONSUM parquet (all `just nemosis-
 Usage: python3 scripts/nem_bidstack.py [REGION]   (default SA1)
 
 Energy generation offers only (BIDTYPE = 'ENERGY', DIRECTION = 'GEN': batteries also bid a LOAD direction). The market day runs 04:00 to 04:00, so the interval belongs to the day of (interval - 4 h - 1 min).
-A unit's price bands come from its latest offer (latest OFFERDATE, VERSIONNO) for that market day; availability comes from the interval row. The join is on (DUID, band): `dup_keys` counts keys with more than one row and must be 0.
+A unit's price bands come from its latest offer (latest OFFERDATE, VERSIONNO) for that market day; availability comes from the interval row, capped by MAXAVAIL cumulatively through the bands (bids may sum above MAXAVAIL, which is what is actually available). The join is on (DUID, band): `dup_keys` counts keys with more than one row and must be 0.
 Prints, for the interval with the region's highest RRP: total offered MW, MW offered at or below the RRP, MW offered at or below 0, and the region's DISPATCHABLEGENERATION for reference.
 PASS requires a non-empty stack, one row per (unit, band), and NO unit whose price bands are not ascending (AEMO's offer rules require ascending bands: a deterministic data invariant, checked across the whole day).
-The offered-versus-dispatched ratio is reported, not gated (ramp limits and constraints legitimately keep dispatch below offers). No model, no network.
+The offered-versus-dispatched and offered-versus-AVAILABLEGENERATION (DISPATCHREGIONSUM, an independent figure) ratios are reported, not gated (ramp limits and constraints legitimately keep dispatch below offers). No model, no network.
 """
 import json
 import os
@@ -34,7 +34,7 @@ def main():
         print(f"FAIL nem-bidstack: unknown region {region}")
         sys.exit(1)
     bands = " UNION ALL ".join(f"SELECT DUID, {i} AS band, PRICEBAND{i} AS price FROM latest" for i in range(1, 11))
-    avail = " UNION ALL ".join(f"SELECT DUID, {i} AS band, BANDAVAIL{i} AS mw FROM at_t" for i in range(1, 11))
+    avail = " UNION ALL ".join(f"SELECT DUID, {i} AS band, BANDAVAIL{i} AS mw, MAXAVAIL AS maxavail FROM at_t" for i in range(1, 11))
     common = f"""
       WITH u AS (SELECT DUID, arg_max(REGIONID, START_DATE) AS region FROM dudetailsummary GROUP BY DUID),
       peak AS (SELECT SETTLEMENTDATE AS t, RRP AS rrp FROM dispatchprice WHERE REGIONID = '{region}' AND INTERVENTION = 0 ORDER BY RRP DESC, SETTLEMENTDATE LIMIT 1),
@@ -43,11 +43,13 @@ def main():
                                 FROM biddayoffer_d d, md WHERE d.BIDTYPE = 'ENERGY' AND d.DIRECTION = 'GEN' AND d.SETTLEMENTDATE = md.day) WHERE rn = 1),
       at_t AS (SELECT b.* FROM bidperoffer_d b JOIN peak ON b.INTERVAL_DATETIME = peak.t JOIN md ON b.SETTLEMENTDATE = md.day JOIN u ON u.DUID = b.DUID
                WHERE b.BIDTYPE = 'ENERGY' AND b.DIRECTION = 'GEN' AND u.region = '{region}'),
-      stack AS (SELECT p.DUID, p.band, p.price, a.mw FROM ({bands}) p JOIN ({avail}) a USING (DUID, band))"""
+      raw AS (SELECT p.DUID, p.band, p.price, a.mw AS bid_mw, a.maxavail FROM ({bands}) p JOIN ({avail}) a USING (DUID, band)),
+      stack AS (SELECT DUID, band, price, bid_mw, greatest(0, least(bid_mw, maxavail - coalesce(sum(bid_mw) OVER (PARTITION BY DUID ORDER BY band ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING), 0))) AS mw FROM raw)"""
     r = sql(common + f""" SELECT peak.t, peak.rrp, count(DISTINCT stack.DUID) AS units, round(sum(stack.mw), 1) AS offered_mw,
         round(sum(CASE WHEN stack.price <= peak.rrp THEN stack.mw ELSE 0 END), 1) AS offered_at_or_below_rrp,
         round(sum(CASE WHEN stack.price <= 0 THEN stack.mw ELSE 0 END), 1) AS offered_at_or_below_zero,
-        (SELECT DISPATCHABLEGENERATION FROM dispatchregionsum WHERE REGIONID = '{region}' AND INTERVENTION = 0 AND SETTLEMENTDATE = peak.t) AS dispatchable_generation_mw
+        (SELECT DISPATCHABLEGENERATION FROM dispatchregionsum WHERE REGIONID = '{region}' AND INTERVENTION = 0 AND SETTLEMENTDATE = peak.t) AS dispatchable_generation_mw,
+        (SELECT AVAILABLEGENERATION FROM dispatchregionsum WHERE REGIONID = '{region}' AND INTERVENTION = 0 AND SETTLEMENTDATE = peak.t) AS available_generation_mw
         FROM stack, peak GROUP BY peak.t, peak.rrp""")
     if "error" in r:
         print(f"FAIL nem-bidstack: {r['error']}")
@@ -59,6 +61,7 @@ def main():
     row = r["rows"][0]
     print(" | ".join(str(v) for v in row))
     ratio = (row[4] / row[6]) if row[6] else float("nan")
+    avail_ratio = (row[3] / row[7]) if row[7] else float("nan")
     dup = sql(common + " SELECT count(*) FROM (SELECT DUID, band FROM stack GROUP BY 1, 2 HAVING count(*) > 1)")
     if "error" in dup:
         print(f"FAIL nem-bidstack: {dup['error']}")
@@ -73,7 +76,7 @@ def main():
         print(f"FAIL nem-bidstack: {inv['error']}")
         sys.exit(1)
     offers, bad = inv["rows"][0]
-    print(f"nem-bidstack: region={region} interval={row[0]} rrp={row[1]} offered_at_or_below_rrp/dispatchable_generation={ratio:.3f} offers_checked={offers} non_ascending={bad} dup_keys={dup_keys}")
+    print(f"nem-bidstack: region={region} interval={row[0]} rrp={row[1]} offered_at_or_below_rrp/dispatchable_generation={ratio:.3f} offered/available_generation={avail_ratio:.3f} offers_checked={offers} non_ascending={bad} dup_keys={dup_keys}")
     ok = bad == 0 and offers > 0 and dup_keys == 0
     print(f"{'PASS' if ok else 'FAIL'} nem-bidstack: {'every energy offer has ascending price bands and the stack has one row per unit and band' if ok else f'{bad} of {offers} offers non-ascending, {dup_keys} duplicated unit-band keys'}")
     sys.exit(0 if ok else 1)
