@@ -1,0 +1,52 @@
+[
+ {
+  "id": "M1",
+  "question": "Which station (STATIONID) had the highest total cleared energy in MWh on the day, and how much (1 decimal)?",
+  "sql": "WITH u AS (SELECT DUID, arg_max(REGIONID, START_DATE) AS region, arg_max(STATIONID, START_DATE) AS station FROM dudetailsummary GROUP BY DUID) SELECT u.station, round(sum(l.TOTALCLEARED)*5/60,1) e FROM dispatchload l JOIN u USING (DUID) WHERE l.INTERVENTION=0 GROUP BY 1 ORDER BY e DESC LIMIT 1"
+ },
+ {
+  "id": "M2",
+  "question": "How many distinct units in SA1 had a positive TOTALCLEARED in at least one interval?",
+  "sql": "WITH u AS (SELECT DUID, arg_max(REGIONID, START_DATE) AS region, arg_max(STATIONID, START_DATE) AS station FROM dudetailsummary GROUP BY DUID) SELECT count(DISTINCT l.DUID) FROM dispatchload l JOIN u USING (DUID) WHERE l.INTERVENTION=0 AND u.region='SA1' AND l.TOTALCLEARED>0"
+ },
+ {
+  "id": "M3",
+  "question": "Which region's units cleared the most energy in MWh on the day, and how much (1 decimal)?",
+  "sql": "WITH u AS (SELECT DUID, arg_max(REGIONID, START_DATE) AS region, arg_max(STATIONID, START_DATE) AS station FROM dudetailsummary GROUP BY DUID) SELECT u.region, round(sum(l.TOTALCLEARED)*5/60,1) e FROM dispatchload l JOIN u USING (DUID) WHERE l.INTERVENTION=0 GROUP BY 1 ORDER BY e DESC LIMIT 1"
+ },
+ {
+  "id": "M4",
+  "question": "In how many 5-minute intervals was VIC1-NSW1 flowing forward (from VIC1 to NSW1) while the NSW1 price was higher than the VIC1 price?",
+  "sql": "SELECT count(*) FROM dispatchinterconnectorres i JOIN dispatchprice v ON v.SETTLEMENTDATE=i.SETTLEMENTDATE AND v.REGIONID='VIC1' AND v.INTERVENTION=0 JOIN dispatchprice n ON n.SETTLEMENTDATE=i.SETTLEMENTDATE AND n.REGIONID='NSW1' AND n.INTERVENTION=0 WHERE i.INTERVENTION=0 AND i.INTERCONNECTORID='VIC1-NSW1' AND i.MWFLOW>0 AND n.RRP>v.RRP"
+ },
+ {
+  "id": "M5",
+  "question": "Which region had the highest average NETINTERCHANGE (MW) over the day, and what is it (1 decimal)?",
+  "sql": "SELECT REGIONID, round(avg(NETINTERCHANGE),1) a FROM dispatchregionsum WHERE INTERVENTION=0 GROUP BY 1 ORDER BY a DESC LIMIT 1"
+ },
+ {
+  "id": "M6",
+  "question": "Which interconnector had the highest average MWLOSSES (MW) over the day, and what is it (2 decimals)?",
+  "sql": "SELECT INTERCONNECTORID, round(avg(MWLOSSES),2) a FROM dispatchinterconnectorres WHERE INTERVENTION=0 GROUP BY 1 ORDER BY a DESC LIMIT 1"
+ },
+ {
+  "id": "M7",
+  "question": "In the interval with the highest SA1 price, which unit in SA1 had the highest TOTALCLEARED, and how many MW was that?",
+  "sql": "WITH u AS (SELECT DUID, arg_max(REGIONID, START_DATE) AS region, arg_max(STATIONID, START_DATE) AS station FROM dudetailsummary GROUP BY DUID), p AS (SELECT SETTLEMENTDATE FROM dispatchprice WHERE REGIONID='SA1' AND INTERVENTION=0 ORDER BY RRP DESC, SETTLEMENTDATE LIMIT 1) SELECT l.DUID, l.TOTALCLEARED FROM dispatchload l JOIN u USING (DUID) JOIN p ON p.SETTLEMENTDATE=l.SETTLEMENTDATE WHERE l.INTERVENTION=0 AND u.region='SA1' ORDER BY l.TOTALCLEARED DESC, l.DUID LIMIT 1"
+ },
+ {
+  "id": "M8",
+  "question": "What share of NSW1's total cleared energy came from its five units with the most cleared energy (3 decimals)?",
+  "sql": "WITH u AS (SELECT DUID, arg_max(REGIONID, START_DATE) AS region, arg_max(STATIONID, START_DATE) AS station FROM dudetailsummary GROUP BY DUID), e AS (SELECT l.DUID, sum(l.TOTALCLEARED) m FROM dispatchload l JOIN u USING (DUID) WHERE l.INTERVENTION=0 AND u.region='NSW1' GROUP BY 1) SELECT round((SELECT sum(m) FROM (SELECT m FROM e ORDER BY m DESC LIMIT 5))/(SELECT sum(m) FROM e),3)"
+ },
+ {
+  "id": "M9",
+  "question": "In how many intervals was the sum of NETINTERCHANGE over all five regions more than 50 MW away from zero (absolute value above 50)?",
+  "sql": "SELECT count(*) FROM (SELECT SETTLEMENTDATE FROM dispatchregionsum WHERE INTERVENTION=0 GROUP BY 1 HAVING abs(sum(NETINTERCHANGE))>50)"
+ },
+ {
+  "id": "M10",
+  "question": "Which station has the most distinct DUIDs (using the row in force for each DUID), and how many? Break ties by station name alphabetically.",
+  "sql": "WITH u AS (SELECT DUID, arg_max(REGIONID, START_DATE) AS region, arg_max(STATIONID, START_DATE) AS station FROM dudetailsummary GROUP BY DUID) SELECT station, count(*) c FROM u GROUP BY 1 ORDER BY c DESC, station LIMIT 1"
+ }
+]

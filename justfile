@@ -408,6 +408,10 @@ nem-interconnector:
 nem-unit-lookup:
     @python3 scripts/nem_unit_lookup.py
 
+# Multi-table benchmark (#120): arm 1 (plain text-to-SQL) over NEMOSIS parquet views (dispatchload, dudetailsummary, dispatchprice, dispatchregionsum, dispatchinterconnectorres) for 2025-09-01. A measurement, not a gate. Needs the parquet fetched first.
+demo-multitable-qa:
+    @python3 -u scripts/demo_timeseries_qa.py --schema-file configs/nem-multitable-schema.txt --questions configs/nem-multitable-questions.proposed.json
+
 # Demo 3 data (#100): a container fetches the public AEMO price-and-demand CSVs (Sept 2025, 5 regions) into out/nem and verifies configs/nem-priceanddemand.sha256; another builds out/nem/nem.duckdb. No host download.
 nem-data:
     mkdir -p out/nem

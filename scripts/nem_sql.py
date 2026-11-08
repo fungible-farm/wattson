@@ -40,6 +40,9 @@ def query(data):
     if ";" in sql:
         sys.exit(json.dumps({"error": "one statement only"}))
     con = duckdb.connect(os.path.join(data, "nem.duckdb"), read_only=True)
+    # Any NEMOSIS parquet mounted at /nemosis is exposed as a view named after the file (DISPATCHLOAD.parquet -> dispatchload), for multi-table questions.
+    for path in sorted(glob.glob("/nemosis/*.parquet")):
+        con.execute(f"CREATE TEMP VIEW {os.path.basename(path)[:-8].lower()} AS SELECT * FROM read_parquet('{path}')")
     try:
         con.execute(sql)
         columns = [d[0] for d in con.description]

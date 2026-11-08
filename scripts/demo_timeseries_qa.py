@@ -65,8 +65,12 @@ def fail(msg):
 
 def run_sql(sql):
     """Execute ONE read-only statement in the container; return the parsed JSON ({"columns", "rows"} or {"error"})."""
-    out = subprocess.run(["podman", "run", "--rm", "-i", "--network=none", "--userns=keep-id:uid=1000,gid=1000", "-v", f"{DATA}:/data:ro,z", IMAGE, "query"],
-                         input=sql, capture_output=True, text=True, timeout=120)
+    mounts = ["-v", f"{DATA}:/data:ro,z"]
+    nemosis = os.path.join(REPO, "out", "nemosis")
+    if os.path.isdir(nemosis):
+        mounts += ["-v", f"{nemosis}:/nemosis:ro,z"]  # NEMOSIS parquet, exposed as views (multi-table questions)
+    out = subprocess.run(["podman", "run", "--rm", "-i", "--network=none", "--userns=keep-id:uid=1000,gid=1000", *mounts, IMAGE, "query"],
+                         input=sql, capture_output=True, text=True, timeout=300)
     try:
         return json.loads(out.stdout.strip().splitlines()[-1])
     except (ValueError, IndexError):
@@ -96,6 +100,7 @@ def same(expected, got):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--only", default="")
+    parser.add_argument("--schema-file", default=None, help="text replacing the built-in schema description in the prompt")
     parser.add_argument("--questions", default=None, help="JSON file of {id, question, sql}; default is the built-in set")
     parser.add_argument("--base-url", default=None)
     parser.add_argument("--model", default=None)
@@ -106,6 +111,9 @@ def main():
     delegate = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(delegate)
     base_url, model = args.base_url or delegate.DEFAULT_URL, args.model or delegate.DEFAULT_MODEL
+    global PROMPT
+    if args.schema_file:
+        PROMPT = ("You write DuckDB SQL for these tables.\n" + open(args.schema_file).read() + "\nAnswer the question with exactly ONE SQL statement in a ```sql block and no explanation. Return the values the question asks for, one column each.\nQuestion: ")
     print(f"arm 1 (plain text-to-SQL, schema in the prompt); model under test: {model} at {base_url}")
     pool = QUESTIONS if not args.questions else [(q["id"], q["question"], q["sql"]) for q in json.load(open(args.questions))]
     questions = [q for q in pool if not args.only or q[0] in args.only.split(",")]
