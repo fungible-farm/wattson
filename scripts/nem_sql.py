@@ -2,6 +2,7 @@
 """Inside the wattson-nem container: build the DuckDB file from the AEMO price-and-demand CSVs, and run one read-only SQL statement.
 
   nem_sql.py load  [--data /data]        read /data/PRICE_AND_DEMAND_*.csv, write /data/nem.duckdb, print row counts per region
+  nem_sql.py export [--src /nemosis] [--out /nemosis/csv]   write the five multi-table NEMOSIS parquet files as CSV (selected columns) for loading into Postgres
   nem_sql.py query [--data /data]        read ONE SQL statement from stdin, run it read-only, print {"columns": [...], "rows": [...]} as JSON
 
 Table `price_demand(region, settlement_ts, total_demand_mw, rrp, period_type)`: one row per region per 5-minute dispatch interval.
@@ -35,6 +36,27 @@ def load(data):
     con.close()
 
 
+EXPORT = {
+    "dispatchload": ["SETTLEMENTDATE", "DUID", "INTERVENTION", "TOTALCLEARED", "AVAILABILITY"],
+    "dudetailsummary": ["DUID", "START_DATE", "END_DATE", "REGIONID", "STATIONID", "PARTICIPANTID", "DISPATCHTYPE", "SCHEDULE_TYPE"],
+    "dispatchprice": ["SETTLEMENTDATE", "REGIONID", "INTERVENTION", "RRP"],
+    "dispatchregionsum": ["SETTLEMENTDATE", "REGIONID", "INTERVENTION", "TOTALDEMAND", "NETINTERCHANGE"],
+    "dispatchinterconnectorres": ["SETTLEMENTDATE", "INTERCONNECTORID", "INTERVENTION", "MWFLOW", "MWLOSSES"],
+}
+
+
+def export(src, out):
+    """parquet -> CSV with ISO timestamps and the selected columns; prints `<table> rows=N` so the loader can check counts."""
+    os.makedirs(out, exist_ok=True)
+    con = duckdb.connect()
+    for table, cols in EXPORT.items():
+        path = os.path.join(src, table.upper() + ".parquet")
+        select = ", ".join(f"strftime({c}, '%Y-%m-%d %H:%M:%S') AS {c}" if c in ("SETTLEMENTDATE", "START_DATE", "END_DATE") else c for c in cols)
+        n = con.execute(f"SELECT count(*) FROM read_parquet('{path}')").fetchone()[0]
+        con.execute(f"COPY (SELECT {select} FROM read_parquet('{path}')) TO '{os.path.join(out, table + '.csv')}' (HEADER, DELIMITER ',')")
+        print(f"{table} rows={n}")
+
+
 def query(data):
     sql = sys.stdin.read().strip().rstrip(";")
     if ";" in sql:
@@ -54,7 +76,9 @@ def query(data):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("command", choices=("load", "query"))
+    parser.add_argument("command", choices=("load", "query", "export"))
     parser.add_argument("--data", default="/data")
+    parser.add_argument("--src", default="/nemosis")
+    parser.add_argument("--out", default="/nemosis/csv")
     args = parser.parse_args()
-    {"load": load, "query": query}[args.command](args.data)
+    {"load": lambda: load(args.data), "query": lambda: query(args.data), "export": lambda: export(args.src, args.out)}[args.command]()
