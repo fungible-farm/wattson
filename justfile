@@ -420,6 +420,10 @@ nem-fcas:
 nem-bidstack region="SA1":
     @python3 scripts/nem_bidstack.py {{region}}
 
+# Arm 3 (governed metric catalogue) on the multi-table question set (#120). Uncovered questions fail by design. Needs the five NEMOSIS parquet tables fetched first.
+demo-multitable-metrics:
+    @python3 -u scripts/demo_timeseries_metrics.py --questions configs/nem-multitable-questions.proposed.json
+
 # Demo 3 data (#100): a container fetches the public AEMO price-and-demand CSVs (Sept 2025, 5 regions) into out/nem and verifies configs/nem-priceanddemand.sha256; another builds out/nem/nem.duckdb. No host download.
 nem-data:
     mkdir -p out/nem
