@@ -67,6 +67,10 @@ def main():
         print(f"FAIL nem-bidstack: {dup['error']}")
         sys.exit(1)
     dup_keys = dup["rows"][0][0]
+    by_type = sql(common + f""" SELECT coalesce(d.SCHEDULE_TYPE, 'UNKNOWN') AS schedule_type, count(DISTINCT stack.DUID) AS units, round(sum(stack.mw), 1) AS offered_mw
+        FROM stack LEFT JOIN (SELECT DUID, arg_max(SCHEDULE_TYPE, START_DATE) AS SCHEDULE_TYPE FROM dudetailsummary GROUP BY DUID) d USING (DUID) GROUP BY 1 ORDER BY 1""")
+    if "error" not in by_type:
+        print("offered MW by schedule type: " + "; ".join(f"{r[0]}: {r[1]} units {r[2]} MW" for r in by_type["rows"]))
     # Ascending-band invariant, whole day, every region.
     inv = sql("""WITH latest AS (SELECT * FROM (SELECT *, row_number() OVER (PARTITION BY DUID, SETTLEMENTDATE ORDER BY OFFERDATE DESC, VERSIONNO DESC) AS rn
                                 FROM biddayoffer_d WHERE BIDTYPE = 'ENERGY') WHERE rn = 1)
