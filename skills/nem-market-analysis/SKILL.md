@@ -27,7 +27,7 @@ Run ONE read-only SQL statement over the parquet or over `out/nem/nem.duckdb` (`
 | Fuel mix, capacity factor | DISPATCHLOAD, DISPATCH_UNIT_SCADA, static Generators and Scheduled Loads | planned |
 | Interconnector flow and congestion | DISPATCHINTERCONNECTORRES | `just nem-interconnector` (chart `docs/diagrams/nem-interconnector.d2`) |
 | Binding-constraint analysis | DISPATCHCONSTRAINT, GENCONDATA, SPD* | planned |
-| Bid stack, supply curve (gap March 2021 to July 2024) | BIDPEROFFER_D, BIDDAYOFFER_D | planned |
+| Bid stack, supply curve (gap March 2021 to July 2024) | BIDPEROFFER_D, BIDDAYOFFER_D (+ DISPATCHPRICE, DUDETAILSUMMARY, DISPATCHREGIONSUM) | `just nem-bidstack` (chart `docs/diagrams/nem-bidstack.d2`) |
 | FCAS price | DISPATCHPRICE (FCAS columns) | `just nem-fcas` (chart `docs/diagrams/nem-fcas.d2`); causer-pays (FCAS_4_SECOND) still planned |
 | Unit lookup, DUID to region and station | DUDETAILSUMMARY (+ DISPATCHLOAD for coverage) | `just nem-unit-lookup` (chart `docs/diagrams/nem-unit-lookup.d2`); mapping onto the CSIRO synthetic network is still planned |
 
