@@ -1,0 +1,38 @@
+[
+ {
+  "claim": "dudetailsummary has exactly one row per DUID in this window, so no 'row in force' resolution is needed (the original schema said a DUID can have several rows; that was never true for this data)",
+  "sql": "SELECT count(*)=count(DISTINCT DUID) FROM dudetailsummary"
+ },
+ {
+  "claim": "no dudetailsummary row starts after or ends before the data window",
+  "sql": "SELECT count(*) FILTER (WHERE START_DATE > TIMESTAMP '2025-09-02 00:00:00' OR END_DATE < TIMESTAMP '2025-09-01 00:00:00')=0 FROM dudetailsummary"
+ },
+ {
+  "claim": "every dispatchload DUID has a dudetailsummary row (an inner join drops no energy)",
+  "sql": "SELECT count(*)=0 FROM dispatchload WHERE DUID NOT IN (SELECT DUID FROM dudetailsummary)"
+ },
+ {
+  "claim": "dispatchload has at most one row per interval and unit",
+  "sql": "SELECT count(*)=count(DISTINCT (SETTLEMENTDATE, DUID, INTERVENTION)) FROM dispatchload"
+ },
+ {
+  "claim": "INTERVENTION=0 rows exist and no INTERVENTION=1 rows exist in any table (the filter is harmless and the schema's 'always INTERVENTION = 0' is a rule, not a trap)",
+  "sql": "SELECT (SELECT count(*) FROM dispatchload WHERE INTERVENTION=1)+(SELECT count(*) FROM dispatchprice WHERE INTERVENTION=1)+(SELECT count(*) FROM dispatchregionsum WHERE INTERVENTION=1)+(SELECT count(*) FROM dispatchinterconnectorres WHERE INTERVENTION=1)=0"
+ },
+ {
+  "claim": "TOTALCLEARED is negative for some units (charging or load), so 'net cleared energy' is a stated convention that changes some answers",
+  "sql": "SELECT count(*)>0 FROM dispatchload WHERE TOTALCLEARED<0"
+ },
+ {
+  "claim": "every table has all 288 intervals of the day",
+  "sql": "SELECT (SELECT count(DISTINCT SETTLEMENTDATE) FROM dispatchload)=288 AND (SELECT count(DISTINCT SETTLEMENTDATE) FROM dispatchprice)=288 AND (SELECT count(DISTINCT SETTLEMENTDATE) FROM dispatchregionsum)=288 AND (SELECT count(DISTINCT SETTLEMENTDATE) FROM dispatchinterconnectorres)=288"
+ },
+ {
+  "claim": "the five-region sum of NETINTERCHANGE is never below -50, so M9 cannot detect a missing absolute value (declared, not hidden)",
+  "sql": "SELECT count(*)=0 FROM (SELECT 1 FROM dispatchregionsum WHERE INTERVENTION=0 GROUP BY SETTLEMENTDATE HAVING sum(NETINTERCHANGE)<-50)"
+ },
+ {
+  "claim": "each interval has exactly five regional rows in dispatchregionsum",
+  "sql": "SELECT count(*)=0 FROM (SELECT 1 FROM dispatchregionsum GROUP BY SETTLEMENTDATE HAVING count(*)<>5)"
+ }
+]

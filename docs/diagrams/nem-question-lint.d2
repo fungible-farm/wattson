@@ -1,0 +1,9 @@
+# procedural-chart
+# Admission gate for a benchmark question set: no question enters the benchmark unless it can detect the errors it claims to test (#120).
+direction: right
+proposed: question set, claims and schema written
+fetched: the five NEMOSIS parquet tables present
+admitted: every claim true, every question agreed, discriminating and unflippable, scorer proven
+
+proposed -> fetched: "cmd: just nemosis-fetch DISPATCHLOAD \"2025/09/01 00:00:00\" \"2025/09/02 00:00:00\" | pass: prints 'nemosis-fetch: DISPATCHLOAD rows=<N> sha256=<prefix>' (repeat for DISPATCHPRICE, DISPATCHREGIONSUM, DUDETAILSUMMARY, DISPATCHINTERCONNECTORRES)"
+fetched -> admitted: "cmd: just nem-question-lint | pass: prints 'PASS nem-question-lint: 0 failure(s)' and no line starting FAIL"

@@ -1,0 +1,7 @@
+Tables (AEMO MMS data via NEMOSIS; every table covers 2025-09-01 only, all rows are the data window; always use INTERVENTION = 0):
+- dispatchload(SETTLEMENTDATE TIMESTAMP, DUID VARCHAR, INTERVENTION INT, TOTALCLEARED DOUBLE, AVAILABILITY DOUBLE, ...): one row per dispatch unit per 5-minute interval; TOTALCLEARED is the unit's dispatched MW and can be negative (a unit charging or consuming). Energy in MWh = MW * 5 / 60. 'Cleared energy' means NET energy: sum TOTALCLEARED including negative values, never clip them.
+- dudetailsummary(DUID, START_DATE, END_DATE, REGIONID, STATIONID, PARTICIPANTID, DISPATCHTYPE, ...): maps each DUID to its region and station. In this data there is exactly one row per DUID (checked), so it joins to dispatchload one-to-one.
+- dispatchprice(SETTLEMENTDATE, REGIONID, INTERVENTION, RRP DOUBLE, ...): regional price in $/MWh, one row per region per interval.
+- dispatchregionsum(SETTLEMENTDATE, REGIONID, INTERVENTION, TOTALDEMAND DOUBLE, NETINTERCHANGE DOUBLE, ...): regional demand in MW; NETINTERCHANGE positive means the region is exporting.
+- dispatchinterconnectorres(SETTLEMENTDATE, INTERCONNECTORID, INTERVENTION, MWFLOW DOUBLE, MWLOSSES DOUBLE, ...): flow in MW per interconnector per interval; positive MWFLOW is the interconnector's forward direction (VIC1-NSW1 forward means from VIC1 to NSW1).
+Regions: NSW1, QLD1, SA1, TAS1, VIC1. SETTLEMENTDATE is the END of the 5-minute interval.

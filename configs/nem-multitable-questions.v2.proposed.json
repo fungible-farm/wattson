@@ -1,0 +1,236 @@
+[
+ {
+  "id": "M1",
+  "question": "Which station (STATIONID) had the highest net cleared energy in MWh on the day, and how much (1 decimal)?",
+  "sql": "SELECT u.station, round(sum(l.TOTALCLEARED)*5/60,1) e FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 GROUP BY 1 ORDER BY e DESC, 1 LIMIT 1",
+  "sql_alt": "SELECT station, round(e,1) FROM (SELECT d.STATIONID station, sum(l.TOTALCLEARED)/12.0 e FROM dispatchload l JOIN dudetailsummary d ON d.DUID=l.DUID WHERE l.INTERVENTION=0 GROUP BY 1) ORDER BY e DESC, station LIMIT 1",
+  "decimals": 1,
+  "mutants": [
+   {
+    "name": "forgot MW to MWh conversion",
+    "sql": "SELECT u.station, round(sum(l.TOTALCLEARED),1) e FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 GROUP BY 1 ORDER BY e DESC LIMIT 1",
+    "must_differ": true,
+    "why": "tests the unit conversion"
+   },
+   {
+    "name": "grouped by unit instead of station",
+    "sql": "SELECT l.DUID, round(sum(l.TOTALCLEARED)*5/60,1) e FROM dispatchload l WHERE l.INTERVENTION=0 GROUP BY 1 ORDER BY e DESC LIMIT 1",
+    "must_differ": true,
+    "why": "tests the unit-to-station join"
+   },
+   {
+    "name": "positive output only (ignore charging)",
+    "sql": "SELECT u.station, round(sum(greatest(l.TOTALCLEARED,0))*5/60,1) e FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 GROUP BY 1 ORDER BY e DESC LIMIT 1",
+    "must_differ": false,
+    "why": "known insensitive: the leader has no negative rows; stated so nobody claims M1 tests the sign convention"
+   }
+  ],
+  "margin_sql": "SELECT round(sum(l.TOTALCLEARED)*5/60,1) FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 GROUP BY u.station ORDER BY 1 DESC LIMIT 2"
+ },
+ {
+  "id": "M2",
+  "question": "How many distinct units in SA1 had a positive TOTALCLEARED in at least one interval?",
+  "sql": "SELECT count(DISTINCT l.DUID) FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 AND u.region='SA1' AND l.TOTALCLEARED>0",
+  "sql_alt": "SELECT count(*) FROM (SELECT l.DUID FROM dispatchload l WHERE l.INTERVENTION=0 AND l.DUID IN (SELECT DUID FROM dudetailsummary WHERE REGIONID='SA1') GROUP BY 1 HAVING max(l.TOTALCLEARED)>0)",
+  "decimals": null,
+  "mutants": [
+   {
+    "name": "any row instead of positive",
+    "sql": "SELECT count(DISTINCT l.DUID) FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 AND u.region='SA1'",
+    "must_differ": true,
+    "why": "tests the positive filter"
+   },
+   {
+    "name": "all regions",
+    "sql": "SELECT count(DISTINCT DUID) FROM dispatchload WHERE INTERVENTION=0 AND TOTALCLEARED>0",
+    "must_differ": true,
+    "why": "tests the region filter"
+   }
+  ]
+ },
+ {
+  "id": "M3",
+  "question": "Which region's units had the highest net cleared energy in MWh on the day, and how much (1 decimal)?",
+  "sql": "SELECT u.region, round(sum(l.TOTALCLEARED)*5/60,1) e FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 GROUP BY 1 ORDER BY e DESC, 1 LIMIT 1",
+  "sql_alt": "SELECT region, round(e,1) FROM (SELECT d.REGIONID region, sum(l.TOTALCLEARED)/12.0 e FROM dispatchload l JOIN dudetailsummary d ON d.DUID=l.DUID WHERE l.INTERVENTION=0 GROUP BY 1) ORDER BY e DESC, region LIMIT 1",
+  "decimals": 1,
+  "mutants": [
+   {
+    "name": "positive output only",
+    "sql": "SELECT u.region, round(sum(greatest(l.TOTALCLEARED,0))*5/60,1) e FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 GROUP BY 1 ORDER BY e DESC LIMIT 1",
+    "must_differ": true,
+    "why": "tests the net (sign) convention the schema states"
+   },
+   {
+    "name": "forgot MW to MWh conversion",
+    "sql": "SELECT u.region, round(sum(l.TOTALCLEARED),1) e FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 GROUP BY 1 ORDER BY e DESC LIMIT 1",
+    "must_differ": true,
+    "why": "tests the unit conversion"
+   }
+  ],
+  "margin_sql": "SELECT round(sum(l.TOTALCLEARED)*5/60,1) FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 GROUP BY u.region ORDER BY 1 DESC LIMIT 2"
+ },
+ {
+  "id": "M4",
+  "question": "In how many 5-minute intervals was VIC1-NSW1 flowing forward (from VIC1 to NSW1) while the NSW1 price exceeded the VIC1 price by more than 10 $/MWh?",
+  "sql": "SELECT count(*) FROM dispatchinterconnectorres i JOIN dispatchprice v ON v.SETTLEMENTDATE=i.SETTLEMENTDATE AND v.REGIONID='VIC1' AND v.INTERVENTION=0 JOIN dispatchprice n ON n.SETTLEMENTDATE=i.SETTLEMENTDATE AND n.REGIONID='NSW1' AND n.INTERVENTION=0 WHERE i.INTERVENTION=0 AND i.INTERCONNECTORID='VIC1-NSW1' AND i.MWFLOW>0 AND n.RRP-v.RRP>10",
+  "sql_alt": "SELECT count(*) FROM (SELECT SETTLEMENTDATE FROM dispatchinterconnectorres WHERE INTERVENTION=0 AND INTERCONNECTORID='VIC1-NSW1' AND MWFLOW>0) f WHERE (SELECT RRP FROM dispatchprice WHERE SETTLEMENTDATE=f.SETTLEMENTDATE AND REGIONID='NSW1' AND INTERVENTION=0) - (SELECT RRP FROM dispatchprice WHERE SETTLEMENTDATE=f.SETTLEMENTDATE AND REGIONID='VIC1' AND INTERVENTION=0) > 10",
+  "decimals": null,
+  "mutants": [
+   {
+    "name": "price condition dropped",
+    "sql": "SELECT count(*) FROM dispatchinterconnectorres WHERE INTERVENTION=0 AND INTERCONNECTORID='VIC1-NSW1' AND MWFLOW>0",
+    "must_differ": true,
+    "why": "the original M4 failed this: every forward interval had NSW1 dearer"
+   },
+   {
+    "name": "flow condition dropped",
+    "sql": "SELECT count(*) FROM dispatchprice n JOIN dispatchprice v ON v.SETTLEMENTDATE=n.SETTLEMENTDATE AND v.REGIONID='VIC1' AND v.INTERVENTION=0 WHERE n.REGIONID='NSW1' AND n.INTERVENTION=0 AND n.RRP-v.RRP>10",
+    "must_differ": true,
+    "why": "tests the flow filter"
+   },
+   {
+    "name": "threshold ignored (strictly greater)",
+    "sql": "SELECT count(*) FROM dispatchinterconnectorres i JOIN dispatchprice v ON v.SETTLEMENTDATE=i.SETTLEMENTDATE AND v.REGIONID='VIC1' AND v.INTERVENTION=0 JOIN dispatchprice n ON n.SETTLEMENTDATE=i.SETTLEMENTDATE AND n.REGIONID='NSW1' AND n.INTERVENTION=0 WHERE i.INTERVENTION=0 AND i.INTERCONNECTORID='VIC1-NSW1' AND i.MWFLOW>0 AND n.RRP>v.RRP",
+    "must_differ": true,
+    "why": "tests the $10 threshold"
+   }
+  ]
+ },
+ {
+  "id": "M5",
+  "question": "Which region had the highest average NETINTERCHANGE (MW) over the day, and what is it (1 decimal)?",
+  "sql": "SELECT REGIONID, round(avg(NETINTERCHANGE),1) a FROM dispatchregionsum WHERE INTERVENTION=0 GROUP BY 1 ORDER BY a DESC, 1 LIMIT 1",
+  "sql_alt": "SELECT REGIONID, round(sum(NETINTERCHANGE)/count(*),1) FROM dispatchregionsum WHERE INTERVENTION=0 GROUP BY 1 ORDER BY 2 DESC, 1 LIMIT 1",
+  "decimals": 1,
+  "mutants": [
+   {
+    "name": "sign convention reversed (import as positive)",
+    "sql": "SELECT REGIONID, round(avg(-NETINTERCHANGE),1) a FROM dispatchregionsum WHERE INTERVENTION=0 GROUP BY 1 ORDER BY a DESC LIMIT 1",
+    "must_differ": true,
+    "why": "tests the schema's export-positive note"
+   },
+   {
+    "name": "magnitude instead of signed",
+    "sql": "SELECT REGIONID, round(avg(abs(NETINTERCHANGE)),1) a FROM dispatchregionsum WHERE INTERVENTION=0 GROUP BY 1 ORDER BY a DESC LIMIT 1",
+    "must_differ": true,
+    "why": "tests signed average"
+   }
+  ],
+  "margin_sql": "SELECT round(avg(NETINTERCHANGE),1) FROM dispatchregionsum WHERE INTERVENTION=0 GROUP BY REGIONID ORDER BY 1 DESC LIMIT 2"
+ },
+ {
+  "id": "M6",
+  "question": "Which interconnector had the highest average MWLOSSES (MW) over the day, and what is it (2 decimals)?",
+  "sql": "SELECT INTERCONNECTORID, round(avg(MWLOSSES),2) a FROM dispatchinterconnectorres WHERE INTERVENTION=0 GROUP BY 1 ORDER BY a DESC, 1 LIMIT 1",
+  "sql_alt": "SELECT INTERCONNECTORID, round(sum(MWLOSSES)/count(*),2) FROM dispatchinterconnectorres WHERE INTERVENTION=0 GROUP BY 1 ORDER BY 2 DESC, 1 LIMIT 1",
+  "decimals": 2,
+  "mutants": [
+   {
+    "name": "wrong column (flow instead of losses)",
+    "sql": "SELECT INTERCONNECTORID, round(avg(MWFLOW),2) a FROM dispatchinterconnectorres WHERE INTERVENTION=0 GROUP BY 1 ORDER BY a DESC LIMIT 1",
+    "must_differ": true,
+    "why": "tests column selection"
+   },
+   {
+    "name": "total instead of average",
+    "sql": "SELECT INTERCONNECTORID, round(sum(MWLOSSES),2) a FROM dispatchinterconnectorres WHERE INTERVENTION=0 GROUP BY 1 ORDER BY a DESC LIMIT 1",
+    "must_differ": true,
+    "why": "tests the aggregate (value differs even if the id is the same)"
+   }
+  ],
+  "margin_sql": "SELECT round(avg(MWLOSSES),2) FROM dispatchinterconnectorres WHERE INTERVENTION=0 GROUP BY INTERCONNECTORID ORDER BY 1 DESC LIMIT 2"
+ },
+ {
+  "id": "M7",
+  "question": "In the interval with the highest SA1 price, which unit in SA1 had the highest TOTALCLEARED, and how many MW was that?",
+  "sql": "WITH p AS (SELECT SETTLEMENTDATE FROM dispatchprice WHERE REGIONID='SA1' AND INTERVENTION=0 ORDER BY RRP DESC, SETTLEMENTDATE LIMIT 1) SELECT l.DUID, l.TOTALCLEARED FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) JOIN p ON p.SETTLEMENTDATE=l.SETTLEMENTDATE WHERE l.INTERVENTION=0 AND u.region='SA1' ORDER BY l.TOTALCLEARED DESC, l.DUID LIMIT 1",
+  "sql_alt": "SELECT DUID, TOTALCLEARED FROM dispatchload WHERE INTERVENTION=0 AND SETTLEMENTDATE=(SELECT arg_max(SETTLEMENTDATE, RRP) FROM dispatchprice WHERE REGIONID='SA1' AND INTERVENTION=0) AND DUID IN (SELECT DUID FROM dudetailsummary WHERE REGIONID='SA1') ORDER BY TOTALCLEARED DESC, DUID LIMIT 1",
+  "decimals": null,
+  "mutants": [
+   {
+    "name": "region filter dropped",
+    "sql": "WITH p AS (SELECT SETTLEMENTDATE FROM dispatchprice WHERE REGIONID='SA1' AND INTERVENTION=0 ORDER BY RRP DESC LIMIT 1) SELECT l.DUID, l.TOTALCLEARED FROM dispatchload l JOIN p ON p.SETTLEMENTDATE=l.SETTLEMENTDATE WHERE l.INTERVENTION=0 ORDER BY l.TOTALCLEARED DESC LIMIT 1",
+    "must_differ": true,
+    "why": "tests the unit-region join"
+   },
+   {
+    "name": "peak taken in VIC1 instead",
+    "sql": "WITH p AS (SELECT SETTLEMENTDATE FROM dispatchprice WHERE REGIONID='VIC1' AND INTERVENTION=0 ORDER BY RRP DESC LIMIT 1) SELECT l.DUID, l.TOTALCLEARED FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) JOIN p ON p.SETTLEMENTDATE=l.SETTLEMENTDATE WHERE l.INTERVENTION=0 AND u.region='SA1' ORDER BY l.TOTALCLEARED DESC LIMIT 1",
+    "must_differ": true,
+    "why": "tests that the interval is chosen by the SA1 price"
+   }
+  ],
+  "margin_sql": "SELECT TOTALCLEARED FROM dispatchload WHERE INTERVENTION=0 AND SETTLEMENTDATE=(SELECT arg_max(SETTLEMENTDATE, RRP) FROM dispatchprice WHERE REGIONID='SA1' AND INTERVENTION=0) AND DUID IN (SELECT DUID FROM dudetailsummary WHERE REGIONID='SA1') ORDER BY 1 DESC LIMIT 2"
+ },
+ {
+  "id": "M8",
+  "question": "What share of NSW1's net cleared energy came from its five units with the most net cleared energy (3 decimals)?",
+  "sql": "WITH e AS (SELECT l.DUID, sum(l.TOTALCLEARED) m FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 AND u.region='NSW1' GROUP BY 1) SELECT round((SELECT sum(m) FROM (SELECT m FROM e ORDER BY m DESC LIMIT 5))/(SELECT sum(m) FROM e),3)",
+  "sql_alt": "SELECT round(sum(m) FILTER (WHERE r<=5)/sum(m),3) FROM (SELECT m, row_number() OVER (ORDER BY m DESC) r FROM (SELECT l.DUID, sum(l.TOTALCLEARED) m FROM dispatchload l WHERE l.INTERVENTION=0 AND l.DUID IN (SELECT DUID FROM dudetailsummary WHERE REGIONID='NSW1') GROUP BY 1))",
+  "decimals": 3,
+  "mutants": [
+   {
+    "name": "positive output only (the original's ambiguity)",
+    "sql": "WITH e AS (SELECT l.DUID, sum(greatest(l.TOTALCLEARED,0)) m FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 AND u.region='NSW1' GROUP BY 1) SELECT round((SELECT sum(m) FROM (SELECT m FROM e ORDER BY m DESC LIMIT 5))/(SELECT sum(m) FROM e),3)",
+    "must_differ": true,
+    "why": "0.437 vs 0.434: the schema now fixes the basis, and this must keep differing"
+   },
+   {
+    "name": "top three instead of five",
+    "sql": "WITH e AS (SELECT l.DUID, sum(l.TOTALCLEARED) m FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 AND u.region='NSW1' GROUP BY 1) SELECT round((SELECT sum(m) FROM (SELECT m FROM e ORDER BY m DESC LIMIT 3))/(SELECT sum(m) FROM e),3)",
+    "must_differ": true,
+    "why": "tests the N"
+   },
+   {
+    "name": "share of all NEM instead of NSW1",
+    "sql": "WITH e AS (SELECT l.DUID, u.region, sum(l.TOTALCLEARED) m FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 GROUP BY 1,2) SELECT round((SELECT sum(m) FROM (SELECT m FROM e WHERE region='NSW1' ORDER BY m DESC LIMIT 5))/(SELECT sum(m) FROM e),3)",
+    "must_differ": true,
+    "why": "tests the denominator"
+   }
+  ]
+ },
+ {
+  "id": "M9",
+  "question": "In how many intervals was the sum of NETINTERCHANGE over all five regions more than 50 MW away from zero (absolute value above 50)?",
+  "sql": "SELECT count(*) FROM (SELECT SETTLEMENTDATE FROM dispatchregionsum WHERE INTERVENTION=0 GROUP BY 1 HAVING abs(sum(NETINTERCHANGE))>50)",
+  "sql_alt": "SELECT count(DISTINCT SETTLEMENTDATE) FROM (SELECT SETTLEMENTDATE, sum(NETINTERCHANGE) OVER (PARTITION BY SETTLEMENTDATE) s FROM dispatchregionsum WHERE INTERVENTION=0) WHERE s>50 OR s<-50",
+  "decimals": null,
+  "mutants": [
+   {
+    "name": "signed instead of absolute",
+    "sql": "SELECT count(*) FROM (SELECT SETTLEMENTDATE FROM dispatchregionsum WHERE INTERVENTION=0 GROUP BY 1 HAVING sum(NETINTERCHANGE)>50)",
+    "must_differ": false,
+    "why": "declared insensitive: the five-region sum is never below -50 on this day (claim below), so the absolute value cannot change the count"
+   },
+   {
+    "name": "threshold 40",
+    "sql": "SELECT count(*) FROM (SELECT SETTLEMENTDATE FROM dispatchregionsum WHERE INTERVENTION=0 GROUP BY 1 HAVING abs(sum(NETINTERCHANGE))>40)",
+    "must_differ": true,
+    "why": "tests the threshold"
+   }
+  ]
+ },
+ {
+  "id": "M10",
+  "question": "Which station has the most distinct DUIDs, and how many? Break ties by station name alphabetically.",
+  "sql": "SELECT station, count(DISTINCT DUID) c FROM (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) GROUP BY 1 ORDER BY c DESC, station LIMIT 1",
+  "sql_alt": "SELECT STATIONID, count(*) FROM (SELECT DISTINCT DUID, STATIONID FROM dudetailsummary) GROUP BY 1 ORDER BY 2 DESC, 1 LIMIT 1",
+  "decimals": null,
+  "mutants": [
+   {
+    "name": "grouped by participant instead of station",
+    "sql": "SELECT PARTICIPANTID, count(DISTINCT DUID) c FROM dudetailsummary GROUP BY 1 ORDER BY c DESC, 1 LIMIT 1",
+    "must_differ": true,
+    "why": "tests the grouping column"
+   },
+   {
+    "name": "grouped by region instead of station",
+    "sql": "SELECT REGIONID, count(DISTINCT DUID) c FROM dudetailsummary GROUP BY 1 ORDER BY c DESC, 1 LIMIT 1",
+    "must_differ": true,
+    "why": "tests the grouping column"
+   }
+  ],
+  "margin_sql": "SELECT count(DISTINCT DUID) FROM (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) GROUP BY station ORDER BY 1 DESC LIMIT 2"
+ }
+]
