@@ -420,6 +420,10 @@ nem-fcas:
 nem-bidstack region="SA1":
     @python3 scripts/nem_bidstack.py {{region}}
 
+# Admission gate for the multi-table question set (#120): claims about the data, two independent SQLs agree, plausible wrong readings give different answers, margins survive rounding, the scorer rejects dumps. Needs the five NEMOSIS parquet tables fetched first.
+nem-question-lint questions="configs/nem-multitable-questions.v2.proposed.json" claims="configs/nem-multitable-claims.json" schema="configs/nem-multitable-schema.v2.txt":
+    @podman run --rm --network=none --userns=keep-id:uid=1000,gid=1000 --entrypoint python -v "$PWD/scripts:/opt/lint:ro,z" -v "$PWD/configs:/cfg:ro,z" -v "$PWD/out/nemosis:/nemosis:z" localhost/wattson-nem:local /opt/lint/nem_question_lint.py --questions /cfg/$(basename {{questions}}) --claims /cfg/$(basename {{claims}}) --schema /cfg/$(basename {{schema}})
+
 # Arm 3 (governed metric catalogue) on the multi-table question set (#120). Uncovered questions fail by design. Needs the five NEMOSIS parquet tables fetched first.
 demo-multitable-metrics:
     @python3 -u scripts/demo_timeseries_metrics.py --questions configs/nem-multitable-questions.proposed.json
@@ -441,7 +445,7 @@ demo-timeseries-qa-hard:
 
 # Check that every command named in the hand-written state charts exists, that every transition names a command and a pass observation, and that the generated recipe graph is current.
 diagrams-check:
-    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2 docs/diagrams/kit-lifecycle.d2 docs/diagrams/retrieval-lifecycle.d2 docs/diagrams/auto-ontology-lifecycle.d2 docs/diagrams/registry-change.d2 docs/diagrams/gateway-reload.d2 docs/diagrams/gateway-failure.d2 docs/diagrams/engine-footprint.d2 docs/diagrams/engine-pairs.d2 docs/diagrams/gateway-routing.d2 docs/diagrams/gateway-candle.d2 docs/diagrams/gateway-boot.d2 docs/diagrams/gateway-mcp-log.d2 docs/diagrams/gpu-lease.d2 docs/diagrams/kit-supply.d2 docs/diagrams/cosign-supply.d2 docs/diagrams/kit-init.d2 docs/diagrams/kit-pod.d2 docs/diagrams/demo-timeseries-qa.d2 docs/diagrams/demo-isp-qa.d2 docs/diagrams/demo-grid-study.d2 docs/diagrams/harness-compare.d2 docs/diagrams/kit-import.d2 docs/diagrams/pi-mcp.d2 docs/diagrams/nemosis-fetch.d2 docs/diagrams/nem-interconnector.d2 docs/diagrams/nem-unit-lookup.d2 docs/diagrams/nem-fcas.d2 docs/diagrams/nem-bidstack.d2
+    python3 scripts/diagram_check.py docs/diagrams/pod-lifecycle.d2 docs/diagrams/gateway-lifecycle.d2 docs/diagrams/delivery-flow.d2 docs/diagrams/model-load.d2 docs/diagrams/kit-lifecycle.d2 docs/diagrams/retrieval-lifecycle.d2 docs/diagrams/auto-ontology-lifecycle.d2 docs/diagrams/registry-change.d2 docs/diagrams/gateway-reload.d2 docs/diagrams/gateway-failure.d2 docs/diagrams/engine-footprint.d2 docs/diagrams/engine-pairs.d2 docs/diagrams/gateway-routing.d2 docs/diagrams/gateway-candle.d2 docs/diagrams/gateway-boot.d2 docs/diagrams/gateway-mcp-log.d2 docs/diagrams/gpu-lease.d2 docs/diagrams/kit-supply.d2 docs/diagrams/cosign-supply.d2 docs/diagrams/kit-init.d2 docs/diagrams/kit-pod.d2 docs/diagrams/demo-timeseries-qa.d2 docs/diagrams/demo-isp-qa.d2 docs/diagrams/demo-grid-study.d2 docs/diagrams/harness-compare.d2 docs/diagrams/kit-import.d2 docs/diagrams/pi-mcp.d2 docs/diagrams/nemosis-fetch.d2 docs/diagrams/nem-interconnector.d2 docs/diagrams/nem-unit-lookup.d2 docs/diagrams/nem-fcas.d2 docs/diagrams/nem-bidstack.d2 docs/diagrams/nem-question-lint.d2
     python3 scripts/justfile_diagram.py --check docs/diagrams/recipes.d2
 
 # --- retrieval: embedding and reranker model servers (CPU, separate containers, behind the gateway) ---------------------------
