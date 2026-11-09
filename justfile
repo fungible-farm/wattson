@@ -637,7 +637,7 @@ ao-up: ao-fetch ao-build ao-secrets
     mkdir -p out
     sed -e "s|@AO_SHA@|{{ao_sha}}|g" \
         -e "s|@EMBED_PORT@|$embed_port|g" -e "s|@EMBED_MODEL@|${WATTSON_EMBED_MODEL:-nomic-embed-text-v1.5}|g" -e "s|@CHAT_MODEL@|${WATTSON_CHAT_MODEL:-qwen3.8-flash-next}|g" \
-        -e "s|@PG_PASSWORD@|$AO_PG_PASSWORD|g" \
+        -e "s|@PG_PASSWORD@|$AO_PG_PASSWORD|g" -e "s|@SHIM_DIR@|$PWD/kube/ao-shim|g" \
         -e "s|@AUTH_SECRET@|$AO_AUTH_SECRET|g" \
         -e "s|@ADMIN_PASSWORD@|$AO_ADMIN_PASSWORD|g" \
         kube/auto-ontology.yaml > out/auto-ontology.rendered.yaml
@@ -655,6 +655,17 @@ ao-up: ao-fetch ao-build ao-secrets
     done
     echo "ao-up: endpoints not healthy after 120s; check pod logs with 'just ao-logs <container>'" >&2
     exit 1
+
+# Observation that the timeout shim is live in a running pod: a chat-completions POST that is aborted before it leaves the process must carry at least the floor timeout (#126).
+ao-shim-check:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for c in auto-ontology-backend auto-ontology-ingestion; do
+        out=$(podman exec -i "$c" python - < scripts/ao_shim_check.py)
+        echo "ao-shim-check: $c chat-completions read timeout = $out (sent 60)"
+        [ "${out%.*}" -ge 600 ] || { echo "FAIL ao-shim-check: $c still uses $out s" >&2; exit 1; }
+    done
+    echo "PASS ao-shim-check: both containers raise the 60 s model timeout"
 
 # Smoke test: both health endpoints must return 200.
 ao-smoke:
