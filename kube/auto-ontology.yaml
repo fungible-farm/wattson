@@ -83,8 +83,12 @@ spec:
         - {name: RERANK_ENDPOINT, value: "http://169.254.1.2:8082/v1"}
         - {name: RERANK_API_KEY, value: "none"}
         - {name: RERANK_MODEL, value: "bge-reranker-v2-m3"}
+        - {name: PYTHONPATH, value: "/opt/wattson-shim"}
+        - {name: WATTSON_LLM_READ_TIMEOUT_S, value: "900"}
+        - {name: LLM_INVOKE_TIMEOUT_S, value: "900"}
       volumeMounts:
         - {name: tmp-backend, mountPath: /tmp}
+        - {name: ao-shim, mountPath: /opt/wattson-shim, readOnly: true}
       ports:
         - {containerPort: 3001, hostPort: 13001, hostIP: 127.0.0.1}
       resources:
@@ -135,8 +139,12 @@ spec:
         - {name: RERANK_API_KEY, value: "none"}
         - {name: RERANK_MODEL, value: "bge-reranker-v2-m3"}
         - {name: CONNECTION_STRINGS, value: "postgresql://postgres:@PG_PASSWORD@@127.0.0.1:5432/demo"}
+        - {name: PYTHONPATH, value: "/opt/wattson-shim"}
+        - {name: WATTSON_LLM_READ_TIMEOUT_S, value: "900"}
+        - {name: LLM_INVOKE_TIMEOUT_S, value: "900"}
       volumeMounts:
         - {name: tmp-ingestion, mountPath: /tmp}
+        - {name: ao-shim, mountPath: /opt/wattson-shim, readOnly: true}
       ports:
         - {containerPort: 3002, hostPort: 13002, hostIP: 127.0.0.1}
       resources:
@@ -166,3 +174,5 @@ spec:
       emptyDir: {}
     - name: tmp-ingestion
       emptyDir: {}
+    - name: ao-shim
+      hostPath: {path: "@SHIM_DIR@", type: Directory}
