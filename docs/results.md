@@ -24,13 +24,16 @@ of the same recipe on the same data; with 3 seeds or fewer, differences smaller 
 | Plain tools, trained, older data (3 seeds) | 76, 69, 74 | 29, 23, 27 | 28, 28, 28 | - | 23, 20, 23 |
 | Python shell, non-thinking (3 seeds) | 89, 88, 90 | 40, 40, 40 | 27, 18, 20 | 40, 40, 40 | 31, 30, 27 |
 | Python shell, thinking (3 seeds) | 90, 89, 85 | 40, 40, 40 | 26, 19, 26 | 40, 40, 40 | 39, 29, 38 |
-| Untrained Qwen3.5-4B + shell (1 run) | 13 (see note) | - | - | - | 35 |
+| Untrained Qwen3.5-4B + shell (1 run, thinking on) | 13 (see note) | - | - | - | 35 |
+| Untrained Qwen3.5-4B + shell (1 run, thinking off) | 5 (see note) | - | - | - | - |
 | Granite 4.2 8B + shell (1 seed) | 90 | 36 | 14 | 40 | 37 |
 
 Untrained held-out note (#132, one greedy run, temperature 0, max_tokens 8192, 12 turns): 14 tasks ended with an answer (13 correct), 42 hit the
 generation limit, 20 the turn limit and 14 the context limit, so 76 answers were empty. The model is failing to finish, not answering wrongly. The
-derived-40 untrained run (35) is not comparable until its thinking mode and token budget are confirmed to match; neither a larger budget nor
-non-thinking mode has been tried for the untrained model. An earlier 10/90 and 12/90 are void (harness image without the case-directory fix).
+derived-40 untrained run (35) is not comparable until its thinking mode and token budget are confirmed to match. With thinking off (same settings otherwise,
+`enable_thinking=false` as the server default, no reasoning in any response) it scored 5/90: 17 answered, 32 hit the turn limit, 31 the context limit,
+10 the generation limit. So runaway reasoning is not the whole cause: without it the model still loops in the shell without converging. A larger
+turn or token budget has not been tried. An earlier 10/90 and 12/90 are void (harness image without the case-directory fix).
 
 Smoke (20 tasks) is at ceiling for every Python arm (20 of 20) and 19 for plain tools.
 
