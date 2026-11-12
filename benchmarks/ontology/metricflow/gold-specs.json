@@ -1,0 +1,83 @@
+{
+ "M1": {
+  "metrics": [
+   "dispatchload_cleared_energy_mwh"
+  ],
+  "group_by": [
+   "duid__stationid"
+  ],
+  "where": "",
+  "order_by": [
+   "-dispatchload_cleared_energy_mwh"
+  ],
+  "limit": 1
+ },
+ "M2": {
+  "inexpressible": "attempt M2-a (gold-spec-attempts.txt): filtering on TOTALCLEARED as a dimension fails, the value is modelled only as measures and no dimension exists; MetricFlow filters rows on dimensions, not measure values"
+ },
+ "M3": {
+  "metrics": [
+   "dispatchload_cleared_energy_mwh"
+  ],
+  "group_by": [
+   "duid__regionid"
+  ],
+  "where": "",
+  "order_by": [
+   "-dispatchload_cleared_energy_mwh"
+  ],
+  "limit": 1
+ },
+ "M4": {
+  "inexpressible": "attempt M4-a: both regions' prices come back as separate rows per interval; no metric or filter compares NSW1 price with VIC1 price in the same interval plus the interconnector flow, and the two fact tables share only metric_time"
+ },
+ "M5": {
+  "metrics": [
+   "dispatchregionsum_netinterchange_avg"
+  ],
+  "group_by": [
+   "region__regionid"
+  ],
+  "where": "",
+  "order_by": [
+   "-dispatchregionsum_netinterchange_avg"
+  ],
+  "limit": 1
+ },
+ "M6": {
+  "metrics": [
+   "dispatchinterconnectorres_mwlosses_avg"
+  ],
+  "group_by": [
+   "interconnector__interconnectorid"
+  ],
+  "where": "",
+  "order_by": [
+   "-dispatchinterconnectorres_mwlosses_avg"
+  ],
+  "limit": 1
+ },
+ "M7": {
+  "inexpressible": "attempts M7-a..f: step 1 (interval of the SA1 price max) and step 2 (top unit at a literal interval) each run, but only as two dependent calls with a literal handed over; M7-b (price and load metrics in one spec) fails to resolve (no common region path), M7-d/f (Metric() filter) fail to resolve; no single spec expresses it"
+ },
+ "M8": {
+  "inexpressible": "attempts M8-a..e: top-5 list (M8-a) and the numerator with that literal list (M8-d) and the denominator (M8-e) each run, but ratio and top-5 handoff need three calls plus client arithmetic; M8-b Metric() filter only supports value thresholds, not rank; a ratio metric with a literal list would be a question-specific YAML metric (disallowed)"
+ },
+ "M9": {
+  "inexpressible": "attempts M9-a..c: Metric() filter on the per-interval sum is refused (only group_by region is offered, metric_time and metric_time__minute fail); the region-grouped variant M9-b runs but answers a different question (864 rows, not intervals)"
+ },
+ "M10": {
+  "metrics": [
+   "dudetailsummary_duid_distinct_count"
+  ],
+  "group_by": [
+   "station__stationid"
+  ],
+  "where": "",
+  "order_by": [
+   "-dudetailsummary_duid_distinct_count",
+   "station__stationid"
+  ],
+  "limit": 1
+ }
+}

@@ -1,0 +1,25 @@
+{
+ "frozen_at": "2026-11-09T05:51:46Z",
+ "authoring_minutes": 10,
+ "files": {
+  "benchmarks/ontology/metricflow/Containerfile": "e490a6a7974db2b8774e34eb2144ccfd0d3e36e18f23dfc653a8f3be1636fa5a",
+  "benchmarks/ontology/metricflow/dbt_project.yml": "7248bf5927f5935a8a23c3a7157a41cac829d15830c173eadc59dca1b9ad2bc6",
+  "benchmarks/ontology/metricflow/gen_semantic_models.py": "3ec213743c54f76d32219808a1ff3355b06b5c0481e5c0d49dd7a5f0573f973e",
+  "benchmarks/ontology/metricflow/gold-spec-attempts.txt": "bb00465d2a00f913cfbd16919642f278deadaab42cd81ff60a1527eb07442ee3",
+  "benchmarks/ontology/metricflow/gold-specs.json": "aeb335816e6136f8c2eb471bba0922a0340818e94e671624d9221b95eb2598cb",
+  "benchmarks/ontology/metricflow/models/dim_interconnector.sql": "4a9a44472f2a17c31473de60ec56c1607d58aa32ea63bb06f52d80d5157b07d4",
+  "benchmarks/ontology/metricflow/models/dim_region.sql": "23329e076579872e8356c584c4c5d6acdb183666f0ea363c89df00f67affc8d6",
+  "benchmarks/ontology/metricflow/models/dim_station.sql": "0ccc3b948d95d6450409f755b73b4b7df2487d8faf728799a7c8e6bd59529f4e",
+  "benchmarks/ontology/metricflow/models/dispatchinterconnectorres.sql": "84d34ee10bda07de8d8e97f7b0ca6cfe9068465793e6384fa0a9803c04cf2cd1",
+  "benchmarks/ontology/metricflow/models/dispatchload.sql": "0a9eaa9cca0e1da9412e9a5e818b34006f1bdee6fe5ae521a80c6b743e7ad067",
+  "benchmarks/ontology/metricflow/models/dispatchprice.sql": "37edc70530b2581946983d9a86d388332c34b2857af08b2003ab6301b50928a1",
+  "benchmarks/ontology/metricflow/models/dispatchregionsum.sql": "16cca5e9fdc8fcb76d3c441764ee12293573d4fb7c6d6e2cae0ca8317fcaeec3",
+  "benchmarks/ontology/metricflow/models/dudetailsummary.sql": "ea1bddc1f0d3fa08084e6aed5491453a21c7f7ebe93fbe4ce17702b6fe06f588",
+  "benchmarks/ontology/metricflow/models/metricflow_time_spine_day.sql": "9ec2ee243372419590659965bc675249933608c2acbccb01a50071f3bc80e70a",
+  "benchmarks/ontology/metricflow/models/metricflow_time_spine_minute.sql": "71bc2a0ae036ed204c7b5a151ae5827c1337300dfecd5ae96553c705114add4f",
+  "benchmarks/ontology/metricflow/models/semantic_models.yml": "18032b72cef2c2b9ebacdced62c1306a0d856412e0f00c3f6602def2fae67845",
+  "benchmarks/ontology/metricflow/models/time_spines.yml": "77857a3328cfd5b877282c6fb6ce1505b241c0b915d71247e165fdcccf74a88a",
+  "benchmarks/ontology/metricflow/profiles.yml": "303286b4e33fcf197e802a74b9eb2962547acac0be139c33117acb3a7431172e",
+  "scripts/ontology_eval/adapter_metricflow.py": "7dc7dc211b1aebd6e641f4316ee2e6c9d255028ba1323a84c98c891a78515283"
+ }
+}

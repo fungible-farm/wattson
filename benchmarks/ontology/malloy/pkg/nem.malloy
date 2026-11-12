@@ -1,0 +1,99 @@
+// Semantic model for the five NEMOSIS tables, authored from configs/nem-multitable-schema.v2.txt alone.
+// Conventions from the schema: INTERVENTION = 0 always; SETTLEMENTDATE is the END of the 5-minute interval;
+// MWh = MW * 5 / 60; TOTALCLEARED is net (negative values count); NETINTERCHANGE > 0 means exporting.
+
+
+// one row per DUID (checked in the schema notes): region and station of each dispatch unit
+source: units is duckdb.table('/nemosis/DUDETAILSUMMARY.parquet') extend {
+  primary_key: DUID
+  dimension:
+    duid is DUID
+    region is REGIONID
+    station is STATIONID
+    participant is PARTICIPANTID
+    dispatch_type is DISPATCHTYPE
+    schedule_type is SCHEDULE_TYPE
+  measure:
+    unit_count is count(DUID)
+}
+
+// one row per region per interval
+source: prices is duckdb.table('/nemosis/DISPATCHPRICE.parquet') extend {
+  where: INTERVENTION = 0
+  dimension:
+    interval_end is SETTLEMENTDATE
+    region is REGIONID
+    price_status is PRICE_STATUS
+  measure:
+    interval_count is count()
+    avg_price is RRP.avg()
+    max_price is RRP.max()
+    min_price is RRP.min()
+}
+
+// one row per region per interval
+source: region_totals is duckdb.table('/nemosis/DISPATCHREGIONSUM.parquet') extend {
+  where: INTERVENTION = 0
+  dimension:
+    interval_end is SETTLEMENTDATE
+    region is REGIONID
+  measure:
+    interval_count is count()
+    avg_demand_mw is TOTALDEMAND.avg()
+    max_demand_mw is TOTALDEMAND.max()
+    min_demand_mw is TOTALDEMAND.min()
+    sum_demand_mw is TOTALDEMAND.sum()
+    avg_net_interchange_mw is NETINTERCHANGE.avg()
+    sum_net_interchange_mw is NETINTERCHANGE.sum()
+    avg_available_generation_mw is AVAILABLEGENERATION.avg()
+    avg_dispatchable_generation_mw is DISPATCHABLEGENERATION.avg()
+}
+
+// one row per unit per interval
+source: dispatch is duckdb.table('/nemosis/DISPATCHLOAD.parquet') extend {
+  where: INTERVENTION = 0
+  join_one: unit is units with DUID
+  dimension:
+    interval_end is SETTLEMENTDATE
+    duid is DUID
+    region is unit.region
+    station is unit.station
+  measure:
+    row_count is count()
+    unit_count is count(DUID)
+    // dispatched MW; may be negative (charging); sums keep the sign
+    net_cleared_mw_sum is TOTALCLEARED.sum()
+    // net energy: MW * 5 min / 60
+    net_cleared_mwh is TOTALCLEARED.sum() * 5 / 60
+    avg_cleared_mw is TOTALCLEARED.avg()
+    max_cleared_mw is TOTALCLEARED.max()
+    min_cleared_mw is TOTALCLEARED.min()
+    avg_availability_mw is AVAILABILITY.avg()
+    max_availability_mw is AVAILABILITY.max()
+}
+
+// one row per interconnector per interval; prices of every region by interval are joined for flow-vs-price analysis
+source: interconnector_flows is duckdb.table('/nemosis/DISPATCHINTERCONNECTORRES.parquet') extend {
+  where: INTERVENTION = 0
+  join_one: nsw_price is prices extend { where: region = 'NSW1' } on SETTLEMENTDATE = nsw_price.interval_end
+  join_one: qld_price is prices extend { where: region = 'QLD1' } on SETTLEMENTDATE = qld_price.interval_end
+  join_one: sa_price is prices extend { where: region = 'SA1' } on SETTLEMENTDATE = sa_price.interval_end
+  join_one: tas_price is prices extend { where: region = 'TAS1' } on SETTLEMENTDATE = tas_price.interval_end
+  join_one: vic_price is prices extend { where: region = 'VIC1' } on SETTLEMENTDATE = vic_price.interval_end
+  dimension:
+    interval_end is SETTLEMENTDATE
+    interconnector is INTERCONNECTORID
+    // forward direction: positive MWFLOW (VIC1-NSW1 forward = VIC1 to NSW1)
+    flowing_forward is MWFLOW > 0
+  measure:
+    interval_count is count()
+    avg_flow_mw is MWFLOW.avg()
+    sum_flow_mw is MWFLOW.sum()
+    max_flow_mw is MWFLOW.max()
+    min_flow_mw is MWFLOW.min()
+    avg_losses_mw is MWLOSSES.avg()
+    sum_losses_mw is MWLOSSES.sum()
+    max_losses_mw is MWLOSSES.max()
+    avg_export_limit_mw is EXPORTLIMIT.avg()
+    avg_import_limit_mw is IMPORTLIMIT.avg()
+}

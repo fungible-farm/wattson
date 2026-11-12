@@ -1,0 +1,101 @@
+{
+  "_readme": "Path B gold specifications for the decomposition ( governed-views) candidate (#128): {question_id: plan} in the adapter plan format {\"steps\":[{\"id\":\"s1\",\"sql\":...}],\"final\":\"sN\"}, written from the question text and the column comments in benchmarks/ontology/decomp/views.sql only, never from model output. Each step reads only the governed views (or an earlier step). Energy questions sum ENERGY_MWH (MWh); power questions use TOTALCLEARED (MW); 'on the day' filters DAY from day_interval.",
+  "M1": {
+    "steps": [
+      {
+        "id": "s1",
+        "sql": "SELECT STATIONID, round(sum(ENERGY_MWH), 1) AS NET_ENERGY_MWH FROM day_interval WHERE DAY = (SELECT min(DAY) FROM day_interval) GROUP BY STATIONID ORDER BY 2 DESC, STATIONID LIMIT 1"
+      }
+    ],
+    "final": "s1"
+  },
+  "M2": {
+    "steps": [
+      {
+        "id": "s1",
+        "sql": "SELECT count(DISTINCT DUID) AS UNITS FROM unit_region WHERE REGIONID = 'SA1' AND TOTALCLEARED > 0"
+      }
+    ],
+    "final": "s1"
+  },
+  "M3": {
+    "steps": [
+      {
+        "id": "s1",
+        "sql": "SELECT REGIONID, round(sum(ENERGY_MWH), 1) AS NET_ENERGY_MWH FROM day_interval WHERE DAY = (SELECT min(DAY) FROM day_interval) GROUP BY REGIONID ORDER BY 2 DESC, REGIONID LIMIT 1"
+      }
+    ],
+    "final": "s1"
+  },
+  "M4": {
+    "steps": [
+      {
+        "id": "s1",
+        "sql": "SELECT count(*) AS INTERVALS FROM interchange_interval i JOIN price_interval pv ON pv.SETTLEMENTDATE = i.SETTLEMENTDATE AND pv.REGIONID = 'VIC1' JOIN price_interval pn ON pn.SETTLEMENTDATE = i.SETTLEMENTDATE AND pn.REGIONID = 'NSW1' WHERE i.INTERCONNECTORID = 'VIC1-NSW1' AND i.MWFLOW > 0 AND pn.RRP - pv.RRP > 10"
+      }
+    ],
+    "final": "s1"
+  },
+  "M5": {
+    "steps": [
+      {
+        "id": "s1",
+        "sql": "SELECT REGIONID, round(avg(NETINTERCHANGE), 1) AS AVG_NET_INTERCHANGE FROM region_reserve GROUP BY REGIONID ORDER BY 2 DESC, REGIONID LIMIT 1"
+      }
+    ],
+    "final": "s1"
+  },
+  "M6": {
+    "steps": [
+      {
+        "id": "s1",
+        "sql": "SELECT INTERCONNECTORID, round(avg(MWLOSSES), 2) AS AVG_LOSSES FROM interchange_interval GROUP BY INTERCONNECTORID ORDER BY 2 DESC, INTERCONNECTORID LIMIT 1"
+      }
+    ],
+    "final": "s1"
+  },
+  "M7": {
+    "steps": [
+      {
+        "id": "s1",
+        "sql": "SELECT SETTLEMENTDATE FROM price_interval WHERE REGIONID = 'SA1' ORDER BY RRP DESC, SETTLEMENTDATE LIMIT 1"
+      },
+      {
+        "id": "s2",
+        "sql": "SELECT DUID, TOTALCLEARED FROM unit_region WHERE REGIONID = 'SA1' AND SETTLEMENTDATE = (SELECT SETTLEMENTDATE FROM s1) ORDER BY TOTALCLEARED DESC, DUID LIMIT 1"
+      }
+    ],
+    "final": "s2"
+  },
+  "M8": {
+    "steps": [
+      {
+        "id": "s1",
+        "sql": "SELECT DUID, sum(ENERGY_MWH) AS NET_ENERGY_MWH FROM unit_region WHERE REGIONID = 'NSW1' GROUP BY DUID"
+      },
+      {
+        "id": "s2",
+        "sql": "SELECT round((SELECT sum(NET_ENERGY_MWH) FROM (SELECT NET_ENERGY_MWH FROM s1 ORDER BY NET_ENERGY_MWH DESC LIMIT 5)) / (SELECT sum(NET_ENERGY_MWH) FROM s1), 3) AS TOP5_SHARE"
+      }
+    ],
+    "final": "s2"
+  },
+  "M9": {
+    "steps": [
+      {
+        "id": "s1",
+        "sql": "SELECT count(*) AS INTERVALS FROM (SELECT SETTLEMENTDATE FROM region_reserve GROUP BY SETTLEMENTDATE HAVING abs(sum(NETINTERCHANGE)) > 50) T"
+      }
+    ],
+    "final": "s1"
+  },
+  "M10": {
+    "steps": [
+      {
+        "id": "s1",
+        "sql": "SELECT STATIONID, count(DISTINCT DUID) AS UNITS FROM unit_dim GROUP BY STATIONID ORDER BY 2 DESC, STATIONID LIMIT 1"
+      }
+    ],
+    "final": "s1"
+  }
+}

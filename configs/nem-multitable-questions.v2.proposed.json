@@ -25,7 +25,9 @@
     "why": "known insensitive: the leader has no negative rows; stated so nobody claims M1 tests the sign convention"
    }
   ],
-  "margin_sql": "SELECT round(sum(l.TOTALCLEARED)*5/60,1) FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 GROUP BY u.station ORDER BY 1 DESC LIMIT 2"
+  "margin_sql": "SELECT round(sum(l.TOTALCLEARED)*5/60,1) FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 GROUP BY u.station ORDER BY 1 DESC LIMIT 2",
+  "shape": "simple-aggregate",
+  "convention": true
  },
  {
   "id": "M2",
@@ -46,7 +48,9 @@
     "must_differ": true,
     "why": "tests the region filter"
    }
-  ]
+  ],
+  "shape": "simple-aggregate",
+  "convention": false
  },
  {
   "id": "M3",
@@ -68,7 +72,9 @@
     "why": "tests the unit conversion"
    }
   ],
-  "margin_sql": "SELECT round(sum(l.TOTALCLEARED)*5/60,1) FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 GROUP BY u.region ORDER BY 1 DESC LIMIT 2"
+  "margin_sql": "SELECT round(sum(l.TOTALCLEARED)*5/60,1) FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 GROUP BY u.region ORDER BY 1 DESC LIMIT 2",
+  "shape": "simple-aggregate",
+  "convention": true
  },
  {
   "id": "M4",
@@ -95,7 +101,9 @@
     "must_differ": true,
     "why": "tests the $10 threshold"
    }
-  ]
+  ],
+  "shape": "cross-fact-join",
+  "convention": false
  },
  {
   "id": "M5",
@@ -117,7 +125,9 @@
     "why": "tests signed average"
    }
   ],
-  "margin_sql": "SELECT round(avg(NETINTERCHANGE),1) FROM dispatchregionsum WHERE INTERVENTION=0 GROUP BY REGIONID ORDER BY 1 DESC LIMIT 2"
+  "margin_sql": "SELECT round(avg(NETINTERCHANGE),1) FROM dispatchregionsum WHERE INTERVENTION=0 GROUP BY REGIONID ORDER BY 1 DESC LIMIT 2",
+  "shape": "simple-aggregate",
+  "convention": true
  },
  {
   "id": "M6",
@@ -139,7 +149,9 @@
     "why": "tests the aggregate (value differs even if the id is the same)"
    }
   ],
-  "margin_sql": "SELECT round(avg(MWLOSSES),2) FROM dispatchinterconnectorres WHERE INTERVENTION=0 GROUP BY INTERCONNECTORID ORDER BY 1 DESC LIMIT 2"
+  "margin_sql": "SELECT round(avg(MWLOSSES),2) FROM dispatchinterconnectorres WHERE INTERVENTION=0 GROUP BY INTERCONNECTORID ORDER BY 1 DESC LIMIT 2",
+  "shape": "simple-aggregate",
+  "convention": false
  },
  {
   "id": "M7",
@@ -161,7 +173,9 @@
     "why": "tests that the interval is chosen by the SA1 price"
    }
   ],
-  "margin_sql": "SELECT TOTALCLEARED FROM dispatchload WHERE INTERVENTION=0 AND SETTLEMENTDATE=(SELECT arg_max(SETTLEMENTDATE, RRP) FROM dispatchprice WHERE REGIONID='SA1' AND INTERVENTION=0) AND DUID IN (SELECT DUID FROM dudetailsummary WHERE REGIONID='SA1') ORDER BY 1 DESC LIMIT 2"
+  "margin_sql": "SELECT TOTALCLEARED FROM dispatchload WHERE INTERVENTION=0 AND SETTLEMENTDATE=(SELECT arg_max(SETTLEMENTDATE, RRP) FROM dispatchprice WHERE REGIONID='SA1' AND INTERVENTION=0) AND DUID IN (SELECT DUID FROM dudetailsummary WHERE REGIONID='SA1') ORDER BY 1 DESC LIMIT 2",
+  "shape": "multi-step",
+  "convention": false
  },
  {
   "id": "M8",
@@ -188,7 +202,9 @@
     "must_differ": true,
     "why": "tests the denominator"
    }
-  ]
+  ],
+  "shape": "ranking-share",
+  "convention": true
  },
  {
   "id": "M9",
@@ -209,7 +225,9 @@
     "must_differ": true,
     "why": "tests the threshold"
    }
-  ]
+  ],
+  "shape": "post-aggregate-filter",
+  "convention": false
  },
  {
   "id": "M10",
@@ -231,6 +249,8 @@
     "why": "tests the grouping column"
    }
   ],
-  "margin_sql": "SELECT count(DISTINCT DUID) FROM (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) GROUP BY station ORDER BY 1 DESC LIMIT 2"
+  "margin_sql": "SELECT count(DISTINCT DUID) FROM (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) GROUP BY station ORDER BY 1 DESC LIMIT 2",
+  "shape": "simple-aggregate",
+  "convention": false
  }
 ]

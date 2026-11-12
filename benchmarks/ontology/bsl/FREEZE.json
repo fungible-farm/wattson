@@ -1,0 +1,13 @@
+{
+ "frozen_at": "2026-11-09T06:03:30Z",
+ "authoring_minutes": 42,
+ "files": {
+  "benchmarks/ontology/bsl/Containerfile": "8daca9e7600862373dfa0f2eaa90841ee59b2d98980672a37ddc5fc229bc0f7f",
+  "benchmarks/ontology/bsl/requirements.txt": "069778292c37e8c5ea5d98e91fc5e2f196fcc6f2ad243afd5632a9491d359124",
+  "benchmarks/ontology/bsl/model.py": "6fa08172e56ad7271b7ebcf3328994ec71ace916069aec5a35917f5b77835aa3",
+  "benchmarks/ontology/bsl/runner.py": "cce8416ccfc42ffd6fb663315735dd6621217b35c0432c94cb81ceb5dbff6af2",
+  "benchmarks/ontology/bsl/chains.py": "884a9a45a3c5b04838d20defce99e702bb4144c8ce7672729c68284e90ec7f10",
+  "benchmarks/ontology/bsl/gold-specs.json": "199cc6be4be8d7925ec7d1044a2c12e2c41e2ffd079bc14cabba5963b10a7ee8",
+  "scripts/ontology_eval/adapter_bsl.py": "292779c574584de865a64734bf5667c5092278af6917cf5c75f7a92a659ec808"
+ }
+}

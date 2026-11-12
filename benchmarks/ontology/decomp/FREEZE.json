@@ -1,0 +1,11 @@
+{
+ "frozen_at": "2026-11-10T03:29:40Z",
+ "authoring_minutes": 70,
+ "authoring_minutes_basis": "authoring-log.md: reconstructed from file mtimes, not a live log. Start = earliest frozen-file mtime (decomp_setup.py 2026-11-10T02:20:00Z, views.sql 02:20:51Z) -> frozen_at. Excludes ~26-46 min of predecessor data prep/exploration that never touched a frozen file (out/nem/nem.duckdb and out/nemosis/*.parquet 01:34Z, scratch out/nem/vtest.duckdb 01:45Z). The span is a file-touch window that mixes writing, container runs and queue waits, and cannot be decomposed. Authoring spanned several pi sessions with context-overflow restarts (operator-reported; no pi session logs for this worktree, so restart count/duration unmeasured, and they fall inside the 52 min gap between the views.sql and adapter_decomp.py mtimes). No dev run is logged for this arm, so no accuracy numbers back the freeze.",
+ "files": {
+  "benchmarks/ontology/decomp/views.sql": "04e36c70e0e89a25fe056cc18b82c89b2246c758ee4acac180477480db96f1be",
+  "scripts/ontology_eval/decomp_setup.py": "af41dffc2e6be2ab2036c0b4463110bb61e3382748356fab8c9b2a158b655c6c",
+  "scripts/ontology_eval/adapter_decomp.py": "4f088674c60c8e3fb93d0497a1553f81395b244488f50f9bd3a1d0bd48fb6838",
+  "benchmarks/ontology/decomp/gold-specs.json": "addfd0e8e0db8f80e35a015af2a233058e8a288c931e9934273ef7cdf03f6f00"
+ }
+}

@@ -1,0 +1,23 @@
+# MetricFlow (dbt-labs/metricflow) evaluation image, candidate B of #128.
+# Build:  podman build -f benchmarks/ontology/metricflow/Containerfile -t localhost/wattson-metricflow:local benchmarks/ontology/metricflow
+# Run offline: podman run --network=none ... (all packages are installed at build time; DuckDB reads local parquet only).
+# Resolved by pip on 2026-11-09: metricflow 0.213.0, dbt-metricflow 0.15.0, dbt-core 1.12.6, dbt-duckdb 1.11.1, duckdb 2.0.0.
+FROM docker.io/library/python:3.12-slim
+RUN pip install --no-cache-dir dbt-core==1.12.6 dbt-duckdb==1.11.1 dbt-metricflow==0.15.0 \
+ && useradd --create-home --uid 1000 wattson \
+ && mkdir -p /licenses /project /work && chown wattson:wattson /work \
+ && python - <<'PY'
+import importlib.metadata as m, glob
+for pkg in ("metricflow", "dbt-metricflow", "dbt-core", "dbt-duckdb"):
+    d = m.distribution(pkg)
+    print(pkg, d.version)
+    for f in d.files or []:
+        if "LICENSE" in str(f).upper() and "dist-info" in str(f):
+            open(f"/licenses/{pkg}-{d.version}-{f.name}", "w").write(open(d.locate_file(f)).read())
+PY
+COPY dbt_project.yml profiles.yml /project/
+COPY models /project/models
+RUN chown -R wattson:wattson /project
+ENV DBT_PROFILES_DIR=/project DBT_LOG_PATH=/tmp/dbt-logs DBT_SEND_ANONYMOUS_USAGE_STATS=false DO_NOT_TRACK=1
+USER wattson
+WORKDIR /project

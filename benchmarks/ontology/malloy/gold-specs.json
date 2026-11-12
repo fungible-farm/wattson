@@ -1,0 +1,12 @@
+{
+ "M1": "run: dispatch -> {\n  group_by: station\n  aggregate: e is net_cleared_mwh\n  order_by: e desc, station\n  limit: 1\n}",
+ "M2": "run: dispatch -> {\n  where: region = 'SA1' and TOTALCLEARED > 0\n  aggregate: n is unit_count\n}",
+ "M3": "run: dispatch -> {\n  group_by: region\n  aggregate: e is net_cleared_mwh\n  order_by: e desc, region\n  limit: 1\n}",
+ "M4": "run: interconnector_flows -> {\n  where: interconnector = 'VIC1-NSW1' and MWFLOW > 0 and nsw_price.RRP - vic_price.RRP > 10\n  aggregate: n is interval_count\n}",
+ "M5": "run: region_totals -> {\n  group_by: region\n  aggregate: a is avg_net_interchange_mw\n  order_by: a desc, region\n  limit: 1\n}",
+ "M6": "run: interconnector_flows -> {\n  group_by: interconnector\n  aggregate: a is avg_losses_mw\n  order_by: a desc, interconnector\n  limit: 1\n}",
+ "M7": "source: peak_interval_load is dispatch extend {\n  join_one: peak is (prices -> {\n    where: region = 'SA1'\n    group_by: interval_end\n    aggregate: p is max_price\n    order_by: p desc, interval_end\n    limit: 1\n  }) on interval_end = peak.interval_end\n}\nrun: peak_interval_load -> {\n  where: region = 'SA1' and peak.interval_end is not null\n  group_by: duid\n  aggregate: mw is max_cleared_mw\n  order_by: mw desc, duid\n  limit: 1\n}",
+ "M8": "run: dispatch -> {\n  where: region = 'NSW1'\n  group_by: duid\n  aggregate: m is net_cleared_mw_sum\n} -> {\n  group_by: duid, m\n  order_by: m desc\n  calculate: rk is row_number()\n} -> {\n  aggregate: share is round(m.sum() { where: rk <= 5 } / m.sum(), 3)\n}",
+ "M9": "run: region_totals -> {\n  group_by: interval_end\n  aggregate: s is sum_net_interchange_mw\n  having: abs(s) > 50\n} -> {\n  aggregate: n is count()\n}",
+ "M10": "run: units -> {\n  group_by: station\n  aggregate: c is unit_count\n  order_by: c desc, station\n  limit: 1\n}"
+}

@@ -1,0 +1,179 @@
+=== M7 attempts
+
+### M7-a step 1 only: interval of highest SA1 price
+$ mf query --metrics dispatchprice_rrp_max --group-by metric_time__minute --where {{ Dimension('region__regionid') }} = 'SA1' --order=-dispatchprice_rrp_max --limit 1 --decimals 2
+metric_time__minute      dispatchprice_rrp_max
+---------------------  -----------------------
+2025-09-01T11:20:00                     760.19
+
+
+### M7-b one spec, price+load metrics together, no region filter on load
+$ mf query --metrics dispatchprice_rrp_max,dispatchload_totalcleared_max --group-by metric_time__minute --where {{ Dimension('region__regionid') }} = 'SA1' --order=-dispatchprice_rrp_max --limit 1
+ERROR: Got error(s) during query resolution.
+Error #1:
+  Message:
+    Query(['dispatchprice_rrp_max', 'dispatchload_totalcleared_max']) is built from:
+      SimpleMetric('dispatchprice_rrp_max'), SimpleMetric('dispatchload_totalcleared_max').
+    However, the given input does not match to a common item that is available to those parents:
+      {
+        "Matching items for: SimpleMetric('dispatchprice_rrp_max')": [
+          "Dimension('region__regionid')",
+        ],
+        "Matching items for: SimpleMetric('dispatchload_totalcleared_max')": [
+          ("Dimension('region__regionid', "
+           "entity_path=['duid'])"),
+        ],
+
+### M7-c unit identity per interval: group load by duid at metric_time
+$ mf query --metrics dispatchload_totalcleared_max --group-by duid,metric_time__minute --where {{ Dimension('duid__regionid') }} = 'SA1' --order=-dispatchload_totalcleared_max --limit 1
+metric_time__minute    duid      dispatchload_totalcleared_max
+---------------------  ------  -------------------------------
+2025-09-01T17:15:00    PPCCGT                              470
+
+
+### M7-d metric-as-filter: price metric constrained to region max
+$ mf query --metrics dispatchload_totalcleared_max --group-by duid --where {{ Dimension('duid__regionid') }} = 'SA1' AND {{ Metric('dispatchprice_rrp_max', group_by=['metric_time']) }} > 15000
+ERROR: Got error(s) during query resolution.
+Error #1:
+  Message:
+    The given input does not match any of the available group-by-items for
+      * Incorrect names.
+      * No valid join paths exist from the measure to the group-by-item.
+        (fan-out join support is pending).
+      * There are multiple matching join paths.
+        (disambiguation support is pending).
+    Suggestions:
+      [
+        "Metric('dispatchload_raisereg_max', group_by=['duid'])",
+        "Metric('dispatchload_lowerreg_max', group_by=['duid'])",
+        "Metric('dispatchload_raise1sec_max', group_by=['duid'])",
+=== M8 attempts
+
+### M8-a step 1: NSW1 top-5 units by net energy
+$ mf query --metrics dispatchload_cleared_energy_mwh --group-by duid --where {{ Dimension('duid__regionid') }} = 'NSW1' --order=-dispatchload_cleared_energy_mwh --limit 5 --decimals 1
+duid      dispatchload_cleared_energy_mwh
+------  ---------------------------------
+ER01                              15367.0
+ER03                              15352.5
+MP1                               14799.3
+VP6                               14234.3
+MP2                               14202.2
+
+
+### M8-b metric-as-filter with threshold (rank not expressible)
+$ mf query --metrics dispatchload_cleared_energy_mwh --where {{ Dimension('duid__regionid') }} = 'NSW1' AND {{ Metric('dispatchload_cleared_energy_mwh', group_by=['duid']) }} > 1000 --decimals 1
+  dispatchload_cleared_energy_mwh
+---------------------------------
+                         146491.7
+
+
+### M8-c rank function in where
+$ mf query --metrics dispatchload_cleared_energy_mwh --where {{ Dimension('duid__regionid') }} = 'NSW1' AND {{ Metric('dispatchload_cleared_energy_mwh', group_by=['duid']) }} IN (SELECT 1)
+dispatchload_cleared_energy_mwh
+---------------------------------
+
+=== M9 attempt (metric-as-filter)
+
+### M9-a rows of per-interval net-interchange sum with abs>50
+$ mf query --metrics dispatchregionsum_row_count --group-by metric_time__minute --where {{ Metric('dispatchregionsum_netinterchange_total', group_by=['metric_time']) }} > 50 OR {{ Metric('dispatchregionsum_netinterchange_total', group_by=['metric_time']) }} < -50 --limit 3
+ERROR: Got error(s) during query resolution.
+Error #1:
+  Message:
+    The given input does not match any of the available group-by-items for
+      * Incorrect names.
+      * No valid join paths exist from the measure to the group-by-item.
+        (fan-out join support is pending).
+      * There are multiple matching join paths.
+        (disambiguation support is pending).
+    Suggestions:
+      [
+        "Metric('dispatchregionsum_netinterchange_total', group_by=['region'])",
+        "Metric('dispatchregionsum_netinterchange_avg', group_by=['region'])",
+        "Metric('dispatchregionsum_netinterchange_max', group_by=['region'])",
+=== M2 attempt
+
+### M2-a filter on measure column as dimension
+$ mf query --metrics dispatchload_duid_distinct_count --where {{ Dimension('duid__regionid') }} = 'SA1' AND {{ Dimension('dispatchload_record__totalcleared') }} > 0
+ERROR: Got error(s) during query resolution.
+Error #1:
+  Message:
+    The given input does not match any of the available group-by-items for
+      * Incorrect names.
+      * No valid join paths exist from the measure to the group-by-item.
+        (fan-out join support is pending).
+      * There are multiple matching join paths.
+        (disambiguation support is pending).
+    Suggestions:
+      [
+        "Dimension('dispatchload_record__agcstatus')",
+        "Dimension('dispatchload_record__intervention')",
+        "Dimension('dispatchload_record__dispatchmode')",
+=== M4 attempt
+
+### M4-a price metrics for NSW1 and VIC1 in one spec
+$ mf query --metrics dispatchprice_rrp_avg --group-by metric_time__minute,region__regionid --where {{ Dimension('region__regionid') }} IN ('NSW1','VIC1') --limit 4
+metric_time__minute    region__regionid      dispatchprice_rrp_avg
+---------------------  ------------------  -----------------------
+2025-09-01T00:05:00    VIC1                                103.945
+2025-09-01T01:25:00    VIC1                                 97
+2025-09-01T02:10:00    NSW1                                110.965
+2025-09-01T02:20:00    NSW1                                107.671
+
+
+### M7-e step 2 with the literal interval from M7-a
+$ mf query --metrics dispatchload_totalcleared_max --group-by duid --where {{ Dimension('duid__regionid') }} = 'SA1' AND {{ TimeDimension('metric_time', 'minute') }} = '2025-09-01 11:20:00' --order=-dispatchload_totalcleared_max --limit 1
+duid      dispatchload_totalcleared_max
+------  -------------------------------
+PPCCGT                          406.697
+
+
+### M7-f Metric filter on time grain minute
+$ mf query --metrics dispatchload_totalcleared_max --group-by duid --where {{ Dimension('duid__regionid') }} = 'SA1' AND {{ Metric('dispatchprice_rrp_max', group_by=['region']) }} > 0
+ERROR: Got error(s) during query resolution.
+Error #1:
+  Message:
+    The given input does not match any of the available group-by-items for
+      * Incorrect names.
+      * No valid join paths exist from the measure to the group-by-item.
+        (fan-out join support is pending).
+      * There are multiple matching join paths.
+        (disambiguation support is pending).
+    Suggestions:
+      [
+        "Metric('dispatchload_raisereg_max', group_by=['duid'])",
+
+### M8-d step 2 numerator with literal top-5 list
+$ mf query --metrics dispatchload_cleared_energy_mwh --where {{ Dimension('duid__regionid') }} = 'NSW1' AND {{ Entity('duid') }} IN ('ER01','ER03','MP1','VP6','MP2') --decimals 1
+  dispatchload_cleared_energy_mwh
+---------------------------------
+                          73955.3
+
+
+### M8-e denominator
+$ mf query --metrics dispatchload_cleared_energy_mwh --where {{ Dimension('duid__regionid') }} = 'NSW1' --decimals 1
+  dispatchload_cleared_energy_mwh
+---------------------------------
+                         169402.6
+
+
+### M9-b Metric filter grouped by region (cannot be per-interval)
+$ mf query --metrics dispatchregionsum_row_count --where {{ Metric('dispatchregionsum_netinterchange_total', group_by=['region']) }} > 50
+  dispatchregionsum_row_count
+-----------------------------
+                          864
+
+
+### M9-c metric_time__minute as metric group_by
+$ mf query --metrics dispatchregionsum_row_count --where {{ Metric('dispatchregionsum_netinterchange_total', group_by=['metric_time__minute']) }} > 50
+ERROR: Got error(s) during query resolution.
+Error #1:
+  Message:
+    The given input does not match any of the available group-by-items for
+      * Incorrect names.
+      * No valid join paths exist from the measure to the group-by-item.
+        (fan-out join support is pending).
+      * There are multiple matching join paths.
+        (disambiguation support is pending).
+    Suggestions:
+      [
+        "Metric('dispatchregionsum_netinterchange_total', group_by=['region'])",

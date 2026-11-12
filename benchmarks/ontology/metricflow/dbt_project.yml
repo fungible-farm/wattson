@@ -1,0 +1,8 @@
+name: wattson_nem
+version: "1.0"
+config-version: 2
+profile: wattson_nem
+model-paths: ["models"]
+models:
+  wattson_nem:
+    +materialized: view

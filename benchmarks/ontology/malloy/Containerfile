@@ -1,0 +1,7 @@
+# Candidate D: Malloy + Publisher, pinned. Build needs network; runs use --network=none.
+FROM docker.io/library/node:22-bookworm-slim
+ARG PUBLISHER_VERSION=0.12.5
+RUN npm install -g --omit=dev @malloy-publisher/server@${PUBLISHER_VERSION}
+# The npm tarball ships no LICENSE file; this is LICENSE from the git tag v0.12.5 of malloydata/publisher (raw.githubusercontent.com .../v0.12.5/LICENSE).
+COPY PUBLISHER-LICENSE /opt/lic/publisher-LICENSE
+WORKDIR /opt/malloy-adapter
