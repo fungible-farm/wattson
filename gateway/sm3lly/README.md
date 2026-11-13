@@ -19,3 +19,7 @@ kr0ki's `OPENAI_API_URL` needs no change. It checks the model list and a chat ca
 Limits: only one model is resident, so a request for the other model unloads the first (kr0ki loses its model for the length of a swap, about 1 to
 2 minutes). Anything that takes the GPU for a long job must stop both new units first and restore them afterwards. Not verified: persistence
 across a reboot, and kr0ki vision calls through the gateway (only its health endpoint was checked).
+
+Correction (2026-11-13): the first cutover bound `:8002` to loopback, but the old neo-coder unit published it on all interfaces, so LAN clients
+(`scripts/pi_delegate.py` and the Demo 3 recipe use `192.168.1.137:8002`) got connection refused. The gateway now publishes `:8002` on all
+interfaces again (verified HTTP 200 from another host); `:8000` stays loopback-only. `cutover.sh` did not check LAN reachability.
