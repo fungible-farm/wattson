@@ -1,0 +1,483 @@
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/opt/python/cpython-3.12.13-linux-aarch64-gnu/lib/python3.12/socket.py", line 865, in create_connection
+    raise exceptions[0]
+  File "/opt/python/cpython-3.12.13-linux-aarch64-gnu/lib/python3.12/socket.py", line 850, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [Errno 111] Connection refused
+backend: waiting for postgres
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> c778a7d94c20, Create the auto_ontology schema
+INFO  [alembic.runtime.migration] Running upgrade c778a7d94c20 -> 47ffb7499dfa, Trigram index on tag.name for global search
+INFO  [alembic.runtime.migration] Running upgrade 47ffb7499dfa -> 6347ede6dac1, add pii processed to catalog columns
+INFO  [alembic.runtime.migration] Running upgrade 6347ede6dac1 -> b3aed65e49b7, add pii processed to attributes
+INFO  [alembic.runtime.migration] Running upgrade b3aed65e49b7 -> e4850fd803d6, add user groups
+INFO  [alembic.runtime.migration] Running upgrade e4850fd803d6 -> f3a91c0e5b27, add owner_id and glossary edit timestamps
+INFO  [alembic.runtime.migration] Running upgrade f3a91c0e5b27 -> 99d4d343dd0b, add semantic fk join path default
+2026-11-09 03:11:25,262 INFO auto_ontology.retrieval.entity_coverage.graph: Entity-coverage graph created
+2026-11-09 03:11:25,345 INFO __main__: Starting Auto Ontology API server — app version unknown
+2026-11-09 03:11:25,364 INFO uvicorn.error: Started server process [2]
+2026-11-09 03:11:25,364 INFO uvicorn.error: Waiting for application startup.
+2026-11-09 03:11:25,397 INFO alembic.runtime.plugins: setup plugin alembic.autogenerate.schemas
+2026-11-09 03:11:25,397 INFO alembic.runtime.plugins: setup plugin alembic.autogenerate.tables
+2026-11-09 03:11:25,397 INFO alembic.runtime.plugins: setup plugin alembic.autogenerate.types
+2026-11-09 03:11:25,397 INFO alembic.runtime.plugins: setup plugin alembic.autogenerate.constraints
+2026-11-09 03:11:25,397 INFO alembic.runtime.plugins: setup plugin alembic.autogenerate.defaults
+2026-11-09 03:11:25,397 INFO alembic.runtime.plugins: setup plugin alembic.autogenerate.comments
+2026-11-09 03:11:25,397 INFO alembic.runtime.plugins: setup plugin alembic.autogenerate.checkconstraint_byname
+2026-11-09 03:11:25,409 INFO auto_ontology.dal.schema_version: Database schema is at the expected revision 99d4d343dd0b
+2026-11-09 03:11:25,409 INFO uvicorn.error: Application startup complete.
+2026-11-09 03:11:25,410 INFO uvicorn.error: Uvicorn running on http://0.0.0.0:3001 (Press CTRL+C to quit)
+2026-11-09 03:11:27,577 INFO auto_ontology.retrieval.text_to_sql.text_to_sql_graph: Text-to-SQL graph: prediction branch False
+2026-11-09 03:11:27,578 INFO auto_ontology.retrieval.text_to_sql.text_to_sql_graph: Text-to-SQL graph: db-probe proactive=False join_path=False jsonb_path=False
+2026-11-09 03:11:27,606 WARNING psycopg.pool: error connecting in 'pool-1': connection failed: connection to server at "127.0.0.1", port 5432 failed: FATAL:  database "demo" does not exist
+2026-11-09 03:11:27,607 WARNING psycopg.pool: error connecting in 'pool-1': connection failed: connection to server at "127.0.0.1", port 5432 failed: FATAL:  database "demo" does not exist
+2026-11-09 03:11:27,617 INFO uvicorn.access: 127.0.0.1:59872 - "GET /api/health/live HTTP/1.1" 200
+2026-11-09 03:11:28,510 INFO uvicorn.access: 192.168.1.198:33930 - "GET /api/health HTTP/1.1" 200
+2026-11-09 03:11:28,565 WARNING psycopg.pool: error connecting in 'pool-1': connection failed: connection to server at "127.0.0.1", port 5432 failed: FATAL:  database "demo" does not exist
+2026-11-09 03:11:28,699 WARNING psycopg.pool: error connecting in 'pool-1': connection failed: connection to server at "127.0.0.1", port 5432 failed: FATAL:  database "demo" does not exist
+2026-11-09 03:11:30,475 WARNING psycopg.pool: error connecting in 'pool-1': connection failed: connection to server at "127.0.0.1", port 5432 failed: FATAL:  database "demo" does not exist
+2026-11-09 03:11:30,878 WARNING psycopg.pool: error connecting in 'pool-1': connection failed: connection to server at "127.0.0.1", port 5432 failed: FATAL:  database "demo" does not exist
+2026-11-09 03:11:33,536 INFO uvicorn.access: 192.168.1.198:33940 - "GET /api/health HTTP/1.1" 200
+2026-11-09 03:11:34,293 WARNING psycopg.pool: error connecting in 'pool-1': connection failed: connection to server at "127.0.0.1", port 5432 failed: FATAL:  database "demo" does not exist
+2026-11-09 03:11:35,233 WARNING psycopg.pool: error connecting in 'pool-1': connection failed: connection to server at "127.0.0.1", port 5432 failed: FATAL:  database "demo" does not exist
+2026-11-09 03:11:38,556 INFO uvicorn.access: 192.168.1.198:56618 - "GET /api/health HTTP/1.1" 200
+2026-11-09 03:11:41,928 WARNING psycopg.pool: error connecting in 'pool-1': connection failed: connection to server at "127.0.0.1", port 5432 failed: FATAL:  database "demo" does not exist
+2026-11-09 03:11:43,585 INFO uvicorn.access: 192.168.1.198:56630 - "GET /api/health HTTP/1.1" 200
+2026-11-09 03:11:43,937 WARNING psycopg.pool: error connecting in 'pool-1': connection failed: connection to server at "127.0.0.1", port 5432 failed: FATAL:  database "demo" does not exist
+2026-11-09 03:11:48,606 INFO uvicorn.access: 192.168.1.198:55124 - "GET /api/health HTTP/1.1" 200
+2026-11-09 03:11:53,632 INFO uvicorn.access: 192.168.1.198:55136 - "GET /api/health HTTP/1.1" 200
+2026-11-09 03:11:57,193 WARNING psycopg.pool: error connecting in 'pool-1': connection failed: connection to server at "127.0.0.1", port 5432 failed: FATAL:  database "demo" does not exist
+2026-11-09 03:11:57,604 ERROR auto_ontology.connectors.registry: Failed to initialize connector for connection string: postgresql://postgres:***@127.0.0.1:5432/demo
+Traceback (most recent call last):
+  File "/app/auto_ontology/connectors/registry.py", line 172, in create_connector
+    connector = connector_class(connection_string)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/auto_ontology/connectors/postgres.py", line 71, in __init__
+    self._database_name: str = self.execute("SELECT current_database()").iloc[0, 0]
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/auto_ontology/connectors/postgres.py", line 105, in execute
+    with self._pool.connection() as conn:
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python/cpython-3.12.13-linux-aarch64-gnu/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/psycopg_pool/pool.py", line 184, in connection
+    conn = self.getconn(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/psycopg_pool/pool.py", line 218, in getconn
+    raise PoolTimeout(
+psycopg_pool.PoolTimeout: couldn't get a connection after 30.00 sec
+2026-11-09 03:11:57,606 ERROR auto_ontology.server.chat.worker: Worker init failed
+Traceback (most recent call last):
+  File "/app/auto_ontology/server/chat/worker.py", line 101, in _worker_loop
+    connectors = get_connectors()
+                 ^^^^^^^^^^^^^^^^
+  File "/app/auto_ontology/connectors/registry.py", line 305, in get_connectors
+    connector = create_connector(cs, schemas=schemas, table_filter=table_filter)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/auto_ontology/connectors/registry.py", line 172, in create_connector
+    connector = connector_class(connection_string)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/auto_ontology/connectors/postgres.py", line 71, in __init__
+    self._database_name: str = self.execute("SELECT current_database()").iloc[0, 0]
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/auto_ontology/connectors/postgres.py", line 105, in execute
+    with self._pool.connection() as conn:
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python/cpython-3.12.13-linux-aarch64-gnu/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/psycopg_pool/pool.py", line 184, in connection
+    conn = self.getconn(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/psycopg_pool/pool.py", line 218, in getconn
+    raise PoolTimeout(
+psycopg_pool.PoolTimeout: couldn't get a connection after 30.00 sec
+2026-11-09 03:11:58,658 INFO uvicorn.access: 192.168.1.198:53392 - "GET /api/health HTTP/1.1" 200
+2026-11-09 03:12:03,683 INFO uvicorn.access: 192.168.1.198:53408 - "GET /api/health HTTP/1.1" 200
+2026-11-09 03:12:22,763 INFO uvicorn.access: 127.0.0.1:44930 - "GET /api/health/live HTTP/1.1" 200
+2026-11-09 03:26:33,811 INFO auto_ontology.server.chat.router: Chat completions request: {'question': 'Which station (STATIONID) had the highest net cleared energy in MWh on the day, and how much (1 decimal)?', 'evidence': None, 'conversation_id': None, 'prediction': None, 'target_db': None}
+2026-11-09 03:26:35,964 INFO auto_ontology.retrieval.text_to_sql.text_to_sql_graph: Text-to-SQL graph: prediction branch False
+2026-11-09 03:26:35,964 INFO auto_ontology.retrieval.text_to_sql.text_to_sql_graph: Text-to-SQL graph: db-probe proactive=False join_path=False jsonb_path=False
+2026-11-09 03:26:36,006 INFO auto_ontology.server.chat.worker: Conversation context resolution: follow_up=False processing_question=Which station (STATIONID) had the highest net cleared energy in MWh on the day, and how much (1 decimal)?
+2026-11-09 03:26:36,011 ERROR auto_ontology.server.chat.settings_dal: Failed to fetch custom prompts; continuing with empty string
+Traceback (most recent call last):
+  File "/app/auto_ontology/server/chat/settings_dal.py", line 83, in fetch_custom_prompts
+    cur.execute(f"SELECT content FROM {FRONTEND_SCHEMA}.prompts")
+  File "/opt/venv/lib/python3.12/site-packages/psycopg/cursor.py", line 117, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedTable: relation "frontend.prompts" does not exist
+LINE 1: SELECT content FROM frontend.prompts
+                            ^
+2026-11-09 03:26:36,016 ERROR auto_ontology.server.chat.settings_dal: Failed to fetch acronyms; continuing with empty list
+Traceback (most recent call last):
+  File "/app/auto_ontology/server/chat/settings_dal.py", line 36, in fetch_acronyms
+    cur.execute(
+  File "/opt/venv/lib/python3.12/site-packages/psycopg/cursor.py", line 117, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedTable: relation "frontend.acronyms" does not exist
+LINE 1: SELECT name, description FROM frontend.acronyms ORDER BY cre...
+                                      ^
+2026-11-09 03:26:36,017 INFO auto_ontology.retrieval.text_to_sql.main: Text-to-SQL agent started for question: Which station (STATIONID) had the highest net cleared energy in MWh on the day, and how much (1 decimal)?
+2026-11-09 03:26:36,022 INFO auto_ontology.retrieval.text_to_sql.main: --- AGENT STEP ---
+2026-11-09 03:26:36,023 INFO auto_ontology.retrieval.text_to_sql.text_to_sql_graph: 🔁 Node visits: {'question_intent': 1} | Total visits this run: 1
+2026-11-09 03:26:36,023 INFO auto_ontology.retrieval.text_to_sql.base.question_intent: Executing agent: question_intent
+/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py:1283: UserWarning: Model 'qwen3.8-flash-next' is not known to support structured output. Your output may fail at inference time.
+  warnings.warn(
+2026-11-09 03:26:36,030 INFO uvicorn.access: 192.168.1.198:57334 - "POST /api/chat/completions HTTP/1.1" 200
+2026-11-09 03:28:41,559 INFO auto_ontology.retrieval.text_to_sql.base.question_intent: Question intent: type=calculation subtype=ranking target_db=demo rewritten='Which station had the highest net cleared energy in MWh on the day, and how much (1 decimal)?' evidence_extracted=True
+2026-11-09 03:28:41,559 INFO auto_ontology.retrieval.text_to_sql.base.question_intent: Agent completed: question_intent -> none
+2026-11-09 03:28:41,560 INFO auto_ontology.retrieval.text_to_sql.main: --- AGENT STEP ---
+2026-11-09 03:28:41,560 INFO auto_ontology.retrieval.text_to_sql.main: Node: question_intent
+2026-11-09 03:28:41,561 INFO auto_ontology.retrieval.text_to_sql.text_to_sql_graph: 🔁 Node visits: {'question_intent': 1, 'question_extraction': 1} | Total visits this run: 2
+2026-11-09 03:28:41,561 INFO auto_ontology.retrieval.text_to_sql.base.question_extraction: Executing agent: question_extraction
+/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py:1283: UserWarning: Model 'qwen3.8-flash-next' is not known to support structured output. Your output may fail at inference time.
+  warnings.warn(
+2026-11-09 03:32:47,752 INFO auto_ontology.retrieval.text_to_sql.base.question_extraction: Extracted question:
+  raw: Which station had the highest net cleared energy in MWh on the day, and how much (1 decimal)?
+  sanitized: Which station had the highest net cleared energy in MWh on the day, and how much (1 decimal)?
+  entities: ['station', 'net cleared energy in MWh', 'station net cleared energy day date']
+  subject: station
+  glossary: []
+2026-11-09 03:32:47,752 INFO auto_ontology.retrieval.text_to_sql.base.question_extraction: Agent completed: question_extraction -> none
+2026-11-09 03:32:47,753 INFO auto_ontology.retrieval.text_to_sql.main: --- AGENT STEP ---
+2026-11-09 03:32:47,753 INFO auto_ontology.retrieval.text_to_sql.main: Node: question_extraction
+2026-11-09 03:32:47,754 INFO auto_ontology.retrieval.text_to_sql.text_to_sql_graph: 🔁 Node visits: {'question_intent': 1, 'question_extraction': 1, 'retrieve_candidates': 1} | Total visits this run: 3
+2026-11-09 03:32:47,754 INFO auto_ontology.retrieval.text_to_sql.base.candidate_retrieval: Executing agent: candidate_retrieval
+2026-11-09 03:32:47,764 INFO auto_ontology.retrieval.text_to_sql.base.candidate_retrieval: No CustomAnalysis nodes found for database 'demo' — skipping VDB search
+2026-11-09 03:32:49,002 INFO httpx: HTTP Request: POST http://169.254.1.2:8083/v1/embeddings "HTTP/1.1 200 OK"
+2026-11-09 03:32:49,820 INFO httpx: HTTP Request: POST http://169.254.1.2:8083/v1/embeddings "HTTP/1.1 200 OK"
+2026-11-09 03:32:49,823 INFO httpx: HTTP Request: POST http://169.254.1.2:8083/v1/embeddings "HTTP/1.1 200 OK"
+2026-11-09 03:32:49,826 INFO httpx: HTTP Request: POST http://169.254.1.2:8083/v1/embeddings "HTTP/1.1 200 OK"
+2026-11-09 03:32:49,830 INFO httpx: HTTP Request: POST http://169.254.1.2:8083/v1/embeddings "HTTP/1.1 200 OK"
+2026-11-09 03:32:50,494 INFO httpx: HTTP Request: POST http://169.254.1.2:8083/v1/embeddings "HTTP/1.1 200 OK"
+2026-11-09 03:32:50,506 INFO auto_ontology.retrieval.text_to_sql.base.candidate_retrieval: Retrieved 8 ColumnAttributes, 0 CustomAnalysis, 0 SqlAttribute candidates, and subject Term id='b67eac60-b5c5-4051-bae8-eac3e4eaf6e4' score=0.4785883010953146 (3 entities queried, subject='station')
+2026-11-09 03:32:50,506 INFO auto_ontology.retrieval.text_to_sql.base.candidate_retrieval: Agent completed: candidate_retrieval -> none
+2026-11-09 03:32:50,506 INFO auto_ontology.retrieval.text_to_sql.main: --- AGENT STEP ---
+2026-11-09 03:32:50,506 INFO auto_ontology.retrieval.text_to_sql.main: Node: retrieve_candidates
+2026-11-09 03:32:50,508 INFO auto_ontology.retrieval.text_to_sql.text_to_sql_graph: 🔁 Node visits: {'question_intent': 1, 'question_extraction': 1, 'retrieve_candidates': 1, 'prepare_candidates': 1} | Total visits this run: 4
+2026-11-09 03:32:50,508 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Executing agent: candidate_preparation
+2026-11-09 03:32:50,508 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Retrieved 0 custom analyses
+2026-11-09 03:32:50,508 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Found 0 relevant queries from custom analyses
+2026-11-09 03:32:50,519 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Fetched store context for 8/8 column attributes
+2026-11-09 03:32:50,522 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Fetched synonyms for 0 term(s)
+/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py:1283: UserWarning: Model 'qwen3.8-flash-next' is not known to support structured output. Your output may fail at inference time.
+  warnings.warn(
+2026-11-09 03:32:51,319 INFO httpx: HTTP Request: POST http://169.254.1.2:8083/v1/embeddings "HTTP/1.1 200 OK"
+2026-11-09 03:32:51,919 INFO httpx: HTTP Request: POST http://169.254.1.2:8083/v1/embeddings "HTTP/1.1 200 OK"
+2026-11-09 03:32:51,920 INFO httpx: HTTP Request: POST http://169.254.1.2:8083/v1/embeddings "HTTP/1.1 200 OK"
+2026-11-09 03:32:51,930 INFO httpx: HTTP Request: POST http://169.254.1.2:8083/v1/embeddings "HTTP/1.1 200 OK"
+2026-11-09 03:35:29,660 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Anchor column identified: 7b89e735-094b-41c0-affa-9c5bd18bc61f (The question asks for the station with the highest net cleared energy in MWh, making the energy/flow measure the primary analytical focus. Among the available columns, public.dispatchinterconnectorres.mwflow is the closest physical column representing the megawatt flow used to determine net cleared energy.)
+2026-11-09 03:35:29,660 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Anchor attribute id: 7b89e735-094b-41c0-affa-9c5bd18bc61f
+2026-11-09 03:35:29,667 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Join path to Settlement Date (6fefe1b7-f506-4538-ae76-4fbf52b303e8): 0 hop(s)
+2026-11-09 03:35:29,671 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Join path to Megawatt Losses (7673e993-1030-4a34-9e12-ed32bceb6d9d): 0 hop(s)
+2026-11-09 03:35:29,674 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Join path to Recommended Retail Price (e26f73e9-0d6c-4a12-9c5b-e0d1c0d2f529): 0 hop(s)
+2026-11-09 03:35:29,676 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Join path to Settlement Date (9b1cf2d6-3f84-46c2-be04-33c461c1feb0): 0 hop(s)
+2026-11-09 03:35:29,676 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Join path to End Date (f47d80cc-d802-4ddd-b1e7-8f4546246dae): 0 hop(s)
+2026-11-09 03:35:29,677 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Join path to Start Date (fbf9c642-9430-4709-9b7e-ef3a364a2266): 0 hop(s)
+2026-11-09 03:35:29,678 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Join path to Settlement Date (cb4a6148-053f-4c1e-8bde-899ed805570f): 0 hop(s)
+2026-11-09 03:35:29,687 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Tables from candidates: ['dudetailsummary', 'dispatchinterconnectorres', 'dispatchprice', 'dispatchregionsum']
+2026-11-09 03:35:29,696 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Added 0 table(s) from subject Term 'Dispatch Interconnector Result': ['dispatchinterconnectorres']
+2026-11-09 03:35:29,702 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Back-filled column metadata for 1/1 table(s)
+/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py:1283: UserWarning: Model 'qwen3.8-flash-next' is not known to support structured output. Your output may fail at inference time.
+  warnings.warn(
+2026-11-09 03:38:11,925 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Relevance filter reasoning: The answer needs station identification and cleared energy, which come from dudetailsummary.stationid and dispatchload.totalcleared. The other tables provide interconnector flows, prices, or region totals and are not needed for station-level net cleared energy.
+2026-11-09 03:38:11,925 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Relevance filter removed tables: ['demo.public.dispatchinterconnectorres', 'demo.public.dispatchprice', 'demo.public.dispatchregionsum']
+2026-11-09 03:38:11,944 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Final 2 table(s) reaching SQL generation: ['demo.public.dudetailsummary', 'demo.public.dispatchload']
+2026-11-09 03:38:11,945 INFO auto_ontology.retrieval.text_to_sql.base.candidate_preparation: Agent completed: candidate_preparation -> none
+2026-11-09 03:38:11,945 INFO auto_ontology.retrieval.text_to_sql.main: --- AGENT STEP ---
+2026-11-09 03:38:11,945 INFO auto_ontology.retrieval.text_to_sql.main: Node: prepare_candidates
+2026-11-09 03:38:11,946 INFO auto_ontology.retrieval.text_to_sql.text_to_sql_graph: 🔁 Node visits: {'question_intent': 1, 'question_extraction': 1, 'retrieve_candidates': 1, 'prepare_candidates': 1, 'refine_evidence': 1} | Total visits this run: 5
+2026-11-09 03:38:11,946 INFO auto_ontology.retrieval.text_to_sql.base.evidence_refinement: Executing agent: evidence_refinement
+/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py:1283: UserWarning: Model 'qwen3.8-flash-next' is not known to support structured output. Your output may fail at inference time.
+  warnings.warn(
+2026-11-09 03:40:02,369 INFO auto_ontology.retrieval.text_to_sql.base.evidence_refinement: Applied LLM-grounded question and evidence
+/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py:1283: UserWarning: Model 'qwen3.8-flash-next' is not known to support structured output. Your output may fail at inference time.
+  warnings.warn(
+2026-11-09 03:40:47,710 INFO auto_ontology.retrieval.text_to_sql.base.evidence_refinement: No certain evidence repairs found
+2026-11-09 03:40:47,711 INFO auto_ontology.retrieval.text_to_sql.base.evidence_refinement: Agent completed: evidence_refinement -> none
+2026-11-09 03:40:47,711 INFO auto_ontology.retrieval.text_to_sql.main: --- AGENT STEP ---
+2026-11-09 03:40:47,711 INFO auto_ontology.retrieval.text_to_sql.main: Node: refine_evidence
+2026-11-09 03:40:47,712 INFO auto_ontology.retrieval.text_to_sql.text_to_sql_graph: 🔁 Node visits: {'question_intent': 1, 'question_extraction': 1, 'retrieve_candidates': 1, 'prepare_candidates': 1, 'refine_evidence': 1, 'construct_sql_from_candidates': 1} | Total visits this run: 6
+2026-11-09 03:40:47,713 INFO auto_ontology.retrieval.text_to_sql.base.sql_from_semantic: Executing agent: sql_from_semantic
+2026-11-09 03:40:47,713 INFO auto_ontology.retrieval.text_to_sql.base.sql_from_semantic: Semantic context: anchor=Megawatt Flow, join_paths=7, custom_analyses=0, sql_attributes=0, fallback_tables=2
+2026-11-09 03:40:47,713 INFO auto_ontology.retrieval.text_to_sql.base.sql_from_semantic: Using 0 similar questions from conversations.
+2026-11-09 03:40:47,713 INFO auto_ontology.retrieval.text_to_sql.base.sql_from_semantic: Injecting the ranking calculation SQL shape into the SQL prompt.
+/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py:1283: UserWarning: Model 'qwen3.8-flash-next' is not known to support structured output. Your output may fail at inference time.
+  warnings.warn(
+2026-11-09 03:40:47,739 ERROR auto_ontology.utils.llm_invoke: Unexpected error on attempt 1/3 for SQLGenerationModel: Exception: [500] {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}
+{'error': {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}, 'status': 500}
+Traceback (most recent call last):
+  File "/app/auto_ontology/utils/llm_invoke.py", line 570, in safe_invoke_with_structured_output
+    result = model_llm.invoke(_system_messages_first(llm, current_messages))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py", line 1467, in invoke
+    raise last_exc
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py", line 1461, in invoke
+    result = chain.invoke(input, config, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 3454, in invoke
+    input_ = context.run(step.invoke, input_, config, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 6014, in invoke
+    return self.bound.invoke(
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 488, in invoke
+    self.generate_prompt(
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 1877, in generate_prompt
+    return self.generate(prompt_messages, stop=stop, callbacks=callbacks, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 1684, in generate
+    self._generate_with_cache(
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 2022, in _generate_with_cache
+    result = self._generate(
+             ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py", line 706, in _generate
+    response = self._client.get_req(payload=payload, extra_headers=extra_headers)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/_common.py", line 612, in get_req
+    response, session = self._post(
+                        ^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/_common.py", line 421, in _post
+    self._try_raise(response)
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/_common.py", line 526, in _try_raise
+    raise Exception(message) from None
+Exception: [500] {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}
+{'error': {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}, 'status': 500}
+2026-11-09 03:40:47,744 ERROR auto_ontology.retrieval.text_to_sql.base.sql_from_semantic: LLM structured output failed: Exception: [500] {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}
+{'error': {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}, 'status': 500}
+Traceback (most recent call last):
+  File "/app/auto_ontology/retrieval/text_to_sql/agents/sql_from_semantic.py", line 360, in run_with_context
+    response = safe_invoke_with_structured_output(llm, messages, schema)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/auto_ontology/utils/llm_invoke.py", line 570, in safe_invoke_with_structured_output
+    result = model_llm.invoke(_system_messages_first(llm, current_messages))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py", line 1467, in invoke
+    raise last_exc
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py", line 1461, in invoke
+    result = chain.invoke(input, config, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 3454, in invoke
+    input_ = context.run(step.invoke, input_, config, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 6014, in invoke
+    return self.bound.invoke(
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 488, in invoke
+    self.generate_prompt(
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 1877, in generate_prompt
+    return self.generate(prompt_messages, stop=stop, callbacks=callbacks, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 1684, in generate
+    self._generate_with_cache(
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 2022, in _generate_with_cache
+    result = self._generate(
+             ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py", line 706, in _generate
+    response = self._client.get_req(payload=payload, extra_headers=extra_headers)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/_common.py", line 612, in get_req
+    response, session = self._post(
+                        ^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/_common.py", line 421, in _post
+    self._try_raise(response)
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/_common.py", line 526, in _try_raise
+    raise Exception(message) from None
+Exception: [500] {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}
+{'error': {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}, 'status': 500}
+2026-11-09 03:40:47,744 WARNING auto_ontology.retrieval.text_to_sql.base.sql_from_semantic: LLM returned None on attempt 1/3 — retrying.
+/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py:1283: UserWarning: Model 'qwen3.8-flash-next' is not known to support structured output. Your output may fail at inference time.
+  warnings.warn(
+2026-11-09 03:40:47,762 ERROR auto_ontology.utils.llm_invoke: Unexpected error on attempt 1/3 for SQLGenerationModel: Exception: [500] {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}
+{'error': {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}, 'status': 500}
+Traceback (most recent call last):
+  File "/app/auto_ontology/utils/llm_invoke.py", line 570, in safe_invoke_with_structured_output
+    result = model_llm.invoke(_system_messages_first(llm, current_messages))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py", line 1467, in invoke
+    raise last_exc
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py", line 1461, in invoke
+    result = chain.invoke(input, config, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 3454, in invoke
+    input_ = context.run(step.invoke, input_, config, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 6014, in invoke
+    return self.bound.invoke(
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 488, in invoke
+    self.generate_prompt(
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 1877, in generate_prompt
+    return self.generate(prompt_messages, stop=stop, callbacks=callbacks, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 1684, in generate
+    self._generate_with_cache(
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 2022, in _generate_with_cache
+    result = self._generate(
+             ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py", line 706, in _generate
+    response = self._client.get_req(payload=payload, extra_headers=extra_headers)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/_common.py", line 612, in get_req
+    response, session = self._post(
+                        ^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/_common.py", line 421, in _post
+    self._try_raise(response)
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/_common.py", line 526, in _try_raise
+    raise Exception(message) from None
+Exception: [500] {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}
+{'error': {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}, 'status': 500}
+2026-11-09 03:40:47,762 ERROR auto_ontology.retrieval.text_to_sql.base.sql_from_semantic: LLM structured output failed: Exception: [500] {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}
+{'error': {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}, 'status': 500}
+Traceback (most recent call last):
+  File "/app/auto_ontology/retrieval/text_to_sql/agents/sql_from_semantic.py", line 360, in run_with_context
+    response = safe_invoke_with_structured_output(llm, messages, schema)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/auto_ontology/utils/llm_invoke.py", line 570, in safe_invoke_with_structured_output
+    result = model_llm.invoke(_system_messages_first(llm, current_messages))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py", line 1467, in invoke
+    raise last_exc
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py", line 1461, in invoke
+    result = chain.invoke(input, config, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 3454, in invoke
+    input_ = context.run(step.invoke, input_, config, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 6014, in invoke
+    return self.bound.invoke(
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 488, in invoke
+    self.generate_prompt(
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 1877, in generate_prompt
+    return self.generate(prompt_messages, stop=stop, callbacks=callbacks, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 1684, in generate
+    self._generate_with_cache(
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 2022, in _generate_with_cache
+    result = self._generate(
+             ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py", line 706, in _generate
+    response = self._client.get_req(payload=payload, extra_headers=extra_headers)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/_common.py", line 612, in get_req
+    response, session = self._post(
+                        ^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/_common.py", line 421, in _post
+    self._try_raise(response)
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/_common.py", line 526, in _try_raise
+    raise Exception(message) from None
+Exception: [500] {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}
+{'error': {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}, 'status': 500}
+2026-11-09 03:40:47,763 WARNING auto_ontology.retrieval.text_to_sql.base.sql_from_semantic: LLM returned None on attempt 2/3 — retrying.
+/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py:1283: UserWarning: Model 'qwen3.8-flash-next' is not known to support structured output. Your output may fail at inference time.
+  warnings.warn(
+2026-11-09 03:40:47,784 ERROR auto_ontology.utils.llm_invoke: Unexpected error on attempt 1/3 for SQLGenerationModel: Exception: [500] {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}
+{'error': {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}, 'status': 500}
+Traceback (most recent call last):
+  File "/app/auto_ontology/utils/llm_invoke.py", line 570, in safe_invoke_with_structured_output
+    result = model_llm.invoke(_system_messages_first(llm, current_messages))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py", line 1467, in invoke
+    raise last_exc
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py", line 1461, in invoke
+    result = chain.invoke(input, config, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 3454, in invoke
+    input_ = context.run(step.invoke, input_, config, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 6014, in invoke
+    return self.bound.invoke(
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 488, in invoke
+    self.generate_prompt(
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 1877, in generate_prompt
+    return self.generate(prompt_messages, stop=stop, callbacks=callbacks, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 1684, in generate
+    self._generate_with_cache(
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 2022, in _generate_with_cache
+    result = self._generate(
+             ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py", line 706, in _generate
+    response = self._client.get_req(payload=payload, extra_headers=extra_headers)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/_common.py", line 612, in get_req
+    response, session = self._post(
+                        ^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/_common.py", line 421, in _post
+    self._try_raise(response)
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/_common.py", line 526, in _try_raise
+    raise Exception(message) from None
+Exception: [500] {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}
+{'error': {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}, 'status': 500}
+2026-11-09 03:40:47,784 ERROR auto_ontology.retrieval.text_to_sql.base.sql_from_semantic: LLM structured output failed: Exception: [500] {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}
+{'error': {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}, 'status': 500}
+Traceback (most recent call last):
+  File "/app/auto_ontology/retrieval/text_to_sql/agents/sql_from_semantic.py", line 360, in run_with_context
+    response = safe_invoke_with_structured_output(llm, messages, schema)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/auto_ontology/utils/llm_invoke.py", line 570, in safe_invoke_with_structured_output
+    result = model_llm.invoke(_system_messages_first(llm, current_messages))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py", line 1467, in invoke
+    raise last_exc
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py", line 1461, in invoke
+    result = chain.invoke(input, config, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 3454, in invoke
+    input_ = context.run(step.invoke, input_, config, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/runnables/base.py", line 6014, in invoke
+    return self.bound.invoke(
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 488, in invoke
+    self.generate_prompt(
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 1877, in generate_prompt
+    return self.generate(prompt_messages, stop=stop, callbacks=callbacks, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 1684, in generate
+    self._generate_with_cache(
+  File "/opt/venv/lib/python3.12/site-packages/langchain_core/language_models/chat_models.py", line 2022, in _generate_with_cache
+    result = self._generate(
+             ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py", line 706, in _generate
+    response = self._client.get_req(payload=payload, extra_headers=extra_headers)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/_common.py", line 612, in get_req
+    response, session = self._post(
+                        ^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/_common.py", line 421, in _post
+    self._try_raise(response)
+  File "/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/_common.py", line 526, in _try_raise
+    raise Exception(message) from None
+Exception: [500] {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}
+{'error': {'code': 500, 'message': '\n------------\nWhile executing CallExpression at line 110, column 28 in source:\n...eveloper" %}↵        {{- raise_exception(\'System message must be at the beginnin...\n                                           ^\nError: Jinja Exception: System message must be at the beginning.', 'type': 'server_error'}, 'status': 500}
+2026-11-09 03:40:47,784 WARNING auto_ontology.retrieval.text_to_sql.base.sql_from_semantic: LLM returned None on attempt 3/3 — retrying.
+2026-11-09 03:40:47,784 ERROR auto_ontology.retrieval.text_to_sql.base.sql_from_semantic: LLM returned None after 3 attempts.
+2026-11-09 03:40:47,784 INFO auto_ontology.retrieval.text_to_sql.base.sql_from_semantic: Agent completed: sql_from_semantic -> unconstructable
+2026-11-09 03:40:47,785 INFO auto_ontology.retrieval.text_to_sql.main: --- AGENT STEP ---
+2026-11-09 03:40:47,785 INFO auto_ontology.retrieval.text_to_sql.main: Node: construct_sql_from_candidates
+2026-11-09 03:40:47,786 INFO auto_ontology.retrieval.text_to_sql.text_to_sql_graph: 🔁 Node visits: {'question_intent': 1, 'question_extraction': 1, 'retrieve_candidates': 1, 'prepare_candidates': 1, 'refine_evidence': 1, 'construct_sql_from_candidates': 1, 'unconstructable_sql_response': 1} | Total visits this run: 7
+2026-11-09 03:40:47,786 INFO auto_ontology.retrieval.text_to_sql.base.sql_unconstructable: Executing agent: sql_unconstructable
+2026-11-09 03:40:47,786 INFO auto_ontology.retrieval.text_to_sql.base.sql_unconstructable: Generated unconstructable SQL response: LLM failed to produce a response....
+2026-11-09 03:40:47,786 INFO auto_ontology.retrieval.text_to_sql.base.sql_unconstructable: Agent completed: sql_unconstructable -> none
+2026-11-09 03:40:47,786 INFO auto_ontology.retrieval.text_to_sql.main: --- AGENT STEP ---
+2026-11-09 03:40:47,786 INFO auto_ontology.retrieval.text_to_sql.main: Node: unconstructable_sql_response
+2026-11-09 03:40:47,786 WARNING auto_ontology.retrieval.text_to_sql.main: Full SQL pipeline attempt 1 returned no SQL; restarting from question intent.
+2026-11-09 03:40:47,788 INFO auto_ontology.retrieval.text_to_sql.main: --- AGENT STEP ---
+2026-11-09 03:40:47,789 INFO auto_ontology.retrieval.text_to_sql.text_to_sql_graph: 🔁 Node visits: {'question_intent': 1} | Total visits this run: 1
+2026-11-09 03:40:47,789 INFO auto_ontology.retrieval.text_to_sql.base.question_intent: Executing agent: question_intent
+/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py:1283: UserWarning: Model 'qwen3.8-flash-next' is not known to support structured output. Your output may fail at inference time.
+  warnings.warn(
+2026-11-09 03:41:43,690 INFO auto_ontology.retrieval.text_to_sql.base.question_intent: Question intent: type=calculation subtype=ranking target_db=demo rewritten='Which station had the highest net cleared energy in MWh on the day, and how much (1 decimal)?' evidence_extracted=True
+2026-11-09 03:41:43,690 INFO auto_ontology.retrieval.text_to_sql.base.question_intent: Agent completed: question_intent -> none
+2026-11-09 03:41:43,690 INFO auto_ontology.retrieval.text_to_sql.main: --- AGENT STEP ---
+2026-11-09 03:41:43,690 INFO auto_ontology.retrieval.text_to_sql.main: Node: question_intent
+2026-11-09 03:41:43,691 INFO auto_ontology.retrieval.text_to_sql.text_to_sql_graph: 🔁 Node visits: {'question_intent': 1, 'question_extraction': 1} | Total visits this run: 2
+2026-11-09 03:41:43,691 INFO auto_ontology.retrieval.text_to_sql.base.question_extraction: Executing agent: question_extraction
+/opt/venv/lib/python3.12/site-packages/langchain_nvidia_ai_endpoints/chat_models.py:1283: UserWarning: Model 'qwen3.8-flash-next' is not known to support structured output. Your output may fail at inference time.
+  warnings.warn(

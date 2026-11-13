@@ -1,0 +1,6 @@
+{
+  "frozenConfig": false,
+  "environments": [
+    { "name": "local", "packages": [{ "name": "nem", "location": "./pkg" }], "connections": [] }
+  ]
+}

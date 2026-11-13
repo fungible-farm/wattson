@@ -1,0 +1,1616 @@
+semantic_models:
+  - name: interconnector_dim
+    model: ref('dim_interconnector')
+    description: key table of distinct interconnector ids
+    entities:
+      - name: interconnector
+        type: primary
+        expr: INTERCONNECTORID
+    dimensions:
+      - name: interconnectorid
+        type: categorical
+        expr: INTERCONNECTORID
+  - name: station_dim
+    model: ref('dim_station')
+    description: key table of distinct station ids
+    entities:
+      - name: station
+        type: primary
+        expr: STATIONID
+    dimensions:
+      - name: stationid
+        type: categorical
+        expr: STATIONID
+        description: "power station id"
+  - name: region_dim
+    model: ref('dim_region')
+    description: key table of distinct region ids
+    entities:
+      - name: region
+        type: primary
+        expr: REGIONID
+    dimensions:
+      - name: regionid
+        type: categorical
+        expr: REGIONID
+        description: "NEM region id: NSW1, QLD1, SA1, TAS1, VIC1"
+  - name: dispatchload
+    model: ref('dispatchload')
+    description: AEMO DISPATCHLOAD table (NEMOSIS), 2025-09-01; intervention 0 only.
+    primary_entity: dispatchload_record
+    defaults:
+      agg_time_dimension: settlementdate
+    entities:
+      - name: duid
+        type: foreign
+        expr: DUID
+    dimensions:
+      - name: settlementdate
+        type: time
+        description: "END of the 5-minute dispatch interval"
+        type_params:
+          time_granularity: minute
+      - name: intervention
+        type: categorical
+        expr: INTERVENTION
+        description: "0 = normal dispatch run (the only one loaded)"
+      - name: dispatchmode
+        type: categorical
+        expr: DISPATCHMODE
+      - name: agcstatus
+        type: categorical
+        expr: AGCSTATUS
+      - name: semidispatchcap
+        type: categorical
+        expr: SEMIDISPATCHCAP
+    measures:
+      - name: dispatchload_row_count
+        agg: sum
+        expr: 1
+        description: "number of dispatchload rows"
+      - name: dispatchload_duid_distinct_count
+        agg: count_distinct
+        expr: DUID
+        description: "distinct duid values"
+      - name: dispatchload_interval_distinct_count
+        agg: count_distinct
+        expr: SETTLEMENTDATE
+        description: "distinct 5-minute intervals"
+      - name: dispatchload_cleared_energy_mwh
+        agg: sum
+        expr: TOTALCLEARED * 5.0 / 60.0
+        description: "net energy MWh = MW * 5/60, negatives included"
+      - name: dispatchload_totalcleared_total
+        agg: sum
+        expr: TOTALCLEARED
+        description: "total of TOTALCLEARED (dispatched MW, negative when charging/consuming)"
+      - name: dispatchload_totalcleared_avg
+        agg: average
+        expr: TOTALCLEARED
+        description: "avg of TOTALCLEARED (dispatched MW, negative when charging/consuming)"
+      - name: dispatchload_totalcleared_max
+        agg: max
+        expr: TOTALCLEARED
+        description: "max of TOTALCLEARED (dispatched MW, negative when charging/consuming)"
+      - name: dispatchload_totalcleared_min
+        agg: min
+        expr: TOTALCLEARED
+        description: "min of TOTALCLEARED (dispatched MW, negative when charging/consuming)"
+      - name: dispatchload_initialmw_total
+        agg: sum
+        expr: INITIALMW
+        description: "total of INITIALMW (initial MW)"
+      - name: dispatchload_initialmw_avg
+        agg: average
+        expr: INITIALMW
+        description: "avg of INITIALMW (initial MW)"
+      - name: dispatchload_initialmw_max
+        agg: max
+        expr: INITIALMW
+        description: "max of INITIALMW (initial MW)"
+      - name: dispatchload_initialmw_min
+        agg: min
+        expr: INITIALMW
+        description: "min of INITIALMW (initial MW)"
+      - name: dispatchload_availability_total
+        agg: sum
+        expr: AVAILABILITY
+        description: "total of AVAILABILITY (MW availability)"
+      - name: dispatchload_availability_avg
+        agg: average
+        expr: AVAILABILITY
+        description: "avg of AVAILABILITY (MW availability)"
+      - name: dispatchload_availability_max
+        agg: max
+        expr: AVAILABILITY
+        description: "max of AVAILABILITY (MW availability)"
+      - name: dispatchload_availability_min
+        agg: min
+        expr: AVAILABILITY
+        description: "min of AVAILABILITY (MW availability)"
+      - name: dispatchload_rampuprate_avg
+        agg: average
+        expr: RAMPUPRATE
+        description: "avg of RAMPUPRATE (ramp up MW/min)"
+      - name: dispatchload_rampuprate_max
+        agg: max
+        expr: RAMPUPRATE
+        description: "max of RAMPUPRATE (ramp up MW/min)"
+      - name: dispatchload_rampdownrate_avg
+        agg: average
+        expr: RAMPDOWNRATE
+        description: "avg of RAMPDOWNRATE (ramp down MW/min)"
+      - name: dispatchload_rampdownrate_max
+        agg: max
+        expr: RAMPDOWNRATE
+        description: "max of RAMPDOWNRATE (ramp down MW/min)"
+      - name: dispatchload_lower5min_avg
+        agg: average
+        expr: LOWER5MIN
+        description: "avg of LOWER5MIN (FCAS enablement MW)"
+      - name: dispatchload_lower5min_max
+        agg: max
+        expr: LOWER5MIN
+        description: "max of LOWER5MIN (FCAS enablement MW)"
+      - name: dispatchload_lower60sec_avg
+        agg: average
+        expr: LOWER60SEC
+        description: "avg of LOWER60SEC (FCAS enablement MW)"
+      - name: dispatchload_lower60sec_max
+        agg: max
+        expr: LOWER60SEC
+        description: "max of LOWER60SEC (FCAS enablement MW)"
+      - name: dispatchload_lower6sec_avg
+        agg: average
+        expr: LOWER6SEC
+        description: "avg of LOWER6SEC (FCAS enablement MW)"
+      - name: dispatchload_lower6sec_max
+        agg: max
+        expr: LOWER6SEC
+        description: "max of LOWER6SEC (FCAS enablement MW)"
+      - name: dispatchload_lower1sec_avg
+        agg: average
+        expr: LOWER1SEC
+        description: "avg of LOWER1SEC (FCAS enablement MW)"
+      - name: dispatchload_lower1sec_max
+        agg: max
+        expr: LOWER1SEC
+        description: "max of LOWER1SEC (FCAS enablement MW)"
+      - name: dispatchload_raise5min_avg
+        agg: average
+        expr: RAISE5MIN
+        description: "avg of RAISE5MIN (FCAS enablement MW)"
+      - name: dispatchload_raise5min_max
+        agg: max
+        expr: RAISE5MIN
+        description: "max of RAISE5MIN (FCAS enablement MW)"
+      - name: dispatchload_raise60sec_avg
+        agg: average
+        expr: RAISE60SEC
+        description: "avg of RAISE60SEC (FCAS enablement MW)"
+      - name: dispatchload_raise60sec_max
+        agg: max
+        expr: RAISE60SEC
+        description: "max of RAISE60SEC (FCAS enablement MW)"
+      - name: dispatchload_raise6sec_avg
+        agg: average
+        expr: RAISE6SEC
+        description: "avg of RAISE6SEC (FCAS enablement MW)"
+      - name: dispatchload_raise6sec_max
+        agg: max
+        expr: RAISE6SEC
+        description: "max of RAISE6SEC (FCAS enablement MW)"
+      - name: dispatchload_raise1sec_avg
+        agg: average
+        expr: RAISE1SEC
+        description: "avg of RAISE1SEC (FCAS enablement MW)"
+      - name: dispatchload_raise1sec_max
+        agg: max
+        expr: RAISE1SEC
+        description: "max of RAISE1SEC (FCAS enablement MW)"
+      - name: dispatchload_lowerreg_avg
+        agg: average
+        expr: LOWERREG
+        description: "avg of LOWERREG (FCAS enablement MW)"
+      - name: dispatchload_lowerreg_max
+        agg: max
+        expr: LOWERREG
+        description: "max of LOWERREG (FCAS enablement MW)"
+      - name: dispatchload_raisereg_avg
+        agg: average
+        expr: RAISEREG
+        description: "avg of RAISEREG (FCAS enablement MW)"
+      - name: dispatchload_raisereg_max
+        agg: max
+        expr: RAISEREG
+        description: "max of RAISEREG (FCAS enablement MW)"
+      - name: dispatchload_raiseregenablementmax_avg
+        agg: average
+        expr: RAISEREGENABLEMENTMAX
+        description: "avg of RAISEREGENABLEMENTMAX (FCAS enablement MW)"
+      - name: dispatchload_raiseregenablementmax_max
+        agg: max
+        expr: RAISEREGENABLEMENTMAX
+        description: "max of RAISEREGENABLEMENTMAX (FCAS enablement MW)"
+      - name: dispatchload_raiseregenablementmin_avg
+        agg: average
+        expr: RAISEREGENABLEMENTMIN
+        description: "avg of RAISEREGENABLEMENTMIN (FCAS enablement MW)"
+      - name: dispatchload_raiseregenablementmin_max
+        agg: max
+        expr: RAISEREGENABLEMENTMIN
+        description: "max of RAISEREGENABLEMENTMIN (FCAS enablement MW)"
+      - name: dispatchload_lowerregenablementmax_avg
+        agg: average
+        expr: LOWERREGENABLEMENTMAX
+        description: "avg of LOWERREGENABLEMENTMAX (FCAS enablement MW)"
+      - name: dispatchload_lowerregenablementmax_max
+        agg: max
+        expr: LOWERREGENABLEMENTMAX
+        description: "max of LOWERREGENABLEMENTMAX (FCAS enablement MW)"
+      - name: dispatchload_lowerregenablementmin_avg
+        agg: average
+        expr: LOWERREGENABLEMENTMIN
+        description: "avg of LOWERREGENABLEMENTMIN (FCAS enablement MW)"
+      - name: dispatchload_lowerregenablementmin_max
+        agg: max
+        expr: LOWERREGENABLEMENTMIN
+        description: "max of LOWERREGENABLEMENTMIN (FCAS enablement MW)"
+  - name: dispatchprice
+    model: ref('dispatchprice')
+    description: AEMO DISPATCHPRICE table (NEMOSIS), 2025-09-01; intervention 0 only.
+    primary_entity: dispatchprice_record
+    defaults:
+      agg_time_dimension: settlementdate
+    entities:
+      - name: region
+        type: foreign
+        expr: REGIONID
+    dimensions:
+      - name: settlementdate
+        type: time
+        description: "END of the 5-minute dispatch interval"
+        type_params:
+          time_granularity: minute
+      - name: intervention
+        type: categorical
+        expr: INTERVENTION
+        description: "0 = normal dispatch run (the only one loaded)"
+      - name: price_status
+        type: categorical
+        expr: PRICE_STATUS
+    measures:
+      - name: dispatchprice_row_count
+        agg: sum
+        expr: 1
+        description: "number of dispatchprice rows"
+      - name: dispatchprice_region_distinct_count
+        agg: count_distinct
+        expr: REGIONID
+        description: "distinct region values"
+      - name: dispatchprice_rrp_avg
+        agg: average
+        expr: RRP
+        description: "avg of RRP (regional price $/MWh)"
+      - name: dispatchprice_rrp_max
+        agg: max
+        expr: RRP
+        description: "max of RRP (regional price $/MWh)"
+      - name: dispatchprice_rrp_min
+        agg: min
+        expr: RRP
+        description: "min of RRP (regional price $/MWh)"
+      - name: dispatchprice_raise6secrrp_avg
+        agg: average
+        expr: RAISE6SECRRP
+        description: "avg of RAISE6SECRRP (FCAS price $/MW)"
+      - name: dispatchprice_raise6secrrp_max
+        agg: max
+        expr: RAISE6SECRRP
+        description: "max of RAISE6SECRRP (FCAS price $/MW)"
+      - name: dispatchprice_raise6secrrp_min
+        agg: min
+        expr: RAISE6SECRRP
+        description: "min of RAISE6SECRRP (FCAS price $/MW)"
+      - name: dispatchprice_raise60secrrp_avg
+        agg: average
+        expr: RAISE60SECRRP
+        description: "avg of RAISE60SECRRP (FCAS price $/MW)"
+      - name: dispatchprice_raise60secrrp_max
+        agg: max
+        expr: RAISE60SECRRP
+        description: "max of RAISE60SECRRP (FCAS price $/MW)"
+      - name: dispatchprice_raise60secrrp_min
+        agg: min
+        expr: RAISE60SECRRP
+        description: "min of RAISE60SECRRP (FCAS price $/MW)"
+      - name: dispatchprice_raise5minrrp_avg
+        agg: average
+        expr: RAISE5MINRRP
+        description: "avg of RAISE5MINRRP (FCAS price $/MW)"
+      - name: dispatchprice_raise5minrrp_max
+        agg: max
+        expr: RAISE5MINRRP
+        description: "max of RAISE5MINRRP (FCAS price $/MW)"
+      - name: dispatchprice_raise5minrrp_min
+        agg: min
+        expr: RAISE5MINRRP
+        description: "min of RAISE5MINRRP (FCAS price $/MW)"
+      - name: dispatchprice_raiseregrrp_avg
+        agg: average
+        expr: RAISEREGRRP
+        description: "avg of RAISEREGRRP (FCAS price $/MW)"
+      - name: dispatchprice_raiseregrrp_max
+        agg: max
+        expr: RAISEREGRRP
+        description: "max of RAISEREGRRP (FCAS price $/MW)"
+      - name: dispatchprice_raiseregrrp_min
+        agg: min
+        expr: RAISEREGRRP
+        description: "min of RAISEREGRRP (FCAS price $/MW)"
+      - name: dispatchprice_lower6secrrp_avg
+        agg: average
+        expr: LOWER6SECRRP
+        description: "avg of LOWER6SECRRP (FCAS price $/MW)"
+      - name: dispatchprice_lower6secrrp_max
+        agg: max
+        expr: LOWER6SECRRP
+        description: "max of LOWER6SECRRP (FCAS price $/MW)"
+      - name: dispatchprice_lower6secrrp_min
+        agg: min
+        expr: LOWER6SECRRP
+        description: "min of LOWER6SECRRP (FCAS price $/MW)"
+      - name: dispatchprice_lower60secrrp_avg
+        agg: average
+        expr: LOWER60SECRRP
+        description: "avg of LOWER60SECRRP (FCAS price $/MW)"
+      - name: dispatchprice_lower60secrrp_max
+        agg: max
+        expr: LOWER60SECRRP
+        description: "max of LOWER60SECRRP (FCAS price $/MW)"
+      - name: dispatchprice_lower60secrrp_min
+        agg: min
+        expr: LOWER60SECRRP
+        description: "min of LOWER60SECRRP (FCAS price $/MW)"
+      - name: dispatchprice_lower5minrrp_avg
+        agg: average
+        expr: LOWER5MINRRP
+        description: "avg of LOWER5MINRRP (FCAS price $/MW)"
+      - name: dispatchprice_lower5minrrp_max
+        agg: max
+        expr: LOWER5MINRRP
+        description: "max of LOWER5MINRRP (FCAS price $/MW)"
+      - name: dispatchprice_lower5minrrp_min
+        agg: min
+        expr: LOWER5MINRRP
+        description: "min of LOWER5MINRRP (FCAS price $/MW)"
+      - name: dispatchprice_lowerregrrp_avg
+        agg: average
+        expr: LOWERREGRRP
+        description: "avg of LOWERREGRRP (FCAS price $/MW)"
+      - name: dispatchprice_lowerregrrp_max
+        agg: max
+        expr: LOWERREGRRP
+        description: "max of LOWERREGRRP (FCAS price $/MW)"
+      - name: dispatchprice_lowerregrrp_min
+        agg: min
+        expr: LOWERREGRRP
+        description: "min of LOWERREGRRP (FCAS price $/MW)"
+  - name: dispatchregionsum
+    model: ref('dispatchregionsum')
+    description: AEMO DISPATCHREGIONSUM table (NEMOSIS), 2025-09-01; intervention 0 only.
+    primary_entity: dispatchregionsum_record
+    defaults:
+      agg_time_dimension: settlementdate
+    entities:
+      - name: region
+        type: foreign
+        expr: REGIONID
+    dimensions:
+      - name: settlementdate
+        type: time
+        description: "END of the 5-minute dispatch interval"
+        type_params:
+          time_granularity: minute
+      - name: intervention
+        type: categorical
+        expr: INTERVENTION
+        description: "0 = normal dispatch run (the only one loaded)"
+      - name: dispatchinterval
+        type: categorical
+        expr: DISPATCHINTERVAL
+    measures:
+      - name: dispatchregionsum_row_count
+        agg: sum
+        expr: 1
+        description: "number of dispatchregionsum rows"
+      - name: dispatchregionsum_region_distinct_count
+        agg: count_distinct
+        expr: REGIONID
+        description: "distinct region values"
+      - name: dispatchregionsum_totaldemand_total
+        agg: sum
+        expr: TOTALDEMAND
+        description: "total of TOTALDEMAND (regional demand MW)"
+      - name: dispatchregionsum_totaldemand_avg
+        agg: average
+        expr: TOTALDEMAND
+        description: "avg of TOTALDEMAND (regional demand MW)"
+      - name: dispatchregionsum_totaldemand_max
+        agg: max
+        expr: TOTALDEMAND
+        description: "max of TOTALDEMAND (regional demand MW)"
+      - name: dispatchregionsum_totaldemand_min
+        agg: min
+        expr: TOTALDEMAND
+        description: "min of TOTALDEMAND (regional demand MW)"
+      - name: dispatchregionsum_netinterchange_total
+        agg: sum
+        expr: NETINTERCHANGE
+        description: "total of NETINTERCHANGE (net interchange MW, positive = exporting)"
+      - name: dispatchregionsum_netinterchange_avg
+        agg: average
+        expr: NETINTERCHANGE
+        description: "avg of NETINTERCHANGE (net interchange MW, positive = exporting)"
+      - name: dispatchregionsum_netinterchange_max
+        agg: max
+        expr: NETINTERCHANGE
+        description: "max of NETINTERCHANGE (net interchange MW, positive = exporting)"
+      - name: dispatchregionsum_netinterchange_min
+        agg: min
+        expr: NETINTERCHANGE
+        description: "min of NETINTERCHANGE (net interchange MW, positive = exporting)"
+      - name: dispatchregionsum_availablegeneration_avg
+        agg: average
+        expr: AVAILABLEGENERATION
+        description: "avg of AVAILABLEGENERATION (MW)"
+      - name: dispatchregionsum_availablegeneration_max
+        agg: max
+        expr: AVAILABLEGENERATION
+        description: "max of AVAILABLEGENERATION (MW)"
+      - name: dispatchregionsum_availableload_avg
+        agg: average
+        expr: AVAILABLELOAD
+        description: "avg of AVAILABLELOAD (MW)"
+      - name: dispatchregionsum_availableload_max
+        agg: max
+        expr: AVAILABLELOAD
+        description: "max of AVAILABLELOAD (MW)"
+      - name: dispatchregionsum_demandforecast_avg
+        agg: average
+        expr: DEMANDFORECAST
+        description: "avg of DEMANDFORECAST (MW)"
+      - name: dispatchregionsum_demandforecast_max
+        agg: max
+        expr: DEMANDFORECAST
+        description: "max of DEMANDFORECAST (MW)"
+      - name: dispatchregionsum_dispatchablegeneration_avg
+        agg: average
+        expr: DISPATCHABLEGENERATION
+        description: "avg of DISPATCHABLEGENERATION (MW)"
+      - name: dispatchregionsum_dispatchablegeneration_max
+        agg: max
+        expr: DISPATCHABLEGENERATION
+        description: "max of DISPATCHABLEGENERATION (MW)"
+      - name: dispatchregionsum_dispatchableload_avg
+        agg: average
+        expr: DISPATCHABLELOAD
+        description: "avg of DISPATCHABLELOAD (MW)"
+      - name: dispatchregionsum_dispatchableload_max
+        agg: max
+        expr: DISPATCHABLELOAD
+        description: "max of DISPATCHABLELOAD (MW)"
+      - name: dispatchregionsum_excessgeneration_avg
+        agg: average
+        expr: EXCESSGENERATION
+        description: "avg of EXCESSGENERATION (MW)"
+      - name: dispatchregionsum_excessgeneration_max
+        agg: max
+        expr: EXCESSGENERATION
+        description: "max of EXCESSGENERATION (MW)"
+      - name: dispatchregionsum_initialsupply_avg
+        agg: average
+        expr: INITIALSUPPLY
+        description: "avg of INITIALSUPPLY (MW)"
+      - name: dispatchregionsum_initialsupply_max
+        agg: max
+        expr: INITIALSUPPLY
+        description: "max of INITIALSUPPLY (MW)"
+      - name: dispatchregionsum_clearedsupply_avg
+        agg: average
+        expr: CLEAREDSUPPLY
+        description: "avg of CLEAREDSUPPLY (MW)"
+      - name: dispatchregionsum_clearedsupply_max
+        agg: max
+        expr: CLEAREDSUPPLY
+        description: "max of CLEAREDSUPPLY (MW)"
+      - name: dispatchregionsum_totalintermittentgeneration_avg
+        agg: average
+        expr: TOTALINTERMITTENTGENERATION
+        description: "avg of TOTALINTERMITTENTGENERATION (MW)"
+      - name: dispatchregionsum_totalintermittentgeneration_max
+        agg: max
+        expr: TOTALINTERMITTENTGENERATION
+        description: "max of TOTALINTERMITTENTGENERATION (MW)"
+      - name: dispatchregionsum_demand_and_nonschedgen_avg
+        agg: average
+        expr: DEMAND_AND_NONSCHEDGEN
+        description: "avg of DEMAND_AND_NONSCHEDGEN (MW)"
+      - name: dispatchregionsum_demand_and_nonschedgen_max
+        agg: max
+        expr: DEMAND_AND_NONSCHEDGEN
+        description: "max of DEMAND_AND_NONSCHEDGEN (MW)"
+      - name: dispatchregionsum_uigf_avg
+        agg: average
+        expr: UIGF
+        description: "avg of UIGF (MW)"
+      - name: dispatchregionsum_uigf_max
+        agg: max
+        expr: UIGF
+        description: "max of UIGF (MW)"
+      - name: dispatchregionsum_semischedule_clearedmw_avg
+        agg: average
+        expr: SEMISCHEDULE_CLEAREDMW
+        description: "avg of SEMISCHEDULE_CLEAREDMW (MW)"
+      - name: dispatchregionsum_semischedule_clearedmw_max
+        agg: max
+        expr: SEMISCHEDULE_CLEAREDMW
+        description: "max of SEMISCHEDULE_CLEAREDMW (MW)"
+      - name: dispatchregionsum_semischedule_compliancemw_avg
+        agg: average
+        expr: SEMISCHEDULE_COMPLIANCEMW
+        description: "avg of SEMISCHEDULE_COMPLIANCEMW (MW)"
+      - name: dispatchregionsum_semischedule_compliancemw_max
+        agg: max
+        expr: SEMISCHEDULE_COMPLIANCEMW
+        description: "max of SEMISCHEDULE_COMPLIANCEMW (MW)"
+  - name: dispatchinterconnectorres
+    model: ref('dispatchinterconnectorres')
+    description: AEMO DISPATCHINTERCONNECTORRES table (NEMOSIS), 2025-09-01; intervention 0 only.
+    primary_entity: dispatchinterconnectorres_record
+    defaults:
+      agg_time_dimension: settlementdate
+    entities:
+      - name: interconnector
+        type: foreign
+        expr: INTERCONNECTORID
+    dimensions:
+      - name: settlementdate
+        type: time
+        description: "END of the 5-minute dispatch interval"
+        type_params:
+          time_granularity: minute
+      - name: intervention
+        type: categorical
+        expr: INTERVENTION
+        description: "0 = normal dispatch run (the only one loaded)"
+      - name: dispatchinterval
+        type: categorical
+        expr: DISPATCHINTERVAL
+    measures:
+      - name: dispatchinterconnectorres_row_count
+        agg: sum
+        expr: 1
+        description: "number of dispatchinterconnectorres rows"
+      - name: dispatchinterconnectorres_interconnector_distinct_count
+        agg: count_distinct
+        expr: INTERCONNECTORID
+        description: "distinct interconnector values"
+      - name: dispatchinterconnectorres_mwflow_total
+        agg: sum
+        expr: MWFLOW
+        description: "total of MWFLOW (flow MW, positive = forward direction)"
+      - name: dispatchinterconnectorres_mwflow_avg
+        agg: average
+        expr: MWFLOW
+        description: "avg of MWFLOW (flow MW, positive = forward direction)"
+      - name: dispatchinterconnectorres_mwflow_max
+        agg: max
+        expr: MWFLOW
+        description: "max of MWFLOW (flow MW, positive = forward direction)"
+      - name: dispatchinterconnectorres_mwflow_min
+        agg: min
+        expr: MWFLOW
+        description: "min of MWFLOW (flow MW, positive = forward direction)"
+      - name: dispatchinterconnectorres_mwlosses_total
+        agg: sum
+        expr: MWLOSSES
+        description: "total of MWLOSSES (losses MW)"
+      - name: dispatchinterconnectorres_mwlosses_avg
+        agg: average
+        expr: MWLOSSES
+        description: "avg of MWLOSSES (losses MW)"
+      - name: dispatchinterconnectorres_mwlosses_max
+        agg: max
+        expr: MWLOSSES
+        description: "max of MWLOSSES (losses MW)"
+      - name: dispatchinterconnectorres_mwlosses_min
+        agg: min
+        expr: MWLOSSES
+        description: "min of MWLOSSES (losses MW)"
+      - name: dispatchinterconnectorres_meteredmwflow_avg
+        agg: average
+        expr: METEREDMWFLOW
+        description: "avg of METEREDMWFLOW (metered flow MW)"
+      - name: dispatchinterconnectorres_meteredmwflow_max
+        agg: max
+        expr: METEREDMWFLOW
+        description: "max of METEREDMWFLOW (metered flow MW)"
+      - name: dispatchinterconnectorres_exportlimit_avg
+        agg: average
+        expr: EXPORTLIMIT
+        description: "avg of EXPORTLIMIT (export limit MW)"
+      - name: dispatchinterconnectorres_exportlimit_max
+        agg: max
+        expr: EXPORTLIMIT
+        description: "max of EXPORTLIMIT (export limit MW)"
+      - name: dispatchinterconnectorres_importlimit_avg
+        agg: average
+        expr: IMPORTLIMIT
+        description: "avg of IMPORTLIMIT (import limit MW)"
+      - name: dispatchinterconnectorres_importlimit_max
+        agg: max
+        expr: IMPORTLIMIT
+        description: "max of IMPORTLIMIT (import limit MW)"
+  - name: dudetailsummary
+    model: ref('dudetailsummary')
+    description: AEMO DUDETAILSUMMARY table (NEMOSIS), 2025-09-01; intervention 0 only.
+    defaults:
+      agg_time_dimension: start_date
+    entities:
+      - name: duid
+        type: primary
+        expr: DUID
+      - name: station
+        type: foreign
+        expr: STATIONID
+      - name: region
+        type: foreign
+        expr: REGIONID
+      - name: participant
+        type: foreign
+        expr: PARTICIPANTID
+    dimensions:
+      - name: start_date
+        type: time
+        description: "END of the 5-minute dispatch interval"
+        type_params:
+          time_granularity: minute
+      - name: end_date
+        type: time
+        type_params:
+          time_granularity: minute
+      - name: lastchanged
+        type: time
+        type_params:
+          time_granularity: minute
+      - name: dispatchtype
+        type: categorical
+        expr: DISPATCHTYPE
+      - name: connectionpointid
+        type: categorical
+        expr: CONNECTIONPOINTID
+      - name: starttype
+        type: categorical
+        expr: STARTTYPE
+      - name: schedule_type
+        type: categorical
+        expr: SCHEDULE_TYPE
+      - name: regionid
+        type: categorical
+        expr: REGIONID
+        description: "NEM region id: NSW1, QLD1, SA1, TAS1, VIC1"
+      - name: stationid
+        type: categorical
+        expr: STATIONID
+        description: "power station id"
+      - name: participantid
+        type: categorical
+        expr: PARTICIPANTID
+    measures:
+      - name: dudetailsummary_row_count
+        agg: sum
+        expr: 1
+        description: "number of dudetailsummary rows"
+      - name: dudetailsummary_duid_distinct_count
+        agg: count_distinct
+        expr: DUID
+        description: "distinct duid values"
+      - name: dudetailsummary_station_distinct_count
+        agg: count_distinct
+        expr: STATIONID
+        description: "distinct station values"
+      - name: dudetailsummary_region_distinct_count
+        agg: count_distinct
+        expr: REGIONID
+        description: "distinct region values"
+      - name: dudetailsummary_participant_distinct_count
+        agg: count_distinct
+        expr: PARTICIPANTID
+        description: "distinct participant values"
+      - name: dudetailsummary_transmissionlossfactor_avg
+        agg: average
+        expr: TRANSMISSIONLOSSFACTOR
+        description: "avg of TRANSMISSIONLOSSFACTOR (loss factor)"
+      - name: dudetailsummary_transmissionlossfactor_max
+        agg: max
+        expr: TRANSMISSIONLOSSFACTOR
+        description: "max of TRANSMISSIONLOSSFACTOR (loss factor)"
+      - name: dudetailsummary_distributionlossfactor_avg
+        agg: average
+        expr: DISTRIBUTIONLOSSFACTOR
+        description: "avg of DISTRIBUTIONLOSSFACTOR (loss factor)"
+      - name: dudetailsummary_distributionlossfactor_max
+        agg: max
+        expr: DISTRIBUTIONLOSSFACTOR
+        description: "max of DISTRIBUTIONLOSSFACTOR (loss factor)"
+      - name: dudetailsummary_max_ramp_rate_up_avg
+        agg: average
+        expr: MAX_RAMP_RATE_UP
+        description: "avg of MAX_RAMP_RATE_UP (MW/min)"
+      - name: dudetailsummary_max_ramp_rate_up_max
+        agg: max
+        expr: MAX_RAMP_RATE_UP
+        description: "max of MAX_RAMP_RATE_UP (MW/min)"
+      - name: dudetailsummary_max_ramp_rate_down_avg
+        agg: average
+        expr: MAX_RAMP_RATE_DOWN
+        description: "avg of MAX_RAMP_RATE_DOWN (MW/min)"
+      - name: dudetailsummary_max_ramp_rate_down_max
+        agg: max
+        expr: MAX_RAMP_RATE_DOWN
+        description: "max of MAX_RAMP_RATE_DOWN (MW/min)"
+
+metrics:
+  - name: dispatchload_row_count
+    label: dispatchload_row_count
+    description: number of dispatchload rows
+    type: simple
+    type_params:
+      measure: dispatchload_row_count
+  - name: dispatchload_duid_distinct_count
+    label: dispatchload_duid_distinct_count
+    description: distinct duid values
+    type: simple
+    type_params:
+      measure: dispatchload_duid_distinct_count
+  - name: dispatchload_interval_distinct_count
+    label: dispatchload_interval_distinct_count
+    description: distinct 5-minute intervals
+    type: simple
+    type_params:
+      measure: dispatchload_interval_distinct_count
+  - name: dispatchload_cleared_energy_mwh
+    label: dispatchload_cleared_energy_mwh
+    description: net energy MWh = MW * 5/60, negatives included
+    type: simple
+    type_params:
+      measure: dispatchload_cleared_energy_mwh
+  - name: dispatchload_totalcleared_total
+    label: dispatchload_totalcleared_total
+    description: total of TOTALCLEARED (dispatched MW, negative when charging/consuming)
+    type: simple
+    type_params:
+      measure: dispatchload_totalcleared_total
+  - name: dispatchload_totalcleared_avg
+    label: dispatchload_totalcleared_avg
+    description: avg of TOTALCLEARED (dispatched MW, negative when charging/consuming)
+    type: simple
+    type_params:
+      measure: dispatchload_totalcleared_avg
+  - name: dispatchload_totalcleared_max
+    label: dispatchload_totalcleared_max
+    description: max of TOTALCLEARED (dispatched MW, negative when charging/consuming)
+    type: simple
+    type_params:
+      measure: dispatchload_totalcleared_max
+  - name: dispatchload_totalcleared_min
+    label: dispatchload_totalcleared_min
+    description: min of TOTALCLEARED (dispatched MW, negative when charging/consuming)
+    type: simple
+    type_params:
+      measure: dispatchload_totalcleared_min
+  - name: dispatchload_initialmw_total
+    label: dispatchload_initialmw_total
+    description: total of INITIALMW (initial MW)
+    type: simple
+    type_params:
+      measure: dispatchload_initialmw_total
+  - name: dispatchload_initialmw_avg
+    label: dispatchload_initialmw_avg
+    description: avg of INITIALMW (initial MW)
+    type: simple
+    type_params:
+      measure: dispatchload_initialmw_avg
+  - name: dispatchload_initialmw_max
+    label: dispatchload_initialmw_max
+    description: max of INITIALMW (initial MW)
+    type: simple
+    type_params:
+      measure: dispatchload_initialmw_max
+  - name: dispatchload_initialmw_min
+    label: dispatchload_initialmw_min
+    description: min of INITIALMW (initial MW)
+    type: simple
+    type_params:
+      measure: dispatchload_initialmw_min
+  - name: dispatchload_availability_total
+    label: dispatchload_availability_total
+    description: total of AVAILABILITY (MW availability)
+    type: simple
+    type_params:
+      measure: dispatchload_availability_total
+  - name: dispatchload_availability_avg
+    label: dispatchload_availability_avg
+    description: avg of AVAILABILITY (MW availability)
+    type: simple
+    type_params:
+      measure: dispatchload_availability_avg
+  - name: dispatchload_availability_max
+    label: dispatchload_availability_max
+    description: max of AVAILABILITY (MW availability)
+    type: simple
+    type_params:
+      measure: dispatchload_availability_max
+  - name: dispatchload_availability_min
+    label: dispatchload_availability_min
+    description: min of AVAILABILITY (MW availability)
+    type: simple
+    type_params:
+      measure: dispatchload_availability_min
+  - name: dispatchload_rampuprate_avg
+    label: dispatchload_rampuprate_avg
+    description: avg of RAMPUPRATE (ramp up MW/min)
+    type: simple
+    type_params:
+      measure: dispatchload_rampuprate_avg
+  - name: dispatchload_rampuprate_max
+    label: dispatchload_rampuprate_max
+    description: max of RAMPUPRATE (ramp up MW/min)
+    type: simple
+    type_params:
+      measure: dispatchload_rampuprate_max
+  - name: dispatchload_rampdownrate_avg
+    label: dispatchload_rampdownrate_avg
+    description: avg of RAMPDOWNRATE (ramp down MW/min)
+    type: simple
+    type_params:
+      measure: dispatchload_rampdownrate_avg
+  - name: dispatchload_rampdownrate_max
+    label: dispatchload_rampdownrate_max
+    description: max of RAMPDOWNRATE (ramp down MW/min)
+    type: simple
+    type_params:
+      measure: dispatchload_rampdownrate_max
+  - name: dispatchload_lower5min_avg
+    label: dispatchload_lower5min_avg
+    description: avg of LOWER5MIN (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_lower5min_avg
+  - name: dispatchload_lower5min_max
+    label: dispatchload_lower5min_max
+    description: max of LOWER5MIN (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_lower5min_max
+  - name: dispatchload_lower60sec_avg
+    label: dispatchload_lower60sec_avg
+    description: avg of LOWER60SEC (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_lower60sec_avg
+  - name: dispatchload_lower60sec_max
+    label: dispatchload_lower60sec_max
+    description: max of LOWER60SEC (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_lower60sec_max
+  - name: dispatchload_lower6sec_avg
+    label: dispatchload_lower6sec_avg
+    description: avg of LOWER6SEC (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_lower6sec_avg
+  - name: dispatchload_lower6sec_max
+    label: dispatchload_lower6sec_max
+    description: max of LOWER6SEC (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_lower6sec_max
+  - name: dispatchload_lower1sec_avg
+    label: dispatchload_lower1sec_avg
+    description: avg of LOWER1SEC (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_lower1sec_avg
+  - name: dispatchload_lower1sec_max
+    label: dispatchload_lower1sec_max
+    description: max of LOWER1SEC (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_lower1sec_max
+  - name: dispatchload_raise5min_avg
+    label: dispatchload_raise5min_avg
+    description: avg of RAISE5MIN (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_raise5min_avg
+  - name: dispatchload_raise5min_max
+    label: dispatchload_raise5min_max
+    description: max of RAISE5MIN (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_raise5min_max
+  - name: dispatchload_raise60sec_avg
+    label: dispatchload_raise60sec_avg
+    description: avg of RAISE60SEC (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_raise60sec_avg
+  - name: dispatchload_raise60sec_max
+    label: dispatchload_raise60sec_max
+    description: max of RAISE60SEC (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_raise60sec_max
+  - name: dispatchload_raise6sec_avg
+    label: dispatchload_raise6sec_avg
+    description: avg of RAISE6SEC (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_raise6sec_avg
+  - name: dispatchload_raise6sec_max
+    label: dispatchload_raise6sec_max
+    description: max of RAISE6SEC (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_raise6sec_max
+  - name: dispatchload_raise1sec_avg
+    label: dispatchload_raise1sec_avg
+    description: avg of RAISE1SEC (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_raise1sec_avg
+  - name: dispatchload_raise1sec_max
+    label: dispatchload_raise1sec_max
+    description: max of RAISE1SEC (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_raise1sec_max
+  - name: dispatchload_lowerreg_avg
+    label: dispatchload_lowerreg_avg
+    description: avg of LOWERREG (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_lowerreg_avg
+  - name: dispatchload_lowerreg_max
+    label: dispatchload_lowerreg_max
+    description: max of LOWERREG (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_lowerreg_max
+  - name: dispatchload_raisereg_avg
+    label: dispatchload_raisereg_avg
+    description: avg of RAISEREG (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_raisereg_avg
+  - name: dispatchload_raisereg_max
+    label: dispatchload_raisereg_max
+    description: max of RAISEREG (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_raisereg_max
+  - name: dispatchload_raiseregenablementmax_avg
+    label: dispatchload_raiseregenablementmax_avg
+    description: avg of RAISEREGENABLEMENTMAX (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_raiseregenablementmax_avg
+  - name: dispatchload_raiseregenablementmax_max
+    label: dispatchload_raiseregenablementmax_max
+    description: max of RAISEREGENABLEMENTMAX (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_raiseregenablementmax_max
+  - name: dispatchload_raiseregenablementmin_avg
+    label: dispatchload_raiseregenablementmin_avg
+    description: avg of RAISEREGENABLEMENTMIN (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_raiseregenablementmin_avg
+  - name: dispatchload_raiseregenablementmin_max
+    label: dispatchload_raiseregenablementmin_max
+    description: max of RAISEREGENABLEMENTMIN (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_raiseregenablementmin_max
+  - name: dispatchload_lowerregenablementmax_avg
+    label: dispatchload_lowerregenablementmax_avg
+    description: avg of LOWERREGENABLEMENTMAX (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_lowerregenablementmax_avg
+  - name: dispatchload_lowerregenablementmax_max
+    label: dispatchload_lowerregenablementmax_max
+    description: max of LOWERREGENABLEMENTMAX (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_lowerregenablementmax_max
+  - name: dispatchload_lowerregenablementmin_avg
+    label: dispatchload_lowerregenablementmin_avg
+    description: avg of LOWERREGENABLEMENTMIN (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_lowerregenablementmin_avg
+  - name: dispatchload_lowerregenablementmin_max
+    label: dispatchload_lowerregenablementmin_max
+    description: max of LOWERREGENABLEMENTMIN (FCAS enablement MW)
+    type: simple
+    type_params:
+      measure: dispatchload_lowerregenablementmin_max
+  - name: dispatchprice_row_count
+    label: dispatchprice_row_count
+    description: number of dispatchprice rows
+    type: simple
+    type_params:
+      measure: dispatchprice_row_count
+  - name: dispatchprice_region_distinct_count
+    label: dispatchprice_region_distinct_count
+    description: distinct region values
+    type: simple
+    type_params:
+      measure: dispatchprice_region_distinct_count
+  - name: dispatchprice_rrp_avg
+    label: dispatchprice_rrp_avg
+    description: avg of RRP (regional price $/MWh)
+    type: simple
+    type_params:
+      measure: dispatchprice_rrp_avg
+  - name: dispatchprice_rrp_max
+    label: dispatchprice_rrp_max
+    description: max of RRP (regional price $/MWh)
+    type: simple
+    type_params:
+      measure: dispatchprice_rrp_max
+  - name: dispatchprice_rrp_min
+    label: dispatchprice_rrp_min
+    description: min of RRP (regional price $/MWh)
+    type: simple
+    type_params:
+      measure: dispatchprice_rrp_min
+  - name: dispatchprice_raise6secrrp_avg
+    label: dispatchprice_raise6secrrp_avg
+    description: avg of RAISE6SECRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_raise6secrrp_avg
+  - name: dispatchprice_raise6secrrp_max
+    label: dispatchprice_raise6secrrp_max
+    description: max of RAISE6SECRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_raise6secrrp_max
+  - name: dispatchprice_raise6secrrp_min
+    label: dispatchprice_raise6secrrp_min
+    description: min of RAISE6SECRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_raise6secrrp_min
+  - name: dispatchprice_raise60secrrp_avg
+    label: dispatchprice_raise60secrrp_avg
+    description: avg of RAISE60SECRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_raise60secrrp_avg
+  - name: dispatchprice_raise60secrrp_max
+    label: dispatchprice_raise60secrrp_max
+    description: max of RAISE60SECRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_raise60secrrp_max
+  - name: dispatchprice_raise60secrrp_min
+    label: dispatchprice_raise60secrrp_min
+    description: min of RAISE60SECRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_raise60secrrp_min
+  - name: dispatchprice_raise5minrrp_avg
+    label: dispatchprice_raise5minrrp_avg
+    description: avg of RAISE5MINRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_raise5minrrp_avg
+  - name: dispatchprice_raise5minrrp_max
+    label: dispatchprice_raise5minrrp_max
+    description: max of RAISE5MINRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_raise5minrrp_max
+  - name: dispatchprice_raise5minrrp_min
+    label: dispatchprice_raise5minrrp_min
+    description: min of RAISE5MINRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_raise5minrrp_min
+  - name: dispatchprice_raiseregrrp_avg
+    label: dispatchprice_raiseregrrp_avg
+    description: avg of RAISEREGRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_raiseregrrp_avg
+  - name: dispatchprice_raiseregrrp_max
+    label: dispatchprice_raiseregrrp_max
+    description: max of RAISEREGRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_raiseregrrp_max
+  - name: dispatchprice_raiseregrrp_min
+    label: dispatchprice_raiseregrrp_min
+    description: min of RAISEREGRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_raiseregrrp_min
+  - name: dispatchprice_lower6secrrp_avg
+    label: dispatchprice_lower6secrrp_avg
+    description: avg of LOWER6SECRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_lower6secrrp_avg
+  - name: dispatchprice_lower6secrrp_max
+    label: dispatchprice_lower6secrrp_max
+    description: max of LOWER6SECRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_lower6secrrp_max
+  - name: dispatchprice_lower6secrrp_min
+    label: dispatchprice_lower6secrrp_min
+    description: min of LOWER6SECRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_lower6secrrp_min
+  - name: dispatchprice_lower60secrrp_avg
+    label: dispatchprice_lower60secrrp_avg
+    description: avg of LOWER60SECRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_lower60secrrp_avg
+  - name: dispatchprice_lower60secrrp_max
+    label: dispatchprice_lower60secrrp_max
+    description: max of LOWER60SECRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_lower60secrrp_max
+  - name: dispatchprice_lower60secrrp_min
+    label: dispatchprice_lower60secrrp_min
+    description: min of LOWER60SECRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_lower60secrrp_min
+  - name: dispatchprice_lower5minrrp_avg
+    label: dispatchprice_lower5minrrp_avg
+    description: avg of LOWER5MINRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_lower5minrrp_avg
+  - name: dispatchprice_lower5minrrp_max
+    label: dispatchprice_lower5minrrp_max
+    description: max of LOWER5MINRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_lower5minrrp_max
+  - name: dispatchprice_lower5minrrp_min
+    label: dispatchprice_lower5minrrp_min
+    description: min of LOWER5MINRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_lower5minrrp_min
+  - name: dispatchprice_lowerregrrp_avg
+    label: dispatchprice_lowerregrrp_avg
+    description: avg of LOWERREGRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_lowerregrrp_avg
+  - name: dispatchprice_lowerregrrp_max
+    label: dispatchprice_lowerregrrp_max
+    description: max of LOWERREGRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_lowerregrrp_max
+  - name: dispatchprice_lowerregrrp_min
+    label: dispatchprice_lowerregrrp_min
+    description: min of LOWERREGRRP (FCAS price $/MW)
+    type: simple
+    type_params:
+      measure: dispatchprice_lowerregrrp_min
+  - name: dispatchregionsum_row_count
+    label: dispatchregionsum_row_count
+    description: number of dispatchregionsum rows
+    type: simple
+    type_params:
+      measure: dispatchregionsum_row_count
+  - name: dispatchregionsum_region_distinct_count
+    label: dispatchregionsum_region_distinct_count
+    description: distinct region values
+    type: simple
+    type_params:
+      measure: dispatchregionsum_region_distinct_count
+  - name: dispatchregionsum_totaldemand_total
+    label: dispatchregionsum_totaldemand_total
+    description: total of TOTALDEMAND (regional demand MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_totaldemand_total
+  - name: dispatchregionsum_totaldemand_avg
+    label: dispatchregionsum_totaldemand_avg
+    description: avg of TOTALDEMAND (regional demand MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_totaldemand_avg
+  - name: dispatchregionsum_totaldemand_max
+    label: dispatchregionsum_totaldemand_max
+    description: max of TOTALDEMAND (regional demand MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_totaldemand_max
+  - name: dispatchregionsum_totaldemand_min
+    label: dispatchregionsum_totaldemand_min
+    description: min of TOTALDEMAND (regional demand MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_totaldemand_min
+  - name: dispatchregionsum_netinterchange_total
+    label: dispatchregionsum_netinterchange_total
+    description: total of NETINTERCHANGE (net interchange MW, positive = exporting)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_netinterchange_total
+  - name: dispatchregionsum_netinterchange_avg
+    label: dispatchregionsum_netinterchange_avg
+    description: avg of NETINTERCHANGE (net interchange MW, positive = exporting)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_netinterchange_avg
+  - name: dispatchregionsum_netinterchange_max
+    label: dispatchregionsum_netinterchange_max
+    description: max of NETINTERCHANGE (net interchange MW, positive = exporting)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_netinterchange_max
+  - name: dispatchregionsum_netinterchange_min
+    label: dispatchregionsum_netinterchange_min
+    description: min of NETINTERCHANGE (net interchange MW, positive = exporting)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_netinterchange_min
+  - name: dispatchregionsum_availablegeneration_avg
+    label: dispatchregionsum_availablegeneration_avg
+    description: avg of AVAILABLEGENERATION (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_availablegeneration_avg
+  - name: dispatchregionsum_availablegeneration_max
+    label: dispatchregionsum_availablegeneration_max
+    description: max of AVAILABLEGENERATION (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_availablegeneration_max
+  - name: dispatchregionsum_availableload_avg
+    label: dispatchregionsum_availableload_avg
+    description: avg of AVAILABLELOAD (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_availableload_avg
+  - name: dispatchregionsum_availableload_max
+    label: dispatchregionsum_availableload_max
+    description: max of AVAILABLELOAD (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_availableload_max
+  - name: dispatchregionsum_demandforecast_avg
+    label: dispatchregionsum_demandforecast_avg
+    description: avg of DEMANDFORECAST (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_demandforecast_avg
+  - name: dispatchregionsum_demandforecast_max
+    label: dispatchregionsum_demandforecast_max
+    description: max of DEMANDFORECAST (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_demandforecast_max
+  - name: dispatchregionsum_dispatchablegeneration_avg
+    label: dispatchregionsum_dispatchablegeneration_avg
+    description: avg of DISPATCHABLEGENERATION (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_dispatchablegeneration_avg
+  - name: dispatchregionsum_dispatchablegeneration_max
+    label: dispatchregionsum_dispatchablegeneration_max
+    description: max of DISPATCHABLEGENERATION (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_dispatchablegeneration_max
+  - name: dispatchregionsum_dispatchableload_avg
+    label: dispatchregionsum_dispatchableload_avg
+    description: avg of DISPATCHABLELOAD (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_dispatchableload_avg
+  - name: dispatchregionsum_dispatchableload_max
+    label: dispatchregionsum_dispatchableload_max
+    description: max of DISPATCHABLELOAD (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_dispatchableload_max
+  - name: dispatchregionsum_excessgeneration_avg
+    label: dispatchregionsum_excessgeneration_avg
+    description: avg of EXCESSGENERATION (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_excessgeneration_avg
+  - name: dispatchregionsum_excessgeneration_max
+    label: dispatchregionsum_excessgeneration_max
+    description: max of EXCESSGENERATION (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_excessgeneration_max
+  - name: dispatchregionsum_initialsupply_avg
+    label: dispatchregionsum_initialsupply_avg
+    description: avg of INITIALSUPPLY (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_initialsupply_avg
+  - name: dispatchregionsum_initialsupply_max
+    label: dispatchregionsum_initialsupply_max
+    description: max of INITIALSUPPLY (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_initialsupply_max
+  - name: dispatchregionsum_clearedsupply_avg
+    label: dispatchregionsum_clearedsupply_avg
+    description: avg of CLEAREDSUPPLY (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_clearedsupply_avg
+  - name: dispatchregionsum_clearedsupply_max
+    label: dispatchregionsum_clearedsupply_max
+    description: max of CLEAREDSUPPLY (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_clearedsupply_max
+  - name: dispatchregionsum_totalintermittentgeneration_avg
+    label: dispatchregionsum_totalintermittentgeneration_avg
+    description: avg of TOTALINTERMITTENTGENERATION (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_totalintermittentgeneration_avg
+  - name: dispatchregionsum_totalintermittentgeneration_max
+    label: dispatchregionsum_totalintermittentgeneration_max
+    description: max of TOTALINTERMITTENTGENERATION (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_totalintermittentgeneration_max
+  - name: dispatchregionsum_demand_and_nonschedgen_avg
+    label: dispatchregionsum_demand_and_nonschedgen_avg
+    description: avg of DEMAND_AND_NONSCHEDGEN (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_demand_and_nonschedgen_avg
+  - name: dispatchregionsum_demand_and_nonschedgen_max
+    label: dispatchregionsum_demand_and_nonschedgen_max
+    description: max of DEMAND_AND_NONSCHEDGEN (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_demand_and_nonschedgen_max
+  - name: dispatchregionsum_uigf_avg
+    label: dispatchregionsum_uigf_avg
+    description: avg of UIGF (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_uigf_avg
+  - name: dispatchregionsum_uigf_max
+    label: dispatchregionsum_uigf_max
+    description: max of UIGF (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_uigf_max
+  - name: dispatchregionsum_semischedule_clearedmw_avg
+    label: dispatchregionsum_semischedule_clearedmw_avg
+    description: avg of SEMISCHEDULE_CLEAREDMW (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_semischedule_clearedmw_avg
+  - name: dispatchregionsum_semischedule_clearedmw_max
+    label: dispatchregionsum_semischedule_clearedmw_max
+    description: max of SEMISCHEDULE_CLEAREDMW (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_semischedule_clearedmw_max
+  - name: dispatchregionsum_semischedule_compliancemw_avg
+    label: dispatchregionsum_semischedule_compliancemw_avg
+    description: avg of SEMISCHEDULE_COMPLIANCEMW (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_semischedule_compliancemw_avg
+  - name: dispatchregionsum_semischedule_compliancemw_max
+    label: dispatchregionsum_semischedule_compliancemw_max
+    description: max of SEMISCHEDULE_COMPLIANCEMW (MW)
+    type: simple
+    type_params:
+      measure: dispatchregionsum_semischedule_compliancemw_max
+  - name: dispatchinterconnectorres_row_count
+    label: dispatchinterconnectorres_row_count
+    description: number of dispatchinterconnectorres rows
+    type: simple
+    type_params:
+      measure: dispatchinterconnectorres_row_count
+  - name: dispatchinterconnectorres_interconnector_distinct_count
+    label: dispatchinterconnectorres_interconnector_distinct_count
+    description: distinct interconnector values
+    type: simple
+    type_params:
+      measure: dispatchinterconnectorres_interconnector_distinct_count
+  - name: dispatchinterconnectorres_mwflow_total
+    label: dispatchinterconnectorres_mwflow_total
+    description: total of MWFLOW (flow MW, positive = forward direction)
+    type: simple
+    type_params:
+      measure: dispatchinterconnectorres_mwflow_total
+  - name: dispatchinterconnectorres_mwflow_avg
+    label: dispatchinterconnectorres_mwflow_avg
+    description: avg of MWFLOW (flow MW, positive = forward direction)
+    type: simple
+    type_params:
+      measure: dispatchinterconnectorres_mwflow_avg
+  - name: dispatchinterconnectorres_mwflow_max
+    label: dispatchinterconnectorres_mwflow_max
+    description: max of MWFLOW (flow MW, positive = forward direction)
+    type: simple
+    type_params:
+      measure: dispatchinterconnectorres_mwflow_max
+  - name: dispatchinterconnectorres_mwflow_min
+    label: dispatchinterconnectorres_mwflow_min
+    description: min of MWFLOW (flow MW, positive = forward direction)
+    type: simple
+    type_params:
+      measure: dispatchinterconnectorres_mwflow_min
+  - name: dispatchinterconnectorres_mwlosses_total
+    label: dispatchinterconnectorres_mwlosses_total
+    description: total of MWLOSSES (losses MW)
+    type: simple
+    type_params:
+      measure: dispatchinterconnectorres_mwlosses_total
+  - name: dispatchinterconnectorres_mwlosses_avg
+    label: dispatchinterconnectorres_mwlosses_avg
+    description: avg of MWLOSSES (losses MW)
+    type: simple
+    type_params:
+      measure: dispatchinterconnectorres_mwlosses_avg
+  - name: dispatchinterconnectorres_mwlosses_max
+    label: dispatchinterconnectorres_mwlosses_max
+    description: max of MWLOSSES (losses MW)
+    type: simple
+    type_params:
+      measure: dispatchinterconnectorres_mwlosses_max
+  - name: dispatchinterconnectorres_mwlosses_min
+    label: dispatchinterconnectorres_mwlosses_min
+    description: min of MWLOSSES (losses MW)
+    type: simple
+    type_params:
+      measure: dispatchinterconnectorres_mwlosses_min
+  - name: dispatchinterconnectorres_meteredmwflow_avg
+    label: dispatchinterconnectorres_meteredmwflow_avg
+    description: avg of METEREDMWFLOW (metered flow MW)
+    type: simple
+    type_params:
+      measure: dispatchinterconnectorres_meteredmwflow_avg
+  - name: dispatchinterconnectorres_meteredmwflow_max
+    label: dispatchinterconnectorres_meteredmwflow_max
+    description: max of METEREDMWFLOW (metered flow MW)
+    type: simple
+    type_params:
+      measure: dispatchinterconnectorres_meteredmwflow_max
+  - name: dispatchinterconnectorres_exportlimit_avg
+    label: dispatchinterconnectorres_exportlimit_avg
+    description: avg of EXPORTLIMIT (export limit MW)
+    type: simple
+    type_params:
+      measure: dispatchinterconnectorres_exportlimit_avg
+  - name: dispatchinterconnectorres_exportlimit_max
+    label: dispatchinterconnectorres_exportlimit_max
+    description: max of EXPORTLIMIT (export limit MW)
+    type: simple
+    type_params:
+      measure: dispatchinterconnectorres_exportlimit_max
+  - name: dispatchinterconnectorres_importlimit_avg
+    label: dispatchinterconnectorres_importlimit_avg
+    description: avg of IMPORTLIMIT (import limit MW)
+    type: simple
+    type_params:
+      measure: dispatchinterconnectorres_importlimit_avg
+  - name: dispatchinterconnectorres_importlimit_max
+    label: dispatchinterconnectorres_importlimit_max
+    description: max of IMPORTLIMIT (import limit MW)
+    type: simple
+    type_params:
+      measure: dispatchinterconnectorres_importlimit_max
+  - name: dudetailsummary_row_count
+    label: dudetailsummary_row_count
+    description: number of dudetailsummary rows
+    type: simple
+    type_params:
+      measure: dudetailsummary_row_count
+  - name: dudetailsummary_duid_distinct_count
+    label: dudetailsummary_duid_distinct_count
+    description: distinct duid values
+    type: simple
+    type_params:
+      measure: dudetailsummary_duid_distinct_count
+  - name: dudetailsummary_station_distinct_count
+    label: dudetailsummary_station_distinct_count
+    description: distinct station values
+    type: simple
+    type_params:
+      measure: dudetailsummary_station_distinct_count
+  - name: dudetailsummary_region_distinct_count
+    label: dudetailsummary_region_distinct_count
+    description: distinct region values
+    type: simple
+    type_params:
+      measure: dudetailsummary_region_distinct_count
+  - name: dudetailsummary_participant_distinct_count
+    label: dudetailsummary_participant_distinct_count
+    description: distinct participant values
+    type: simple
+    type_params:
+      measure: dudetailsummary_participant_distinct_count
+  - name: dudetailsummary_transmissionlossfactor_avg
+    label: dudetailsummary_transmissionlossfactor_avg
+    description: avg of TRANSMISSIONLOSSFACTOR (loss factor)
+    type: simple
+    type_params:
+      measure: dudetailsummary_transmissionlossfactor_avg
+  - name: dudetailsummary_transmissionlossfactor_max
+    label: dudetailsummary_transmissionlossfactor_max
+    description: max of TRANSMISSIONLOSSFACTOR (loss factor)
+    type: simple
+    type_params:
+      measure: dudetailsummary_transmissionlossfactor_max
+  - name: dudetailsummary_distributionlossfactor_avg
+    label: dudetailsummary_distributionlossfactor_avg
+    description: avg of DISTRIBUTIONLOSSFACTOR (loss factor)
+    type: simple
+    type_params:
+      measure: dudetailsummary_distributionlossfactor_avg
+  - name: dudetailsummary_distributionlossfactor_max
+    label: dudetailsummary_distributionlossfactor_max
+    description: max of DISTRIBUTIONLOSSFACTOR (loss factor)
+    type: simple
+    type_params:
+      measure: dudetailsummary_distributionlossfactor_max
+  - name: dudetailsummary_max_ramp_rate_up_avg
+    label: dudetailsummary_max_ramp_rate_up_avg
+    description: avg of MAX_RAMP_RATE_UP (MW/min)
+    type: simple
+    type_params:
+      measure: dudetailsummary_max_ramp_rate_up_avg
+  - name: dudetailsummary_max_ramp_rate_up_max
+    label: dudetailsummary_max_ramp_rate_up_max
+    description: max of MAX_RAMP_RATE_UP (MW/min)
+    type: simple
+    type_params:
+      measure: dudetailsummary_max_ramp_rate_up_max
+  - name: dudetailsummary_max_ramp_rate_down_avg
+    label: dudetailsummary_max_ramp_rate_down_avg
+    description: avg of MAX_RAMP_RATE_DOWN (MW/min)
+    type: simple
+    type_params:
+      measure: dudetailsummary_max_ramp_rate_down_avg
+  - name: dudetailsummary_max_ramp_rate_down_max
+    label: dudetailsummary_max_ramp_rate_down_max
+    description: max of MAX_RAMP_RATE_DOWN (MW/min)
+    type: simple
+    type_params:
+      measure: dudetailsummary_max_ramp_rate_down_max

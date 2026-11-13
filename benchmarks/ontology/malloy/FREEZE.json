@@ -1,0 +1,15 @@
+{
+ "frozen_at": "2026-11-09T07:00:43Z",
+ "authoring_minutes": 4,
+ "authoring_minutes_basis": "authoring-log.md: 03:49:46Z start -> 03:53:03Z first complete (3.3 min) + a one-line max_tokens fix; excludes the licence gate, image build and Publisher API exploration done before the log started, and GPU-lock queue waits",
+ "files": {
+  "benchmarks/ontology/malloy/pkg/nem.malloy": "443c82ccf77c45ba6497ea1ae671112869b53d9737a88396b7e416e542282c6c",
+  "benchmarks/ontology/malloy/pkg/publisher.json": "f69d55e37d253494fa2ef16fafd45104f7ee14660acd5af94071817789708c2e",
+  "benchmarks/ontology/malloy/publisher.config.json": "05d09e7e6358ee9b82310f07f1565c405f998252bb8e3ce2b1fd1aba635c0540",
+  "benchmarks/ontology/malloy/gold-specs.json": "24bbdf5aab48a0922c95ae6308288437c1aa9c6536078cb22059868121d9030a",
+  "benchmarks/ontology/malloy/client.mjs": "041d53b673280265e7a93cd02dd7c934d977283aac31053114f1aaf1c8b28fda",
+  "benchmarks/ontology/malloy/Containerfile": "571f7de59f777ba691bfb24441455242347cef97e08e7d4b66d619897a4fea1d",
+  "benchmarks/ontology/malloy/PUBLISHER-LICENSE": "32380f1f31656893582279c839cd9571a1a8c16e955517bc956b320363adfc65",
+  "scripts/ontology_eval/adapter_malloy.py": "0b4ec44415ac37c4a8434a4ae13a05a9ca81df46bd73cc9c2ac42d1ad0f83d19"
+ }
+}

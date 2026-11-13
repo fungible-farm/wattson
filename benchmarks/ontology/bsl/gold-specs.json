@@ -1,0 +1,116 @@
+{
+ "M1": {
+  "model": "unit_dispatch",
+  "dimensions": [
+   "dudetailsummary.stationid"
+  ],
+  "measures": [
+   "dispatchload.totalcleared_energy_mwh"
+  ],
+  "order_by": [
+   [
+    "dispatchload.totalcleared_energy_mwh",
+    "desc"
+   ]
+  ],
+  "limit": 1
+ },
+ "M2": {
+  "model": "unit_dispatch",
+  "measures": [
+   "dispatchload.unit_count"
+  ],
+  "filters": [
+   {
+    "field": "dudetailsummary.regionid",
+    "operator": "=",
+    "value": "SA1"
+   },
+   {
+    "field": "dispatchload.totalcleared",
+    "operator": ">",
+    "value": 0
+   }
+  ]
+ },
+ "M3": {
+  "model": "unit_dispatch",
+  "dimensions": [
+   "dudetailsummary.regionid"
+  ],
+  "measures": [
+   "dispatchload.totalcleared_energy_mwh"
+  ],
+  "order_by": [
+   [
+    "dispatchload.totalcleared_energy_mwh",
+    "desc"
+   ]
+  ],
+  "limit": 1
+ },
+ "M4": {
+  "inexpressible": "needs a per-interval comparison of two rows of the same price table (NSW1 vs VIC1 pivoted side by side) combined with the VIC1-NSW1 flow sign, then a count of intervals; BSL queries aggregate one model by dimensions and cannot pivot rows, compare two groups row-wise or count the groups of a prior aggregation"
+ },
+ "M5": {
+  "model": "regional_price_demand",
+  "dimensions": [
+   "dispatchregionsum.regionid"
+  ],
+  "measures": [
+   "dispatchregionsum.netinterchange_avg"
+  ],
+  "order_by": [
+   [
+    "dispatchregionsum.netinterchange_avg",
+    "desc"
+   ]
+  ],
+  "limit": 1
+ },
+ "M6": {
+  "model": "interconnector_flow",
+  "dimensions": [
+   "interconnectorid"
+  ],
+  "measures": [
+   "mwlosses_avg"
+  ],
+  "order_by": [
+   [
+    "mwlosses_avg",
+    "desc"
+   ]
+  ],
+  "limit": 1
+ },
+ "M7": {
+  "program": "M7"
+ },
+ "M8": {
+  "program": "M8"
+ },
+ "M9": {
+  "program": "M9"
+ },
+ "M10": {
+  "model": "unit_details",
+  "dimensions": [
+   "stationid"
+  ],
+  "measures": [
+   "duid_count"
+  ],
+  "order_by": [
+   [
+    "duid_count",
+    "desc"
+   ],
+   [
+    "stationid",
+    "asc"
+   ]
+  ],
+  "limit": 1
+ }
+}

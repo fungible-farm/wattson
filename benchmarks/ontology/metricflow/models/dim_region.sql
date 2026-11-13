@@ -1,0 +1,1 @@
+select distinct REGIONID from read_parquet('/nemosis/DUDETAILSUMMARY.parquet') union select distinct REGIONID from read_parquet('/nemosis/DISPATCHREGIONSUM.parquet') union select distinct REGIONID from read_parquet('/nemosis/DISPATCHPRICE.parquet')

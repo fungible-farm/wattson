@@ -1,0 +1,7 @@
+wattson_nem:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: /work/wattson.duckdb
+      threads: 1

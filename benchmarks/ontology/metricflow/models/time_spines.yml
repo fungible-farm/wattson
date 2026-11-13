@@ -1,0 +1,13 @@
+models:
+  - name: metricflow_time_spine_minute
+    time_spine:
+      standard_granularity_column: date_minute
+    columns:
+      - name: date_minute
+        granularity: minute
+  - name: metricflow_time_spine_day
+    time_spine:
+      standard_granularity_column: date_day
+    columns:
+      - name: date_day
+        granularity: day

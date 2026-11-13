@@ -1,0 +1,7 @@
+# Candidate C: Boring Semantic Layer 0.3.18 over Ibis 11 + DuckDB 2.0. Build with network; run with --network=none.
+FROM docker.io/library/python:3.12-slim
+COPY benchmarks/ontology/bsl/requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt && useradd --create-home --uid 1000 wattson
+COPY benchmarks/ontology/bsl/model.py benchmarks/ontology/bsl/runner.py benchmarks/ontology/bsl/chains.py /opt/bsl/
+WORKDIR /work
+ENTRYPOINT ["python", "-I", "/opt/bsl/runner.py"]
