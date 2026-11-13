@@ -137,10 +137,9 @@ def main():
             ok = all(any(same(e, g) for g in values) for e in truth[qid])
             detail = f"returned {values[:6]}"
         passed += ok
-        print(f"{qid:4} {'PASS' if ok else 'FAIL':7} {text[:78]}")
-        if not ok:
-            print(f"       expected={truth[qid]} {detail}")
-            print(f"       sql={' '.join(sql.split())[:260]}")
+        print(f"{qid:4} {'PASS' if ok else 'FAIL':7} {text}")
+        print(f"       expected={truth[qid]} {detail}")
+        print(f"       sql={' '.join(sql.split())[:260]}")
     print(f"summary: arm 1 (plain text-to-SQL), {model}: {passed}/{len(questions)} questions match the ground truth")
     if passed != len(questions):
         fail(f"{len(questions) - passed} question(s) did not match; the table above is the evidence (a measurement, not a defect of the harness)")
