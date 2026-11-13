@@ -26,6 +26,7 @@ of the same recipe on the same data; with 3 seeds or fewer, differences smaller 
 | Python shell, thinking (3 seeds) | 90, 89, 85 | 40, 40, 40 | 26, 19, 26 | 40, 40, 40 | 39, 29, 38 |
 | Untrained Qwen3.5-4B + shell (1 run, thinking on) | 13 (see note) | - | - | - | 35 |
 | Untrained Qwen3.5-4B + shell (1 run, thinking off) | 5 (see note) | - | - | - | - |
+| Untrained Qwen3.5-4B + shell (1 run, thinking on, doubled budget; sensitivity test) | 29 (see note) | - | - | - | - |
 | Granite 4.2 8B + shell (1 seed) | 90 | 36 | 14 | 40 | 37 |
 
 Untrained held-out note (#132, one greedy run, temperature 0, max_tokens 8192, 12 turns): 14 tasks ended with an answer (13 correct), 42 hit the
@@ -34,6 +35,11 @@ derived-40 untrained run (35) is not comparable until its thinking mode and toke
 `enable_thinking=false` as the server default, no reasoning in any response) it scored 5/90: 17 answered, 32 hit the turn limit, 31 the context limit,
 10 the generation limit. So runaway reasoning is not the whole cause: without it the model still loops in the shell without converging. A larger
 turn or token budget has not been tried. An earlier 10/90 and 12/90 are void (harness image without the case-directory fix).
+
+Budget sensitivity (#132): the same untrained model, thinking on, greedy, one run, with 24 turns, 48 tool calls and max_tokens 16384 (double the protocol; the
+limits were patched into a read-only copy of `tool_probe.py`, the repo is unchanged) scored 29/90 (32.2%), complete, 60 answers empty. This is not comparable
+to the students' 88-90/90, which ran under the fixed protocol (12 turns, 24 calls, 8192 tokens). It shows the 13/90 baseline was partly budget-limited, and
+that the model still fails to finish most tasks at twice the budget. Served by vLLM with context 98304 and concurrency 8, 12,424 s.
 
 Smoke (20 tasks) is at ceiling for every Python arm (20 of 20) and 19 for plain tools.
 
