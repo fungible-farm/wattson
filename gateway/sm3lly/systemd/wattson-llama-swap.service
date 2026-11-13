@@ -1,0 +1,12 @@
+[Unit]
+Description=llama-swap (upstream, v272): loads one model container at a time on the sm3lly GPU
+Conflicts=b00t-hive-inference-heretic-neo-coder.service b00t-hive-inference-arete-27b.service
+
+[Service]
+ExecStart=%h/llama-swap-stage/llama-swap --config %h/llama-swap-stage/llama-swap.yaml --listen 127.0.0.1:18010
+ExecStopPost=-/usr/bin/podman rm -f swap-neo-coder swap-arete
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=default.target

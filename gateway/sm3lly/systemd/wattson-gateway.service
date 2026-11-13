@@ -1,0 +1,15 @@
+[Unit]
+Description=agentgateway (v1.7.0, pinned) in front of llama-swap; serves 127.0.0.1:8000 and :8002 so kr0ki's existing config is unchanged
+Requires=wattson-llama-swap.service
+After=wattson-llama-swap.service
+Conflicts=kr0ki-llm-socat.service b00t-hive-inference-heretic-neo-coder.service b00t-hive-inference-arete-27b.service
+
+[Service]
+ExecStartPre=-/usr/bin/podman rm -f wattson-gateway
+ExecStart=/usr/bin/podman run --rm --name wattson-gateway --read-only --cap-drop=all --security-opt=no-new-privileges --memory=512m --memory-swap=512m --cpus=1 --pids-limit=128 --network=pasta:--map-host-loopback,169.254.1.2 -p 127.0.0.1:8000:4000 -p 127.0.0.1:8002:4000 -v %h/llama-swap-stage/gw:/etc/agentgateway:ro,Z ghcr.io/agentgateway/agentgateway:v1.7.0@sha256:60216aafb03d37f94e952ff3d51d2f630a65b10ecaebdc0a864882f92610c45b -f /etc/agentgateway/agentgateway.yaml
+ExecStop=/usr/bin/podman stop -t 10 wattson-gateway
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=default.target
