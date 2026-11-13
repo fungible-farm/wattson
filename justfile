@@ -408,6 +408,10 @@ nem-interconnector:
 nem-unit-lookup:
     @python3 scripts/nem_unit_lookup.py
 
+# Fetch the five NEMOSIS tables the multi-table question set (#120) asks about for 2025-09-01, one nemosis-fetch per table into out/nemosis. NEMOSIS wants "%Y/%m/%d %H:%M:%S", so slashes, unlike the dashed dates in the other charts.
+nem-multitable-data:
+    @for t in DISPATCHLOAD DUDETAILSUMMARY DISPATCHPRICE DISPATCHREGIONSUM DISPATCHINTERCONNECTORRES; do just nemosis-fetch "$t" "2025/09/01 00:00:00" "2025/09/02 00:00:00"; done
+
 # Multi-table benchmark (#120): arm 1 (plain text-to-SQL) over NEMOSIS parquet views (dispatchload, dudetailsummary, dispatchprice, dispatchregionsum, dispatchinterconnectorres) for 2025-09-01. A measurement, not a gate. Needs the parquet fetched first.
 demo-multitable-qa:
     @python3 -u scripts/demo_timeseries_qa.py --schema-file configs/nem-multitable-schema.txt --questions configs/nem-multitable-questions.proposed.json

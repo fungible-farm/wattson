@@ -107,6 +107,8 @@ def main():
     args = parser.parse_args()
     if not os.path.exists(os.path.join(DATA, "nem.duckdb")):
         fail("out/nem/nem.duckdb missing; run `just nem-data` first")
+    if args.schema_file and not os.path.isdir(os.path.join(REPO, "out", "nemosis")):
+        fail("out/nemosis missing; run just nem-multitable-data first")
     spec = importlib.util.spec_from_file_location("pi_delegate", os.path.join(REPO, "scripts", "pi_delegate.py"))
     delegate = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(delegate)
