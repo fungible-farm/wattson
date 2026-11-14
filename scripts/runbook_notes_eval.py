@@ -124,8 +124,8 @@ def main():
     with open(args.out, "w") as fh:
         json.dump({"prompt_base_sha256": sha, "model": model, "base_url": base_url, "selector_threshold": THRESHOLD, "threshold_set_after_seeing_scores": True, "questions_file": args.questions, "questions_sha256": qsha, "results": results, "pass": counts}, fh, indent=2)
         fh.write("\n")
-    print(f"summary base {counts['base']}/{len(questions)} notes {counts['notes']}/{len(questions)} "
-          "(dev questions, in-sample, one run each)")
+    scope = f"(questions from {os.path.basename(args.questions)}, one run each)" if args.questions else "(dev questions, in-sample, one run each)"
+    print(f"summary base {counts['base']}/{len(questions)} notes {counts['notes']}/{len(questions)} {scope}")
 
 if __name__ == "__main__":
     main()

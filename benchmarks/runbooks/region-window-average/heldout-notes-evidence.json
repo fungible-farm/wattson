@@ -1,0 +1,247 @@
+{
+  "prompt_base_sha256": "cf7286771151e084ab1fedeb4b324a41bde0cbc464b2fbd60118dfcc60998796",
+  "model": "neo-coder",
+  "base_url": "http://192.168.1.137:8002/v1",
+  "selector_threshold": 0.1,
+  "threshold_set_after_seeing_scores": true,
+  "questions_file": "benchmarks/runbooks/region-window-average/heldout-questions.json",
+  "questions_sha256": "f8bcaa62e4fd8b18f8bf2c357293c05e70b1e4f57fc46a2147ae2162b061828a",
+  "results": [
+    {
+      "id": "H1",
+      "arm": "base",
+      "selected": [
+        "region-window-average"
+      ],
+      "passed": false,
+      "sql": "SELECT AVG(rrp) AS avg_price FROM price_demand WHERE region = 'QLD1' AND settlement_ts >= '2025-09-01 00:05:00' AND settlement_ts < '2025-09-08 00:00:00';",
+      "returned": [
+        75.5468486352356
+      ],
+      "expected": [
+        75.53166666666654
+      ]
+    },
+    {
+      "id": "H1",
+      "arm": "notes",
+      "selected": [
+        "region-window-average"
+      ],
+      "passed": true,
+      "sql": "SELECT AVG(rrp) AS avg_rrp FROM price_demand WHERE region = 'QLD1' AND settlement_ts > '2025-09-01 00:00:00' AND settlement_ts <= '2025-09-08 00:00:00';",
+      "returned": [
+        75.53166666666654
+      ],
+      "expected": [
+        75.53166666666654
+      ]
+    },
+    {
+      "id": "H2",
+      "arm": "base",
+      "selected": [],
+      "passed": false,
+      "sql": "SELECT AVG(total_demand_mw) AS avg_demand_mw FROM price_demand WHERE region = 'SA1' AND settlement_ts >= '2025-09-20 00:05:00' AND settlement_ts < '2025-09-21 00:00:00';",
+      "returned": [
+        1284.4422996515675
+      ],
+      "expected": [
+        1285.3001388888886
+      ]
+    },
+    {
+      "id": "H2",
+      "arm": "notes",
+      "selected": [],
+      "passed": false,
+      "sql": "SELECT AVG(total_demand_mw) AS avg_demand_mw FROM price_demand WHERE region = 'SA1' AND settlement_ts >= '2025-09-20 00:05:00' AND settlement_ts < '2025-09-21 00:00:00';",
+      "returned": [
+        1284.4422996515675
+      ],
+      "expected": [
+        1285.3001388888886
+      ]
+    },
+    {
+      "id": "H3",
+      "arm": "base",
+      "selected": [
+        "region-window-average"
+      ],
+      "passed": true,
+      "sql": "SELECT AVG(rrp) AS avg_rrp FROM price_demand WHERE region = 'TAS1' AND settlement_ts >= '2025-09-10 06:05:00' AND settlement_ts <= '2025-09-10 10:00:00';",
+      "returned": [
+        135.35666666666665
+      ],
+      "expected": [
+        135.35666666666665
+      ]
+    },
+    {
+      "id": "H3",
+      "arm": "notes",
+      "selected": [
+        "region-window-average"
+      ],
+      "passed": true,
+      "sql": "SELECT AVG(rrp) AS avg_rrp FROM price_demand WHERE region = 'TAS1' AND settlement_ts > '2025-09-10 06:00:00' AND settlement_ts <= '2025-09-10 10:00:00';",
+      "returned": [
+        135.35666666666665
+      ],
+      "expected": [
+        135.35666666666665
+      ]
+    },
+    {
+      "id": "H4",
+      "arm": "base",
+      "selected": [
+        "region-window-average"
+      ],
+      "passed": false,
+      "sql": "SELECT AVG(total_demand_mw) AS avg_demand_mw FROM price_demand WHERE region = 'VIC1' AND settlement_ts >= '2025-09-01 00:05:00' AND settlement_ts < '2025-10-01 00:00:00';",
+      "returned": [
+        4821.853112628768
+      ],
+      "expected": [
+        4821.861403935177
+      ]
+    },
+    {
+      "id": "H4",
+      "arm": "notes",
+      "selected": [
+        "region-window-average"
+      ],
+      "passed": true,
+      "sql": "SELECT AVG(total_demand_mw) AS avg_demand_mw FROM price_demand WHERE region = 'VIC1' AND settlement_ts > '2025-09-01 00:00:00' AND settlement_ts <= '2025-10-01 00:00:00';",
+      "returned": [
+        4821.861403935177
+      ],
+      "expected": [
+        4821.861403935177
+      ]
+    },
+    {
+      "id": "H5",
+      "arm": "base",
+      "selected": [
+        "region-window-average"
+      ],
+      "passed": false,
+      "sql": "SELECT AVG(rrp) AS avg_price FROM price_demand WHERE region = 'NSW1' AND settlement_ts >= '2025-09-30 00:00:00' AND settlement_ts < '2025-10-01 00:00:00';",
+      "returned": [
+        59.70951388888894
+      ],
+      "expected": [
+        59.54003472222228
+      ]
+    },
+    {
+      "id": "H5",
+      "arm": "notes",
+      "selected": [
+        "region-window-average"
+      ],
+      "passed": true,
+      "sql": "SELECT AVG(rrp) AS avg_rrp FROM price_demand WHERE region = 'NSW1' AND settlement_ts > '2025-09-30 00:00:00' AND settlement_ts <= '2025-10-01 00:00:00';",
+      "returned": [
+        59.54003472222228
+      ],
+      "expected": [
+        59.54003472222228
+      ]
+    },
+    {
+      "id": "H6",
+      "arm": "base",
+      "selected": [
+        "region-window-average"
+      ],
+      "passed": true,
+      "sql": "SELECT AVG(total_demand_mw) AS avg_demand_mw FROM price_demand WHERE region = 'QLD1' AND settlement_ts >= '2025-09-25 12:05:00' AND settlement_ts <= '2025-09-25 13:00:00';",
+      "returned": [
+        3417.9483333333333
+      ],
+      "expected": [
+        3417.9483333333333
+      ]
+    },
+    {
+      "id": "H6",
+      "arm": "notes",
+      "selected": [
+        "region-window-average"
+      ],
+      "passed": true,
+      "sql": "SELECT AVG(total_demand_mw) AS avg_demand_mw FROM price_demand WHERE region = 'QLD1' AND settlement_ts > '2025-09-25 12:00:00' AND settlement_ts <= '2025-09-25 13:00:00';",
+      "returned": [
+        3417.9483333333333
+      ],
+      "expected": [
+        3417.9483333333333
+      ]
+    },
+    {
+      "id": "H7",
+      "arm": "base",
+      "selected": [
+        "region-window-average"
+      ],
+      "passed": false,
+      "sql": "SELECT AVG(rrp) AS avg_rrp FROM price_demand WHERE region = 'SA1' AND settlement_ts >= '2025-09-16 00:00:00' AND settlement_ts < '2025-10-01 00:00:00';",
+      "returned": [
+        41.42721296296312
+      ],
+      "expected": [
+        38.97985243055571
+      ]
+    },
+    {
+      "id": "H7",
+      "arm": "notes",
+      "selected": [
+        "region-window-average"
+      ],
+      "passed": false,
+      "sql": "SELECT AVG(rrp) AS avg_rrp FROM price_demand WHERE region = 'SA1' AND settlement_ts > '2025-09-15 23:55:00' AND settlement_ts <= '2025-09-30 23:55:00';",
+      "returned": [
+        41.42721296296312
+      ],
+      "expected": [
+        38.97985243055571
+      ]
+    },
+    {
+      "id": "H8",
+      "arm": "base",
+      "selected": [],
+      "passed": false,
+      "sql": "SELECT AVG(total_demand_mw) AS avg_demand_mw FROM price_demand WHERE region = 'TAS1' AND settlement_ts >= '2025-09-01 00:05:00' AND settlement_ts < '2025-09-02 00:00:00';",
+      "returned": [
+        1113.2556445993034
+      ],
+      "expected": [
+        1113.0164930555559
+      ]
+    },
+    {
+      "id": "H8",
+      "arm": "notes",
+      "selected": [],
+      "passed": false,
+      "sql": "SELECT AVG(total_demand_mw) AS avg_demand_mw FROM price_demand WHERE region = 'TAS1' AND settlement_ts >= '2025-09-01 00:05:00' AND settlement_ts < '2025-09-02 00:00:00';",
+      "returned": [
+        1113.2556445993034
+      ],
+      "expected": [
+        1113.0164930555559
+      ]
+    }
+  ],
+  "pass": {
+    "base": 2,
+    "notes": 5
+  }
+}

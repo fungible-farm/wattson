@@ -90,7 +90,7 @@ def test_the_evidence_records_the_threshold_and_its_notes(tmp_path: Path, monkey
     assert all(f"- {n}" in seen[q4[1]] for n in notes) and all(n not in seen[q4[0]] for n in notes)
 
 
-def test_a_questions_file_replaces_the_built_in_set_and_is_fingerprinted(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_a_questions_file_replaces_the_built_in_set_and_is_fingerprinted(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
     qs, out = tmp_path / "heldout.json", tmp_path / "EVIDENCE.json"
     qs.write_text(json.dumps([{"id": "H1", "question": AVG, "sql": "SELECT 1"}, {"id": "H2", "question": LOWEST, "sql": "SELECT 2"}]), encoding="utf-8")
     patch(monkeypatch)
@@ -101,3 +101,4 @@ def test_a_questions_file_replaces_the_built_in_set_and_is_fingerprinted(tmp_pat
     assert e["questions_file"] == str(qs) and e["questions_sha256"] == hashlib.sha256(qs.read_bytes()).hexdigest()
     assert {arm: [r["id"] for r in e["results"] if r["arm"] == arm] for arm in ("base", "notes")} == {"base": ["H1", "H2"], "notes": ["H1", "H2"]}
     assert e["pass"] == {"base": 2, "notes": 2}  # the counts follow the two questions, not the built-in ten
+    assert f"(questions from {qs.name}, one run each)" in capsys.readouterr().out  # not the in-sample dev-set wording
