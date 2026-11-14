@@ -1,0 +1,50 @@
+[
+  {
+    "id": "H1",
+    "question": "What was the average price (rrp) in QLD1 over the first seven days of September 2025?",
+    "sql": "SELECT avg(rrp) FROM price_demand WHERE region = 'QLD1' AND settlement_ts > '2025-09-01 00:00:00' AND settlement_ts <= '2025-09-08 00:00:00'",
+    "sql_alt": "SELECT avg(rrp) FROM price_demand WHERE region = 'QLD1' AND settlement_ts BETWEEN '2025-09-01 00:05:00' AND '2025-09-08 00:00:00'"
+  },
+  {
+    "id": "H2",
+    "question": "What was the average total demand in SA1 on the market day of 20 September 2025?",
+    "sql": "SELECT avg(total_demand_mw) FROM price_demand WHERE region = 'SA1' AND settlement_ts > '2025-09-20 00:00:00' AND settlement_ts <= '2025-09-21 00:00:00'",
+    "sql_alt": "SELECT avg(total_demand_mw) FROM price_demand WHERE region = 'SA1' AND settlement_ts BETWEEN '2025-09-20 00:05:00' AND '2025-09-21 00:00:00'"
+  },
+  {
+    "id": "H3",
+    "question": "What was the average price (rrp) in TAS1 over the 48 intervals covering 06:00 to 10:00 on 10 September 2025 (the intervals ending 06:05 up to and including 10:00)?",
+    "sql": "SELECT avg(rrp) FROM price_demand WHERE region = 'TAS1' AND settlement_ts > '2025-09-10 06:00:00' AND settlement_ts <= '2025-09-10 10:00:00'",
+    "sql_alt": "SELECT avg(rrp) FROM price_demand WHERE region = 'TAS1' AND settlement_ts BETWEEN '2025-09-10 06:05:00' AND '2025-09-10 10:00:00'"
+  },
+  {
+    "id": "H4",
+    "question": "What was the average total demand in VIC1 over September 2025?",
+    "sql": "SELECT avg(total_demand_mw) FROM price_demand WHERE region = 'VIC1' AND settlement_ts > '2025-09-01 00:00:00' AND settlement_ts <= '2025-10-01 00:00:00'",
+    "sql_alt": "SELECT avg(total_demand_mw) FROM price_demand WHERE region = 'VIC1' AND settlement_ts BETWEEN '2025-09-01 00:05:00' AND '2025-10-01 00:00:00'"
+  },
+  {
+    "id": "H5",
+    "question": "What was the average price (rrp) in NSW1 on the market day of 30 September 2025?",
+    "sql": "SELECT avg(rrp) FROM price_demand WHERE region = 'NSW1' AND settlement_ts > '2025-09-30 00:00:00' AND settlement_ts <= '2025-10-01 00:00:00'",
+    "sql_alt": "SELECT avg(rrp) FROM price_demand WHERE region = 'NSW1' AND settlement_ts BETWEEN '2025-09-30 00:05:00' AND '2025-10-01 00:00:00'"
+  },
+  {
+    "id": "H6",
+    "question": "What was the average total demand in QLD1 over the 12 intervals covering 12:00 to 13:00 on 25 September 2025 (the intervals ending 12:05 up to and including 13:00)?",
+    "sql": "SELECT avg(total_demand_mw) FROM price_demand WHERE region = 'QLD1' AND settlement_ts > '2025-09-25 12:00:00' AND settlement_ts <= '2025-09-25 13:00:00'",
+    "sql_alt": "SELECT avg(total_demand_mw) FROM price_demand WHERE region = 'QLD1' AND settlement_ts BETWEEN '2025-09-25 12:05:00' AND '2025-09-25 13:00:00'"
+  },
+  {
+    "id": "H7",
+    "question": "What was the average price (rrp) in SA1 from 16 September to 30 September 2025, both days included?",
+    "sql": "SELECT avg(rrp) FROM price_demand WHERE region = 'SA1' AND settlement_ts > '2025-09-15 00:00:00' AND settlement_ts <= '2025-10-01 00:00:00'",
+    "sql_alt": "SELECT avg(rrp) FROM price_demand WHERE region = 'SA1' AND settlement_ts BETWEEN '2025-09-15 00:05:00' AND '2025-10-01 00:00:00'"
+  },
+  {
+    "id": "H8",
+    "question": "What was the average total demand in TAS1 on the market day of 1 September 2025?",
+    "sql": "SELECT avg(total_demand_mw) FROM price_demand WHERE region = 'TAS1' AND settlement_ts > '2025-09-01 00:00:00' AND settlement_ts <= '2025-09-02 00:00:00'",
+    "sql_alt": "SELECT avg(total_demand_mw) FROM price_demand WHERE region = 'TAS1' AND settlement_ts BETWEEN '2025-09-01 00:05:00' AND '2025-09-02 00:00:00'"
+  }
+]

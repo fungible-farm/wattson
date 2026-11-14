@@ -1,0 +1,9 @@
+{
+  "frozen_at": "2026-11-14T23:02:52",
+  "note": "Frozen before any model saw the held-out questions. Runbook drafted from dev question Q4 only; held-out questions written afterwards by the planner without running a model on them. Selector threshold 0.10 (set on dev, applied unchanged).",
+  "sha256": {
+    "runbook.json": "6ca8d4c4fdecb3447aafd2aacfb61f78f710a8f68a359a5a23569b3d8fa79c73",
+    "heldout-questions.json": "f8bcaa62e4fd8b18f8bf2c357293c05e70b1e4f57fc46a2147ae2162b061828a",
+    "runbook_notes_eval.py": "133a5369c6a458a787cb4ffbd81c2c777006edb614a8b18b9baacd8ce7877ae9"
+  }
+}
