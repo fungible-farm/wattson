@@ -339,6 +339,14 @@ harness-compare:
 gateway-mcp-log-check:
     @uv run python scripts/gateway_mcp_log_check.py
 
+# What the gateway log records for a model call (#33): model, token counts, duration and status by default; a per-task header only by opt-in. Throwaway backend and gateway.
+gateway-llm-log-check:
+    @uv run python scripts/gateway_llm_log_check.py
+
+# Per-task cost table from a gateway access log (#33). Cost is an estimate at the rates in the prices file; an unpriced model shows n/a. Example: just gateway-cost-rollup out/gateway.log prices.json
+gateway-cost-rollup log prices="":
+    @python3 scripts/gateway_cost_rollup.py --log {{log}} {{ if prices != "" { "--prices " + prices } else { "" } }}
+
 # Print the gateway as a Quadlet (starts at boot under your user systemd) and the install commands. Installs nothing.
 gateway-quadlet:
     @python3 scripts/gateway_quadlet_check.py --print
