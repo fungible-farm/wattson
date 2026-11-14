@@ -27,7 +27,7 @@ def main():
     torch.set_num_threads(4)
     model = AutoModel.from_pretrained(a.model, trust_remote_code=True, dtype=torch.float32).eval()
     tools = json.loads((HERE / "tools.json").read_text())
-    question = {"type": "choice", "instructions": "Which tool should be called first to do this task?",
+    question = {"type": "choice", "instructions": "Which one tool performs this task?",
                 "criteria": {t["name"]: first_sentence(t["description"]) for t in tools}}
     cases = [c for c in json.loads((HERE / "cases.json").read_text()) if c["split"] == a.split]
     model.system_one("warm up", {"tool": question})
