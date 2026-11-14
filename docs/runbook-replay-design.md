@@ -1,6 +1,6 @@
 # Runbook replay: design for #130 step 2 (proposal, for review before code)
 
-Status: proposal. Nothing here is built except the leakage lint (PR #142). Written 2026-11-14.
+Status: decisions recorded; build order below. Nothing here is built except the leakage lint (PR #142). Written 2026-11-14.
 
 ## Goal
 
@@ -28,12 +28,12 @@ A runbook that stores the SQL for one question and replays it will pass that que
 
 A second risk: drafting a runbook from a held-out question leaks the held-out set. Drafting uses dev questions only; held-out questions may only be used as replay siblings after the runbook is frozen (hash recorded before the replay).
 
-## Open decisions for the owner
+## Decisions (owner, 2026-11-14)
 
-1. Is a sibling-replay rule (two or more unseen questions per family) the right admission bar, or should a human review each runbook?
-2. Where do runbooks live: in this repo (`benchmarks/runbooks/`) or in a per-client registry, given the direction in the named-skill memory (client-supplied registered mapping citing operations manuals)?
-3. Do accepted runbooks feed the model's prompt (as notes) or only a deterministic selector, which would be the stricter reading of REQ-012? The first is easier to test; the second keeps inference out of the selection path.
+1. Admission: sibling replay (lint PASS plus replay PASS on 2 or more same-family questions the runbook was not drafted from). No human gate.
+2. Format and location: the client registry format from the start, not a repo-only catalog. Each runbook is an entry that also names the operations-manual section it relies on (pointer and hash, not a copy, until licensing is checked). The repo holds the schema, validator and the example catalog; a client supplies its own registry.
+3. Use: a deterministic selector (family-tag membership score times recorded reliability, no model call) picks which notes the model sees. The model never chooses which runbook applies.
 
-## Build order if approved
+## Build order
 
 (a) gold-values script and lint wiring, (b) runbook schema plus validator, (c) `--replay-runbook`, (d) catalog and admission command, (e) D2 draft generator. Each is a small PR with tests run by pi.
