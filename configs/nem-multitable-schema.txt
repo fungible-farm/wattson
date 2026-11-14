@@ -1,4 +1,4 @@
-Tables (AEMO MMS data via NEMOSIS; every table covers 2025-09-01 only, all rows are the data window; always use INTERVENTION = 0):
+Tables (AEMO MMS data via NEMOSIS; every table covers the 2025-09-01 market day: SETTLEMENTDATE runs from 2025-09-01 00:05:00 to 2025-09-02 00:00:00 inclusive, all rows are the data window, so do not filter by calendar date; always use INTERVENTION = 0):
 - dispatchload(SETTLEMENTDATE TIMESTAMP, DUID VARCHAR, INTERVENTION INT, TOTALCLEARED DOUBLE, AVAILABILITY DOUBLE, ...): one row per dispatch unit per 5-minute interval; TOTALCLEARED is the unit's dispatched MW. Energy in MWh = MW * 5 / 60.
 - dudetailsummary(DUID, START_DATE, END_DATE, REGIONID, STATIONID, PARTICIPANTID, DISPATCHTYPE, ...): maps each DUID to its region and station. A DUID can have SEVERAL rows (different START_DATE); the row in force is the one with the LATEST START_DATE for that DUID. Use only that row when joining.
 - dispatchprice(SETTLEMENTDATE, REGIONID, INTERVENTION, RRP DOUBLE, ...): regional price in $/MWh, one row per region per interval.

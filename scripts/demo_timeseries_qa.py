@@ -29,7 +29,8 @@ SCHEMA = """Table price_demand(region VARCHAR, settlement_ts TIMESTAMP, total_de
 - one row per region per 5-minute dispatch interval; regions are NSW1, QLD1, SA1, TAS1, VIC1
 - settlement_ts is the END of the interval: 00:05 means the interval 00:00 to 00:05
 - total_demand_mw is demand in MW; rrp is the regional reference price in $/MWh (it can be negative)
-- the data covers 2025-09-01 00:05:00 to 2025-10-01 00:00:00"""
+- the data covers 2025-09-01 00:05:00 to 2025-10-01 00:00:00
+- the data holds exactly the intervals of September 2025, so a question about September needs no date filter; if you do filter, use settlement_ts > 2025-09-01 00:00:00 AND settlement_ts <= 2025-10-01 00:00:00"""
 PROMPT = ("You write DuckDB SQL for this table.\n" + SCHEMA + "\nAnswer the question with exactly ONE SQL statement in a ```sql block and no "
           "explanation. Return the values the question asks for, one column each.\nQuestion: ")
 
