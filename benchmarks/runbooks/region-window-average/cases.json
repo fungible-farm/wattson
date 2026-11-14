@@ -1,0 +1,32 @@
+[
+  {
+    "question_id": "Q4",
+    "role": "source",
+    "params": {
+      "region": "VIC1",
+      "metric_column": "rrp",
+      "start_ts": "2025-09-01 00:00:00",
+      "end_ts": "2025-10-01 00:00:00"
+    }
+  },
+  {
+    "question_id": "Q6",
+    "role": "sibling",
+    "params": {
+      "region": "NSW1",
+      "metric_column": "total_demand_mw",
+      "start_ts": "2025-09-15 17:00:00",
+      "end_ts": "2025-09-15 21:00:00"
+    }
+  },
+  {
+    "question_id": "Q9",
+    "role": "sibling",
+    "params": {
+      "region": "NSW1",
+      "metric_column": "total_demand_mw",
+      "start_ts": "2025-09-15 00:00:00",
+      "end_ts": "2025-09-16 00:00:00"
+    }
+  }
+]

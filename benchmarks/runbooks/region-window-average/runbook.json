@@ -1,0 +1,59 @@
+{
+  "id": "region-window-average",
+  "family": "region-window-average",
+  "status": "draft",
+  "source": {
+    "adapter": "baseline",
+    "run_id": "aa2d754996dc7b357382d94c1d6fcbebe6e1beed38a38f3e89bbab406a9b7381",
+    "journal_sha256": "aa2d754996dc7b357382d94c1d6fcbebe6e1beed38a38f3e89bbab406a9b7381"
+  },
+  "parameters": [
+    {
+      "name": "region",
+      "type": "string",
+      "description": "price_demand region label the window is averaged over, e.g. VIC1 or NSW1"
+    },
+    {
+      "name": "metric_column",
+      "type": "string",
+      "description": "numeric price_demand column to average, e.g. rrp or total_demand_mw"
+    },
+    {
+      "name": "start_ts",
+      "type": "string",
+      "description": "window start as YYYY-MM-DD HH:MM:SS, the exclusive lower bound on settlement_ts"
+    },
+    {
+      "name": "end_ts",
+      "type": "string",
+      "description": "window end as YYYY-MM-DD HH:MM:SS, the inclusive upper bound on settlement_ts"
+    }
+  ],
+  "sql_template": "SELECT avg({metric_column}) FROM price_demand WHERE region = '{region}' AND settlement_ts > CAST('{start_ts}' AS TIMESTAMP) AND settlement_ts <= CAST('{end_ts}' AS TIMESTAMP)",
+  "steps": [
+    {
+      "cmd": "fill every slot of sql_template from the question's declared parameters and save it as filled.sql",
+      "pass": "filled.sql contains no remaining {slot}, quotes no value of its own, and names only columns of price_demand"
+    },
+    {
+      "cmd": "podman run --rm -i --network none --read-only --userns=keep-id:uid=1000,gid=1000 -v \"$PWD/out/nem:/data:ro\" $NEM_IMAGE query < filled.sql",
+      "pass": "the JSON prints one row with the single averaged column and carries no error key"
+    },
+    {
+      "cmd": "python3 scripts/runbook_leakage_lint.py --runbook <this runbook> --gold <gold.json>",
+      "pass": "PASS question, PASS sql, PASS values"
+    }
+  ],
+  "notes": [
+    "settlement_ts is the END of the 5-minute interval, so the window needs > start and <= end: a >= start AND < end filter drops the interval that ends exactly on the upper bound and admits one that ends exactly on the lower one.",
+    "average the raw column and round nowhere in the SQL - rounding each interval before averaging changes the figure, and the answer is compared against the unrounded aggregate.",
+    "region and metric_column come from the question's own declared parameters, so the window shape never changes between siblings of this family."
+  ],
+  "manual_refs": [
+    {
+      "document": "nemosis-dispatch-data",
+      "section": "interval-timestamps",
+      "sha256": "269a35e75a567795dc90a788e931bb33284efa387680e395d12764c822bccff0"
+    }
+  ]
+}

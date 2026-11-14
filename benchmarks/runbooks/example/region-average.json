@@ -31,7 +31,7 @@
       "pass": "filled.sql contains no remaining {slot} and names only columns of price_demand"
     },
     {
-      "cmd": "podman run --rm --network none --read-only -v \"$PWD/data:/data:ro\" $NEM_IMAGE query < filled.sql",
+      "cmd": "podman run --rm -i --network none --read-only --userns=keep-id:uid=1000,gid=1000 -v \"$PWD/out/nem:/data:ro\" \"$NEM_IMAGE\" query < filled.sql",
       "pass": "the JSON prints columns [region, value] with one row per region and carries no error key"
     },
     {

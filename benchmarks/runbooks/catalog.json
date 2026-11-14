@@ -1,0 +1,19 @@
+{
+  "accepted": [
+    {
+      "id": "region-window-average",
+      "family": "region-window-average",
+      "runbook_sha256": "6ca8d4c4fdecb3447aafd2aacfb61f78f710a8f68a359a5a23569b3d8fa79c73",
+      "decision_reason": "validator, leakage lint, source replay and siblings all pass",
+      "evidence": {
+        "validate": true,
+        "leakage": true,
+        "replay_passed": 3,
+        "replay_total": 3,
+        "siblings_passed": 2,
+        "siblings_total": 2
+      }
+    }
+  ],
+  "rejected": []
+}
