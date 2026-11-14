@@ -1,0 +1,290 @@
+[
+  {
+    "id": "heldout-load_network-1",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "ok": true,
+    "latency_s": 0.778,
+    "note": ""
+  },
+  {
+    "id": "heldout-load_network-2",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "ok": true,
+    "latency_s": 0.676,
+    "note": ""
+  },
+  {
+    "id": "heldout-load_network-3",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "ok": true,
+    "latency_s": 0.714,
+    "note": ""
+  },
+  {
+    "id": "heldout-load_network-4",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "run_study_trial",
+    "ok": false,
+    "latency_s": 0.79,
+    "note": ""
+  },
+  {
+    "id": "heldout-load_network-5",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "ok": true,
+    "latency_s": 0.728,
+    "note": ""
+  },
+  {
+    "id": "heldout-load_network-6",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "ok": true,
+    "latency_s": 0.74,
+    "note": ""
+  },
+  {
+    "id": "heldout-load_network-7",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "ok": true,
+    "latency_s": 0.745,
+    "note": ""
+  },
+  {
+    "id": "heldout-load_network-8",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "run_study_trial",
+    "ok": false,
+    "latency_s": 0.843,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_power_flow-1",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "ok": true,
+    "latency_s": 0.787,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_power_flow-2",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "ok": true,
+    "latency_s": 0.824,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_power_flow-3",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_study_trial",
+    "ok": false,
+    "latency_s": 0.842,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_power_flow-4",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "ok": true,
+    "latency_s": 0.799,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_power_flow-5",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "ok": true,
+    "latency_s": 0.792,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_power_flow-6",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "ok": true,
+    "latency_s": 0.852,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_power_flow-7",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_study_trial",
+    "ok": false,
+    "latency_s": 0.882,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_power_flow-8",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "ok": true,
+    "latency_s": 0.813,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_study_trial-1",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "run_study_trial",
+    "ok": true,
+    "latency_s": 0.883,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_study_trial-2",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "run_study_trial",
+    "ok": true,
+    "latency_s": 0.867,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_study_trial-3",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "run_study_trial",
+    "ok": true,
+    "latency_s": 0.855,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_study_trial-4",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "run_study_trial",
+    "ok": true,
+    "latency_s": 0.87,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_study_trial-5",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "run_study_trial",
+    "ok": true,
+    "latency_s": 0.915,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_study_trial-6",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "run_study_trial",
+    "ok": true,
+    "latency_s": 0.984,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_study_trial-7",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "run_study_trial",
+    "ok": true,
+    "latency_s": 0.934,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_study_trial-8",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "run_study_trial",
+    "ok": true,
+    "latency_s": 0.877,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_python-1",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "ok": true,
+    "latency_s": 0.853,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_python-2",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "ok": true,
+    "latency_s": 0.863,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_python-3",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "ok": true,
+    "latency_s": 0.854,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_python-4",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "ok": true,
+    "latency_s": 0.849,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_python-5",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "ok": true,
+    "latency_s": 0.844,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_python-6",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "ok": true,
+    "latency_s": 0.875,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_python-7",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "ok": true,
+    "latency_s": 0.817,
+    "note": ""
+  },
+  {
+    "id": "heldout-run_python-8",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "ok": true,
+    "latency_s": 0.831,
+    "note": ""
+  }
+]

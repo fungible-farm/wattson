@@ -1,0 +1,290 @@
+[
+  {
+    "id": "dev-load_network-1",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "ok": true,
+    "latency_s": 0.954,
+    "note": ""
+  },
+  {
+    "id": "dev-load_network-2",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "ok": true,
+    "latency_s": 0.679,
+    "note": ""
+  },
+  {
+    "id": "dev-load_network-3",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "ok": true,
+    "latency_s": 0.734,
+    "note": ""
+  },
+  {
+    "id": "dev-load_network-4",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "ok": true,
+    "latency_s": 0.749,
+    "note": ""
+  },
+  {
+    "id": "dev-load_network-5",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "ok": true,
+    "latency_s": 0.738,
+    "note": ""
+  },
+  {
+    "id": "dev-load_network-6",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "ok": true,
+    "latency_s": 0.742,
+    "note": ""
+  },
+  {
+    "id": "dev-load_network-7",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "ok": true,
+    "latency_s": 0.793,
+    "note": ""
+  },
+  {
+    "id": "dev-load_network-8",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "ok": true,
+    "latency_s": 0.757,
+    "note": ""
+  },
+  {
+    "id": "dev-run_power_flow-1",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "ok": true,
+    "latency_s": 0.792,
+    "note": ""
+  },
+  {
+    "id": "dev-run_power_flow-2",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "ok": true,
+    "latency_s": 0.808,
+    "note": ""
+  },
+  {
+    "id": "dev-run_power_flow-3",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "ok": true,
+    "latency_s": 0.839,
+    "note": ""
+  },
+  {
+    "id": "dev-run_power_flow-4",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "ok": true,
+    "latency_s": 1.039,
+    "note": ""
+  },
+  {
+    "id": "dev-run_power_flow-5",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "ok": true,
+    "latency_s": 0.883,
+    "note": ""
+  },
+  {
+    "id": "dev-run_power_flow-6",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "ok": true,
+    "latency_s": 0.847,
+    "note": ""
+  },
+  {
+    "id": "dev-run_power_flow-7",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "ok": true,
+    "latency_s": 0.805,
+    "note": ""
+  },
+  {
+    "id": "dev-run_power_flow-8",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "ok": true,
+    "latency_s": 0.805,
+    "note": ""
+  },
+  {
+    "id": "dev-run_study_trial-1",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "run_study_trial",
+    "ok": true,
+    "latency_s": 0.878,
+    "note": ""
+  },
+  {
+    "id": "dev-run_study_trial-2",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "run_study_trial",
+    "ok": true,
+    "latency_s": 0.882,
+    "note": ""
+  },
+  {
+    "id": "dev-run_study_trial-3",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "run_study_trial",
+    "ok": true,
+    "latency_s": 0.839,
+    "note": ""
+  },
+  {
+    "id": "dev-run_study_trial-4",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "run_study_trial",
+    "ok": true,
+    "latency_s": 1.039,
+    "note": ""
+  },
+  {
+    "id": "dev-run_study_trial-5",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "run_study_trial",
+    "ok": true,
+    "latency_s": 0.992,
+    "note": ""
+  },
+  {
+    "id": "dev-run_study_trial-6",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "run_study_trial",
+    "ok": true,
+    "latency_s": 1.05,
+    "note": ""
+  },
+  {
+    "id": "dev-run_study_trial-7",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "run_study_trial",
+    "ok": true,
+    "latency_s": 0.932,
+    "note": ""
+  },
+  {
+    "id": "dev-run_study_trial-8",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "run_study_trial",
+    "ok": true,
+    "latency_s": 0.88,
+    "note": ""
+  },
+  {
+    "id": "dev-run_python-1",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "ok": true,
+    "latency_s": 0.837,
+    "note": ""
+  },
+  {
+    "id": "dev-run_python-2",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "ok": true,
+    "latency_s": 0.869,
+    "note": ""
+  },
+  {
+    "id": "dev-run_python-3",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "ok": true,
+    "latency_s": 0.836,
+    "note": ""
+  },
+  {
+    "id": "dev-run_python-4",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "ok": true,
+    "latency_s": 0.882,
+    "note": ""
+  },
+  {
+    "id": "dev-run_python-5",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "ok": true,
+    "latency_s": 0.846,
+    "note": ""
+  },
+  {
+    "id": "dev-run_python-6",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "ok": true,
+    "latency_s": 0.871,
+    "note": ""
+  },
+  {
+    "id": "dev-run_python-7",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "ok": true,
+    "latency_s": 0.853,
+    "note": ""
+  },
+  {
+    "id": "dev-run_python-8",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "ok": true,
+    "latency_s": 0.876,
+    "note": ""
+  }
+]

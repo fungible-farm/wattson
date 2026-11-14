@@ -1,0 +1,258 @@
+[
+  {
+    "id": "dev-load_network-1",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "confidence": 0.978,
+    "latency_s": 23.543
+  },
+  {
+    "id": "dev-load_network-2",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "confidence": 0.9574,
+    "latency_s": 22.759
+  },
+  {
+    "id": "dev-load_network-3",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "confidence": 0.9506,
+    "latency_s": 23.29
+  },
+  {
+    "id": "dev-load_network-4",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "confidence": 0.8815,
+    "latency_s": 23.128
+  },
+  {
+    "id": "dev-load_network-5",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "confidence": 0.9772,
+    "latency_s": 22.521
+  },
+  {
+    "id": "dev-load_network-6",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "confidence": 0.9479,
+    "latency_s": 22.749
+  },
+  {
+    "id": "dev-load_network-7",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "confidence": 0.9795,
+    "latency_s": 22.893
+  },
+  {
+    "id": "dev-load_network-8",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "confidence": 0.9611,
+    "latency_s": 22.654
+  },
+  {
+    "id": "dev-run_power_flow-1",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "confidence": 0.9042,
+    "latency_s": 24.092
+  },
+  {
+    "id": "dev-run_power_flow-2",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "confidence": 0.923,
+    "latency_s": 23.766
+  },
+  {
+    "id": "dev-run_power_flow-3",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "load_network",
+    "confidence": 0.4448,
+    "latency_s": 24.267
+  },
+  {
+    "id": "dev-run_power_flow-4",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "load_network",
+    "confidence": 0.4206,
+    "latency_s": 23.279
+  },
+  {
+    "id": "dev-run_power_flow-5",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "confidence": 0.8669,
+    "latency_s": 24.027
+  },
+  {
+    "id": "dev-run_power_flow-6",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "load_network",
+    "confidence": 0.6999,
+    "latency_s": 23.772
+  },
+  {
+    "id": "dev-run_power_flow-7",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "confidence": 0.9103,
+    "latency_s": 23.459
+  },
+  {
+    "id": "dev-run_power_flow-8",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "confidence": 0.9288,
+    "latency_s": 24.585
+  },
+  {
+    "id": "dev-run_study_trial-1",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "load_network",
+    "confidence": 0.5273,
+    "latency_s": 24.454
+  },
+  {
+    "id": "dev-run_study_trial-2",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "load_network",
+    "confidence": 0.6731,
+    "latency_s": 25.169
+  },
+  {
+    "id": "dev-run_study_trial-3",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "load_network",
+    "confidence": 0.8732,
+    "latency_s": 23.528
+  },
+  {
+    "id": "dev-run_study_trial-4",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "run_power_flow",
+    "confidence": 0.498,
+    "latency_s": 24.524
+  },
+  {
+    "id": "dev-run_study_trial-5",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "run_power_flow",
+    "confidence": 0.4149,
+    "latency_s": 23.436
+  },
+  {
+    "id": "dev-run_study_trial-6",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "load_network",
+    "confidence": 0.4792,
+    "latency_s": 24.823
+  },
+  {
+    "id": "dev-run_study_trial-7",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "load_network",
+    "confidence": 0.4857,
+    "latency_s": 24.43
+  },
+  {
+    "id": "dev-run_study_trial-8",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "load_network",
+    "confidence": 0.466,
+    "latency_s": 25.207
+  },
+  {
+    "id": "dev-run_python-1",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "confidence": 0.98,
+    "latency_s": 27.346
+  },
+  {
+    "id": "dev-run_python-2",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "confidence": 0.9751,
+    "latency_s": 26.479
+  },
+  {
+    "id": "dev-run_python-3",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "confidence": 0.9788,
+    "latency_s": 25.668
+  },
+  {
+    "id": "dev-run_python-4",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "confidence": 0.9803,
+    "latency_s": 25.302
+  },
+  {
+    "id": "dev-run_python-5",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "confidence": 0.9685,
+    "latency_s": 25.439
+  },
+  {
+    "id": "dev-run_python-6",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "confidence": 0.9717,
+    "latency_s": 24.857
+  },
+  {
+    "id": "dev-run_python-7",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "confidence": 0.9804,
+    "latency_s": 27.39
+  },
+  {
+    "id": "dev-run_python-8",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "confidence": 0.9769,
+    "latency_s": 25.513
+  }
+]
