@@ -1,0 +1,303 @@
+{
+  "prompt_base_sha256": "cf7286771151e084ab1fedeb4b324a41bde0cbc464b2fbd60118dfcc60998796",
+  "model": "neo-coder",
+  "base_url": "http://192.168.1.137:8002/v1",
+  "selector_threshold": 0.1,
+  "threshold_set_after_seeing_scores": true,
+  "results": [
+    {
+      "id": "Q1",
+      "arm": "base",
+      "selected": [],
+      "passed": true,
+      "sql": "SELECT total_demand_mw, settlement_ts FROM price_demand WHERE region = 'SA1' AND settlement_ts >= '2025-09-01 00:00:00' AND settlement_ts < '2025-10-01 00:00:00' ORDER BY total_demand_mw DESC LIMIT 1;",
+      "returned": [
+        2068.15,
+        "2025-09-10 19:40:00"
+      ],
+      "expected": [
+        2068.15,
+        "2025-09-10 19:40:00"
+      ]
+    },
+    {
+      "id": "Q1",
+      "arm": "notes",
+      "selected": [],
+      "passed": true,
+      "sql": "SELECT total_demand_mw, settlement_ts FROM price_demand WHERE region = 'SA1' AND settlement_ts >= '2025-09-01 00:00:00' AND settlement_ts < '2025-10-01 00:00:00' ORDER BY total_demand_mw DESC LIMIT 1;",
+      "returned": [
+        2068.15,
+        "2025-09-10 19:40:00"
+      ],
+      "expected": [
+        2068.15,
+        "2025-09-10 19:40:00"
+      ]
+    },
+    {
+      "id": "Q2",
+      "arm": "base",
+      "selected": [],
+      "passed": true,
+      "sql": "SELECT COUNT(*) AS intervals_above_300 FROM price_demand WHERE region = 'SA1' AND rrp > 300;",
+      "returned": [
+        106
+      ],
+      "expected": [
+        106
+      ]
+    },
+    {
+      "id": "Q2",
+      "arm": "notes",
+      "selected": [],
+      "passed": true,
+      "sql": "SELECT COUNT(*) AS intervals_above_300 FROM price_demand WHERE region = 'SA1' AND rrp > 300;",
+      "returned": [
+        106
+      ],
+      "expected": [
+        106
+      ]
+    },
+    {
+      "id": "Q3",
+      "arm": "base",
+      "selected": [],
+      "passed": true,
+      "sql": "SELECT COUNT(*) AS negative_price_intervals FROM price_demand WHERE region = 'NSW1' AND rrp < 0;",
+      "returned": [
+        2241
+      ],
+      "expected": [
+        2241
+      ]
+    },
+    {
+      "id": "Q3",
+      "arm": "notes",
+      "selected": [],
+      "passed": true,
+      "sql": "SELECT COUNT(*) AS negative_price_intervals FROM price_demand WHERE region = 'NSW1' AND rrp < 0;",
+      "returned": [
+        2241
+      ],
+      "expected": [
+        2241
+      ]
+    },
+    {
+      "id": "Q4",
+      "arm": "base",
+      "selected": [
+        "region-window-average"
+      ],
+      "passed": false,
+      "sql": "SELECT AVG(rrp) AS avg_rrp FROM price_demand WHERE region = 'VIC1' AND settlement_ts >= '2025-09-01 00:05:00' AND settlement_ts < '2025-10-01 00:00:00';",
+      "returned": [
+        55.28018520662115
+      ],
+      "expected": [
+        55.27482291666668
+      ]
+    },
+    {
+      "id": "Q4",
+      "arm": "notes",
+      "selected": [
+        "region-window-average"
+      ],
+      "passed": true,
+      "sql": "SELECT AVG(rrp) AS avg_rrp FROM price_demand WHERE region = 'VIC1' AND settlement_ts > '2025-09-01 00:00:00' AND settlement_ts <= '2025-10-01 00:00:00';",
+      "returned": [
+        55.27482291666668
+      ],
+      "expected": [
+        55.27482291666668
+      ]
+    },
+    {
+      "id": "Q5",
+      "arm": "base",
+      "selected": [],
+      "passed": true,
+      "sql": "SELECT SUM(rrp * total_demand_mw) / SUM(total_demand_mw) AS demand_weighted_avg_price FROM price_demand WHERE region = 'QLD1' AND settlement_ts >= '2025-09-01 00:05:00' AND settlement_ts < '2025-10-01 00:00:00';",
+      "returned": [
+        64.70633398341862
+      ],
+      "expected": [
+        64.70510075452351
+      ]
+    },
+    {
+      "id": "Q5",
+      "arm": "notes",
+      "selected": [],
+      "passed": true,
+      "sql": "SELECT SUM(rrp * total_demand_mw) / SUM(total_demand_mw) AS demand_weighted_avg_price FROM price_demand WHERE region = 'QLD1' AND settlement_ts >= '2025-09-01 00:05:00' AND settlement_ts < '2025-10-01 00:00:00';",
+      "returned": [
+        64.70633398341862
+      ],
+      "expected": [
+        64.70510075452351
+      ]
+    },
+    {
+      "id": "Q6",
+      "arm": "base",
+      "selected": [
+        "region-window-average"
+      ],
+      "passed": true,
+      "sql": "SELECT AVG(total_demand_mw) AS avg_demand_mw FROM price_demand WHERE region = 'NSW1' AND settlement_ts >= '2025-09-15 17:05:00' AND settlement_ts <= '2025-09-15 21:00:00';",
+      "returned": [
+        8508.664999999999
+      ],
+      "expected": [
+        8508.664999999999
+      ]
+    },
+    {
+      "id": "Q6",
+      "arm": "notes",
+      "selected": [
+        "region-window-average"
+      ],
+      "passed": true,
+      "sql": "SELECT AVG(total_demand_mw) AS avg_demand_mw FROM price_demand WHERE region = 'NSW1' AND settlement_ts > '2025-09-15 17:00:00' AND settlement_ts <= '2025-09-15 21:00:00';",
+      "returned": [
+        8508.664999999999
+      ],
+      "expected": [
+        8508.664999999999
+      ]
+    },
+    {
+      "id": "Q7",
+      "arm": "base",
+      "selected": [
+        "region-window-average"
+      ],
+      "passed": true,
+      "sql": "SELECT region, AVG(rrp) AS avg_price FROM price_demand WHERE settlement_ts >= '2025-09-01 00:05:00' AND settlement_ts < '2025-10-01 00:00:00' GROUP BY region ORDER BY avg_price DESC LIMIT 1;",
+      "returned": [
+        "NSW1",
+        71.24579002199313
+      ],
+      "expected": [
+        "NSW1"
+      ]
+    },
+    {
+      "id": "Q7",
+      "arm": "notes",
+      "selected": [
+        "region-window-average"
+      ],
+      "passed": true,
+      "sql": "SELECT region, AVG(rrp) AS avg_price FROM price_demand WHERE settlement_ts > '2025-09-01 00:00:00' AND settlement_ts <= '2025-10-01 00:00:00' GROUP BY region ORDER BY avg_price DESC LIMIT 1;",
+      "returned": [
+        "NSW1",
+        71.24413888888873
+      ],
+      "expected": [
+        "NSW1"
+      ]
+    },
+    {
+      "id": "Q8",
+      "arm": "base",
+      "selected": [],
+      "passed": true,
+      "sql": "SELECT COUNT(*) AS intervals_above_8000 FROM price_demand WHERE region = 'NSW1' AND total_demand_mw > 8000;",
+      "returned": [
+        2092
+      ],
+      "expected": [
+        2092
+      ]
+    },
+    {
+      "id": "Q8",
+      "arm": "notes",
+      "selected": [],
+      "passed": true,
+      "sql": "SELECT COUNT(*) AS intervals_above_8000 FROM price_demand WHERE region = 'NSW1' AND total_demand_mw > 8000;",
+      "returned": [
+        2092
+      ],
+      "expected": [
+        2092
+      ]
+    },
+    {
+      "id": "Q9",
+      "arm": "base",
+      "selected": [
+        "region-window-average"
+      ],
+      "passed": true,
+      "sql": "SELECT AVG(total_demand_mw) AS avg_demand_mw FROM price_demand WHERE region = 'NSW1' AND settlement_ts >= '2025-09-15 00:05:00' AND settlement_ts < '2025-09-16 00:05:00';",
+      "returned": [
+        6480.7923263888915
+      ],
+      "expected": [
+        6480.7923263888915
+      ]
+    },
+    {
+      "id": "Q9",
+      "arm": "notes",
+      "selected": [
+        "region-window-average"
+      ],
+      "passed": false,
+      "sql": "SELECT AVG(total_demand_mw) AS avg_demand_mw FROM price_demand WHERE region = 'NSW1' AND settlement_ts > '2025-09-14 00:00:00' AND settlement_ts <= '2025-09-15 00:00:00';",
+      "returned": [
+        6114.808854166666
+      ],
+      "expected": [
+        6480.7923263888915
+      ]
+    },
+    {
+      "id": "Q10",
+      "arm": "base",
+      "selected": [],
+      "passed": true,
+      "sql": "SELECT rrp, region, settlement_ts FROM price_demand WHERE settlement_ts >= '2025-09-01 00:00:00' AND settlement_ts < '2025-10-01 00:00:00' ORDER BY rrp DESC LIMIT 1;",
+      "returned": [
+        6874.28,
+        "TAS1",
+        "2025-09-10 18:00:00"
+      ],
+      "expected": [
+        6874.28,
+        "TAS1",
+        "2025-09-10 18:00:00"
+      ]
+    },
+    {
+      "id": "Q10",
+      "arm": "notes",
+      "selected": [],
+      "passed": true,
+      "sql": "SELECT rrp, region, settlement_ts FROM price_demand WHERE settlement_ts >= '2025-09-01 00:00:00' AND settlement_ts < '2025-10-01 00:00:00' ORDER BY rrp DESC LIMIT 1;",
+      "returned": [
+        6874.28,
+        "TAS1",
+        "2025-09-10 18:00:00"
+      ],
+      "expected": [
+        6874.28,
+        "TAS1",
+        "2025-09-10 18:00:00"
+      ]
+    }
+  ],
+  "pass": {
+    "base": 9,
+    "notes": 9
+  }
+}

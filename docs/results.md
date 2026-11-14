@@ -89,3 +89,20 @@ run on different hardware, so the difference is sampling and batching noise, not
   stated a maximum line id by computing `count - 1` (an untraced number). The shell should return the highest valid id.
 - Granite has one seed; Qwen3.5-4B results are lab evidence about the recipe, and the project's
   preferred base for new work is Granite 4.2 8B (Apache-2.0).
+
+## Runbook notes, with and without (#130, 2026-11-14)
+
+Does adding a verified runbook's notes to the prompt change neo-coder's answers on the ten timeseries dev questions? One run per question per arm,
+temperature 0, prompt as it stood before PR #141 (the schema line that states the end-of-interval window removed, so the Q4 trap is open).
+The selector is deterministic (token overlap with the runbook's family, parameter names and descriptions); its threshold was set to 0.10 after seeing
+the scores, because the pre-set 0.15 selected only Q6. Evidence: `benchmarks/runbooks/region-window-average/notes-eval-evidence.json`.
+
+| Arm | Passed (of 10) | Notes |
+|---|---|---|
+| Base prompt | 9 | Q4 fails (window ends one interval early) |
+| Base prompt plus selected runbook notes | 9 | Q4 passes, Q9 fails |
+
+The notes selected the runbook for Q4, Q6, Q7 and Q9. Q4 was fixed (the model used `> start AND <= end`), and Q9 broke: the model shifted the window back a whole
+day (6114.8 against 6480.8), a wrong-day error that appeared only with the notes. Net effect: none. Limits: dev questions only and in-sample (the notes were
+written after seeing the Q4 failure), one run each, ten questions, one runbook. The scorer also hides small errors: Q5 passes at 64.7063 against 64.7051 and Q7
+checks only the region. This does not show that runbook notes help; it shows the mechanism runs and can both fix and cause errors.
