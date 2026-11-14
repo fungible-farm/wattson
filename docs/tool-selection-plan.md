@@ -41,3 +41,24 @@ more than accuracy. The first step therefore costs no model: count wrong first t
 ## Expected outcome, stated now
 
 With a handful of allow-listed tools, the deterministic router may already be near perfect, and if step 1 finds no selection errors the case for a decision model rests on audit value only. That is a legitimate result.
+
+## Step 1 result (2026-11-14): what the journals of the untrained 4B runs show
+
+Read-only count over the per-task journals of three untrained Qwen3.5-4B runs on the held-out 90 (thinking on, thinking off, and the doubled-budget run; sm3lly
+`/c0de/out-pc-baseline/`). The tool set is `load_network`, `run_power_flow`, `run_study_trial`, `run_python`. No trained-student journals were on that machine, so
+this says nothing about the students.
+
+| Run | First tool (python / study_trial / load_network / none) | Calls by tool (python / study_trial / load_network / power_flow) | `run_python` calls with status error | `run_study_trial` calls with `execution_failure` |
+|---|---|---|---|---|
+| thinking on, 8192 tokens | 42 / 26 / 20 / 2 | 521 / 62 / 20 / 3 | 113 of 521 | 41 of 62 |
+| thinking off | 44 / 42 / 4 / 0 | 701 / 54 / 5 / 2 | 177 of 701 | 48 of 54 |
+| thinking on, doubled budget | 41 / 26 / 21 / 2 | 625 / 60 / 21 / 3 | 168 of 625 | 36 of 60 |
+
+What this shows: the model mostly works in `run_python` (85 to 90 percent of all tool calls) and retries there; a large share of its `run_study_trial` calls fail at
+execution; it picks a first tool that varies across tasks. What it does not show: whether any first choice was wrong. No label says which tool a task needs, so a
+selection error rate cannot be computed from these journals. The one journal read by hand shows a correctly chosen tool called with bad arguments
+(`operation=load_scale requires observation, observation_id`). My attempt to count argument errors by matching error text found none and is not trustworthy, because
+the error text may sit in a field I did not read.
+
+Consequence for the plan: the evidence points at argument construction and not finishing, neither of which a tool-choice model addresses. Step 2 (labelled
+selection cases) is worth doing only if the owner wants the audit and guardrail value regardless; otherwise the result of step 1 is to stop here.
