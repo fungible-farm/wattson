@@ -12,6 +12,8 @@ gateways:
 frontendPolicies:
   accessLog:
     preset: otel                 # one structured stdout record per request, incl. gen_ai.* fields
+    add:
+      task: request.headers["x-wattson-task"]   # per-task cost roll-up (#33); clients send x-wattson-task
 
 routes:
 # llm mode answers GET /v1/models itself from a built-in catalog, so pass the model list
