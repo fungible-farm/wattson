@@ -6,8 +6,12 @@
     "generate_cases.py": "ea2992801a925b2d81a7465804f24a78952f2e3e8bf0dc9f0f7a608882a52911",
     "cases.json": "737159756e09f46beeade0aa935817aedf57c5025e2d40abb148aabf328ab4e7",
     "router_baseline.py": "ec1b4f4469c21383825ab070da8b9e02c87aea6da05093645f7c062acb372b94",
-    "constrained_choice.py": "f77a364a06af057010220037658e786c457d209098dd74ca16b0a21a54edb74e"
+    "constrained_choice.py": "f77a364a06af057010220037658e786c457d209098dd74ca16b0a21a54edb74e",
+    "d1/d1_select.py": "eff6232e3190a8edbc7e496b0aea6f0dbcf928c720bf1a7b6e6f5d170d8a5b06",
+    "d1/run.sh": "15100b84c7219bc240b6e1bb1fd20ec428f0a58ff7792a092602df358280cf27",
+    "d1/Containerfile": "007a926459baf4391ed9f4b56a0195d302e7e16d78cbf8043b17c57a259618b1"
   },
   "addendum": "router_baseline.py frozen 2026-11-15 before its first heldout run",
-  "addendum2": "constrained_choice.py frozen 2026-11-15 before its first heldout run"
+  "addendum2": "constrained_choice.py frozen 2026-11-15 before its first heldout run",
+  "addendum3": "d1/d1_select.py, run.sh, Containerfile frozen 2026-11-15 before any d1 run; model revision 05b80faf55536582ad5ffb2da7456f6a653acf71; abstain threshold 0.5 fixed, not tuned"
 }
