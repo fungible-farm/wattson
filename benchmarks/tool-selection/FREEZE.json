@@ -5,7 +5,9 @@
     "tools.json": "7504c7331b44fa0c4e3f7ac8d9e150cd968c6247bf1a29e99199f70f6c1110ef",
     "generate_cases.py": "ea2992801a925b2d81a7465804f24a78952f2e3e8bf0dc9f0f7a608882a52911",
     "cases.json": "737159756e09f46beeade0aa935817aedf57c5025e2d40abb148aabf328ab4e7",
-    "router_baseline.py": "ec1b4f4469c21383825ab070da8b9e02c87aea6da05093645f7c062acb372b94"
+    "router_baseline.py": "ec1b4f4469c21383825ab070da8b9e02c87aea6da05093645f7c062acb372b94",
+    "constrained_choice.py": "f77a364a06af057010220037658e786c457d209098dd74ca16b0a21a54edb74e"
   },
-  "addendum": "router_baseline.py frozen 2026-11-15 before its first heldout run"
+  "addendum": "router_baseline.py frozen 2026-11-15 before its first heldout run",
+  "addendum2": "constrained_choice.py frozen 2026-11-15 before its first heldout run"
 }
