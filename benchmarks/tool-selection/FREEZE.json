@@ -1,0 +1,9 @@
+{
+  "frozen": "2026-11-15",
+  "note": "before any model or router saw the heldout split",
+  "sha256": {
+    "tools.json": "7504c7331b44fa0c4e3f7ac8d9e150cd968c6247bf1a29e99199f70f6c1110ef",
+    "generate_cases.py": "ea2992801a925b2d81a7465804f24a78952f2e3e8bf0dc9f0f7a608882a52911",
+    "cases.json": "737159756e09f46beeade0aa935817aedf57c5025e2d40abb148aabf328ab4e7"
+  }
+}

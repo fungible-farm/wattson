@@ -1,0 +1,450 @@
+[
+  {
+    "id": "dev-load_network-1",
+    "split": "dev",
+    "family": "load_network",
+    "task": "Open case57 so I can look at it later.",
+    "correct_tool": "load_network"
+  },
+  {
+    "id": "dev-load_network-2",
+    "split": "dev",
+    "family": "load_network",
+    "task": "Load the case200 case and tell me it worked.",
+    "correct_tool": "load_network"
+  },
+  {
+    "id": "dev-load_network-3",
+    "split": "dev",
+    "family": "load_network",
+    "task": "Get case24 into the session; no analysis yet.",
+    "correct_tool": "load_network"
+  },
+  {
+    "id": "dev-load_network-4",
+    "split": "dev",
+    "family": "load_network",
+    "task": "Read in case57 so we know what buses it has.",
+    "correct_tool": "load_network"
+  },
+  {
+    "id": "dev-load_network-5",
+    "split": "dev",
+    "family": "load_network",
+    "task": "Can you bring up case24 for me?",
+    "correct_tool": "load_network"
+  },
+  {
+    "id": "dev-load_network-6",
+    "split": "dev",
+    "family": "load_network",
+    "task": "I only need case9 available for now.",
+    "correct_tool": "load_network"
+  },
+  {
+    "id": "dev-load_network-7",
+    "split": "dev",
+    "family": "load_network",
+    "task": "Open case118 so I can look at it later.",
+    "correct_tool": "load_network"
+  },
+  {
+    "id": "dev-load_network-8",
+    "split": "dev",
+    "family": "load_network",
+    "task": "Load the case24 case and tell me it worked.",
+    "correct_tool": "load_network"
+  },
+  {
+    "id": "dev-run_power_flow-1",
+    "split": "dev",
+    "family": "run_power_flow",
+    "task": "Solve the AC power flow for case500 and report the bus voltages.",
+    "correct_tool": "run_power_flow"
+  },
+  {
+    "id": "dev-run_power_flow-2",
+    "split": "dev",
+    "family": "run_power_flow",
+    "task": "Run a power flow on case24 exactly as it is: does it converge?",
+    "correct_tool": "run_power_flow"
+  },
+  {
+    "id": "dev-run_power_flow-3",
+    "split": "dev",
+    "family": "run_power_flow",
+    "task": "What are the line flows in case200 at the published base case?",
+    "correct_tool": "run_power_flow"
+  },
+  {
+    "id": "dev-run_power_flow-4",
+    "split": "dev",
+    "family": "run_power_flow",
+    "task": "Converge case9 and list the generator outputs.",
+    "correct_tool": "run_power_flow"
+  },
+  {
+    "id": "dev-run_power_flow-5",
+    "split": "dev",
+    "family": "run_power_flow",
+    "task": "Do a standard load flow on case14 and give me voltages and angles.",
+    "correct_tool": "run_power_flow"
+  },
+  {
+    "id": "dev-run_power_flow-6",
+    "split": "dev",
+    "family": "run_power_flow",
+    "task": "I need the solved operating point of case33 with the data unchanged.",
+    "correct_tool": "run_power_flow"
+  },
+  {
+    "id": "dev-run_power_flow-7",
+    "split": "dev",
+    "family": "run_power_flow",
+    "task": "Solve the AC power flow for case200 and report the bus voltages.",
+    "correct_tool": "run_power_flow"
+  },
+  {
+    "id": "dev-run_power_flow-8",
+    "split": "dev",
+    "family": "run_power_flow",
+    "task": "Run a power flow on case200 exactly as it is: does it converge?",
+    "correct_tool": "run_power_flow"
+  },
+  {
+    "id": "dev-run_study_trial-1",
+    "split": "dev",
+    "family": "run_study_trial",
+    "task": "In case39, raise every load by 65% and tell me the worst bus voltage.",
+    "correct_tool": "run_study_trial"
+  },
+  {
+    "id": "dev-run_study_trial-2",
+    "split": "dev",
+    "family": "run_study_trial",
+    "task": "Set line 1 of case300 to a rating of 2.5 kA and report its loading.",
+    "correct_tool": "run_study_trial"
+  },
+  {
+    "id": "dev-run_study_trial-3",
+    "split": "dev",
+    "family": "run_study_trial",
+    "task": "Take line 19 out of service in case57 and report the voltage violations.",
+    "correct_tool": "run_study_trial"
+  },
+  {
+    "id": "dev-run_study_trial-4",
+    "split": "dev",
+    "family": "run_study_trial",
+    "task": "Push generator 8 in case30 up to 25 MW and show the transformer loading.",
+    "correct_tool": "run_study_trial"
+  },
+  {
+    "id": "dev-run_study_trial-5",
+    "split": "dev",
+    "family": "run_study_trial",
+    "task": "Double every load in case2383 and tell me whether it still converges.",
+    "correct_tool": "run_study_trial"
+  },
+  {
+    "id": "dev-run_study_trial-6",
+    "split": "dev",
+    "family": "run_study_trial",
+    "task": "Cut all loads in case30 to 115% and give me the minimum voltage.",
+    "correct_tool": "run_study_trial"
+  },
+  {
+    "id": "dev-run_study_trial-7",
+    "split": "dev",
+    "family": "run_study_trial",
+    "task": "In case24, raise every load by 140% and tell me the worst bus voltage.",
+    "correct_tool": "run_study_trial"
+  },
+  {
+    "id": "dev-run_study_trial-8",
+    "split": "dev",
+    "family": "run_study_trial",
+    "task": "Set line 27 of case500 to a rating of 0.6 kA and report its loading.",
+    "correct_tool": "run_study_trial"
+  },
+  {
+    "id": "dev-run_python-1",
+    "split": "dev",
+    "family": "run_python",
+    "task": "Add up 60.28, 260.48, 19.91, 170.85, 437.26 and give me the total.",
+    "correct_tool": "run_python"
+  },
+  {
+    "id": "dev-run_python-2",
+    "split": "dev",
+    "family": "run_python",
+    "task": "Is 58.36 within 0.05 of 484.73? Work it out and say yes or no.",
+    "correct_tool": "run_python"
+  },
+  {
+    "id": "dev-run_python-3",
+    "split": "dev",
+    "family": "run_python",
+    "task": "What is the mean of 95.95, 176.10, 337.02, 277.55?",
+    "correct_tool": "run_python"
+  },
+  {
+    "id": "dev-run_python-4",
+    "split": "dev",
+    "family": "run_python",
+    "task": "Take 422.08 minus 5.91, then divide the result by 317.05.",
+    "correct_tool": "run_python"
+  },
+  {
+    "id": "dev-run_python-5",
+    "split": "dev",
+    "family": "run_python",
+    "task": "Standard deviation of 294.55, 93.62, 452.27, 383.16, please.",
+    "correct_tool": "run_python"
+  },
+  {
+    "id": "dev-run_python-6",
+    "split": "dev",
+    "family": "run_python",
+    "task": "Which is bigger, 445.77 or 490.91, and by how much?",
+    "correct_tool": "run_python"
+  },
+  {
+    "id": "dev-run_python-7",
+    "split": "dev",
+    "family": "run_python",
+    "task": "Add up 459.53, 208.77, 178.48, 339.97, 406.89 and give me the total.",
+    "correct_tool": "run_python"
+  },
+  {
+    "id": "dev-run_python-8",
+    "split": "dev",
+    "family": "run_python",
+    "task": "Is 234.27 within 0.01 of 303.48? Work it out and say yes or no.",
+    "correct_tool": "run_python"
+  },
+  {
+    "id": "heldout-load_network-1",
+    "split": "heldout",
+    "family": "load_network",
+    "task": "Just open case300, nothing after that.",
+    "correct_tool": "load_network"
+  },
+  {
+    "id": "heldout-load_network-2",
+    "split": "heldout",
+    "family": "load_network",
+    "task": "Fetch case39 from the case library.",
+    "correct_tool": "load_network"
+  },
+  {
+    "id": "heldout-load_network-3",
+    "split": "heldout",
+    "family": "load_network",
+    "task": "Make case39 the current network.",
+    "correct_tool": "load_network"
+  },
+  {
+    "id": "heldout-load_network-4",
+    "split": "heldout",
+    "family": "load_network",
+    "task": "Give me case300 on its own, untouched.",
+    "correct_tool": "load_network"
+  },
+  {
+    "id": "heldout-load_network-5",
+    "split": "heldout",
+    "family": "load_network",
+    "task": "Just open case118, nothing after that.",
+    "correct_tool": "load_network"
+  },
+  {
+    "id": "heldout-load_network-6",
+    "split": "heldout",
+    "family": "load_network",
+    "task": "Fetch case33 from the case library.",
+    "correct_tool": "load_network"
+  },
+  {
+    "id": "heldout-load_network-7",
+    "split": "heldout",
+    "family": "load_network",
+    "task": "Make case2383 the current network.",
+    "correct_tool": "load_network"
+  },
+  {
+    "id": "heldout-load_network-8",
+    "split": "heldout",
+    "family": "load_network",
+    "task": "Give me case33 on its own, untouched.",
+    "correct_tool": "load_network"
+  },
+  {
+    "id": "heldout-run_power_flow-1",
+    "split": "heldout",
+    "family": "run_power_flow",
+    "task": "Power flow on case9, no edits to the case.",
+    "correct_tool": "run_power_flow"
+  },
+  {
+    "id": "heldout-run_power_flow-2",
+    "split": "heldout",
+    "family": "run_power_flow",
+    "task": "Give me the converged solution for case200 as shipped.",
+    "correct_tool": "run_power_flow"
+  },
+  {
+    "id": "heldout-run_power_flow-3",
+    "split": "heldout",
+    "family": "run_power_flow",
+    "task": "What is the base operating point of case9? Change nothing.",
+    "correct_tool": "run_power_flow"
+  },
+  {
+    "id": "heldout-run_power_flow-4",
+    "split": "heldout",
+    "family": "run_power_flow",
+    "task": "Run AC load flow on case33 and print the minimum voltage.",
+    "correct_tool": "run_power_flow"
+  },
+  {
+    "id": "heldout-run_power_flow-5",
+    "split": "heldout",
+    "family": "run_power_flow",
+    "task": "Power flow on case57, no edits to the case.",
+    "correct_tool": "run_power_flow"
+  },
+  {
+    "id": "heldout-run_power_flow-6",
+    "split": "heldout",
+    "family": "run_power_flow",
+    "task": "Give me the converged solution for case500 as shipped.",
+    "correct_tool": "run_power_flow"
+  },
+  {
+    "id": "heldout-run_power_flow-7",
+    "split": "heldout",
+    "family": "run_power_flow",
+    "task": "What is the base operating point of case57? Change nothing.",
+    "correct_tool": "run_power_flow"
+  },
+  {
+    "id": "heldout-run_power_flow-8",
+    "split": "heldout",
+    "family": "run_power_flow",
+    "task": "Run AC load flow on case24 and print the minimum voltage.",
+    "correct_tool": "run_power_flow"
+  },
+  {
+    "id": "heldout-run_study_trial-1",
+    "split": "heldout",
+    "family": "run_study_trial",
+    "task": "Scale all demand in case500 by 1.4 and measure the maximum line loading.",
+    "correct_tool": "run_study_trial"
+  },
+  {
+    "id": "heldout-run_study_trial-2",
+    "split": "heldout",
+    "family": "run_study_trial",
+    "task": "Re-rate line 27 in case57 to 0.35 kA, then read off that line's loading.",
+    "correct_tool": "run_study_trial"
+  },
+  {
+    "id": "heldout-run_study_trial-3",
+    "split": "heldout",
+    "family": "run_study_trial",
+    "task": "Redispatch unit 8 of case118 to 60 MW and report transformer loading.",
+    "correct_tool": "run_study_trial"
+  },
+  {
+    "id": "heldout-run_study_trial-4",
+    "split": "heldout",
+    "family": "run_study_trial",
+    "task": "N-1 check for case300 with line 27 contingent: list the voltage violations.",
+    "correct_tool": "run_study_trial"
+  },
+  {
+    "id": "heldout-run_study_trial-5",
+    "split": "heldout",
+    "family": "run_study_trial",
+    "task": "Scale all demand in case2383 by 2 and measure the maximum line loading.",
+    "correct_tool": "run_study_trial"
+  },
+  {
+    "id": "heldout-run_study_trial-6",
+    "split": "heldout",
+    "family": "run_study_trial",
+    "task": "Re-rate line 1 in case57 to 0.35 kA, then read off that line's loading.",
+    "correct_tool": "run_study_trial"
+  },
+  {
+    "id": "heldout-run_study_trial-7",
+    "split": "heldout",
+    "family": "run_study_trial",
+    "task": "Redispatch unit 1 of case57 to 60 MW and report transformer loading.",
+    "correct_tool": "run_study_trial"
+  },
+  {
+    "id": "heldout-run_study_trial-8",
+    "split": "heldout",
+    "family": "run_study_trial",
+    "task": "N-1 check for case200 with line 35 contingent: list the voltage violations.",
+    "correct_tool": "run_study_trial"
+  },
+  {
+    "id": "heldout-run_python-1",
+    "split": "heldout",
+    "family": "run_python",
+    "task": "Sum these figures: 138.94, 424.01, 460.12, 439.66, 13.41.",
+    "correct_tool": "run_python"
+  },
+  {
+    "id": "heldout-run_python-2",
+    "split": "heldout",
+    "family": "run_python",
+    "task": "Compare 288.02 with 337.04 using a tolerance of 0.05: same or different?",
+    "correct_tool": "run_python"
+  },
+  {
+    "id": "heldout-run_python-3",
+    "split": "heldout",
+    "family": "run_python",
+    "task": "Median of 51.42, 455.71, 326.19, 97.10, to three decimals.",
+    "correct_tool": "run_python"
+  },
+  {
+    "id": "heldout-run_python-4",
+    "split": "heldout",
+    "family": "run_python",
+    "task": "What fraction of 338.42 is 481.15? Give the decimal.",
+    "correct_tool": "run_python"
+  },
+  {
+    "id": "heldout-run_python-5",
+    "split": "heldout",
+    "family": "run_python",
+    "task": "Sum these figures: 416.27, 86.31, 62.18, 58.26, 371.35.",
+    "correct_tool": "run_python"
+  },
+  {
+    "id": "heldout-run_python-6",
+    "split": "heldout",
+    "family": "run_python",
+    "task": "Compare 371.81 with 21.97 using a tolerance of 0.05: same or different?",
+    "correct_tool": "run_python"
+  },
+  {
+    "id": "heldout-run_python-7",
+    "split": "heldout",
+    "family": "run_python",
+    "task": "Median of 154.32, 1.33, 181.56, 422.58, to three decimals.",
+    "correct_tool": "run_python"
+  },
+  {
+    "id": "heldout-run_python-8",
+    "split": "heldout",
+    "family": "run_python",
+    "task": "What fraction of 145.96 is 134.98? Give the decimal.",
+    "correct_tool": "run_python"
+  }
+]

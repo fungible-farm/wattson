@@ -1,0 +1,18 @@
+[
+  {
+    "name": "run_python",
+    "description": "Run Python 3 code and return what it printed. Do every calculation in code (sums, midpoints, differences, comparisons with a tolerance): never compute a number yourself. Allowed imports: math, json, statistics, fractions, decimal, solver. The module `solver` runs the same study as run_study_trial: `reply = solver.trial(network_id=..., operation=..., scale=..., element_id=..., observation=..., observation_id=..., max_iter=...)` returns a dict with `status`, `error` and `data` (`data['metric']`, `data['converged']`, `data['metric_valid']`, `data['study']`); it raises `solver.SolverError` if the study is refused. Use print() to see results. Each call starts a fresh interpreter, so nothing is remembered between calls."
+  },
+  {
+    "name": "load_network",
+    "description": "Load a power network case by identifier"
+  },
+  {
+    "name": "run_power_flow",
+    "description": "Run AC power flow analysis on a network; returns one of success / non_convergence / constraint_violation / execution_failure with solver measurements"
+  },
+  {
+    "name": "run_study_trial",
+    "description": "Run one fresh Newton-Raphson AC trial. Every response reports the network-wide results: convergence, iterations, min/max bus voltage, max line and transformer loading, and voltage violations. Use operation=none for base-case and N-1 reports; a report needs only network_id, max_iter and, for N-1, contingency_line. load_scale multiplies ALL loads' P/Q and observes bus_voltage; line_rating scales one line max_i_ka and observes line_loading; gen_dispatch scales one generator P and observes trafo_loading. A modification needs scale, observation and observation_id; line_rating and gen_dispatch also need element_id, the modified line/generator. Use only ids the task or a tool response gave you. Omit contingency_line (or pass null) for the intact network; an integer takes that line out of service, and 0 is a real line. load_level sets the operating point: every load's P/Q times load_level before the study (omit it for the base load; not with load_scale, which already scales every load). Returns actual measurements, not a fitted answer. status=constraint_violation with metric_valid=true is still a usable measurement: compare voltage_violations with base_case_voltage_violations, which the unmodified case already has."
+  }
+]
