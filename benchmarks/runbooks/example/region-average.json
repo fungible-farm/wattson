@@ -1,0 +1,54 @@
+{
+  "id": "region-average",
+  "family": "region-window-average",
+  "status": "draft",
+  "source": {
+    "adapter": "bsl",
+    "run_id": "example-run-0001",
+    "journal_sha256": "389d1b0b61f65cb58cac984e34a48e677196da699aee11b5f508d217d7f97b5b"
+  },
+  "parameters": [
+    {
+      "name": "metric_column",
+      "type": "string",
+      "description": "numeric price_demand column to average, e.g. total_demand_mw or rrp"
+    },
+    {
+      "name": "start_date",
+      "type": "string",
+      "description": "date at whose 00:00 the window starts, ISO YYYY-MM-DD, that 00:00 interval excluded"
+    },
+    {
+      "name": "end_date",
+      "type": "string",
+      "description": "date at whose 00:00 the window ends, ISO YYYY-MM-DD, inclusive of that 00:00 interval"
+    }
+  ],
+  "sql_template": "SELECT region, round(avg({metric_column}), 1) AS value FROM price_demand WHERE settlement_ts > CAST('{start_date}' AS TIMESTAMP) AND settlement_ts <= CAST('{end_date}' AS TIMESTAMP) GROUP BY region ORDER BY region",
+  "steps": [
+    {
+      "cmd": "fill every slot of sql_template from the question's declared parameters and save it as filled.sql",
+      "pass": "filled.sql contains no remaining {slot} and names only columns of price_demand"
+    },
+    {
+      "cmd": "podman run --rm --network none --read-only -v \"$PWD/data:/data:ro\" $NEM_IMAGE query < filled.sql",
+      "pass": "the JSON prints columns [region, value] with one row per region and carries no error key"
+    },
+    {
+      "cmd": "python3 scripts/runbook_leakage_lint.py --runbook <this runbook> --gold <gold.json>",
+      "pass": "PASS question, PASS sql, PASS values"
+    }
+  ],
+  "notes": [
+    "settlement_ts is the END of the 5-minute interval, so a day's 288 intervals carry timestamps from 00:05 of that day up to and including 00:00 of the next day; filter with > start and <= end, because a >= start AND < end window drops the last interval.",
+    "average the raw column and round once at the end - rounding each interval first changes the reported figure.",
+    "the region comes from the row itself, so no unit-to-region join is needed for this shape."
+  ],
+  "manual_refs": [
+    {
+      "document": "nemosis-dispatch-data",
+      "section": "interval-timestamps",
+      "sha256": "269a35e75a567795dc90a788e931bb33284efa387680e395d12764c822bccff0"
+    }
+  ]
+}
