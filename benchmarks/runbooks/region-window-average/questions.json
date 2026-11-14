@@ -1,0 +1,17 @@
+[
+  {
+    "id": "Q4",
+    "question": "What was the simple average price (rrp) in VIC1 over September 2025?",
+    "sql": "SELECT avg(rrp) FROM price_demand WHERE region = 'VIC1'"
+  },
+  {
+    "id": "Q6",
+    "question": "What was the average total demand in NSW1 over the 48 intervals covering 17:00 to 21:00 on 15 September 2025 (the intervals ending 17:05 up to and including 21:00)?",
+    "sql": "SELECT avg(total_demand_mw) FROM price_demand WHERE region = 'NSW1' AND settlement_ts > TIMESTAMP '2025-09-15 17:00:00' AND settlement_ts <= TIMESTAMP '2025-09-15 21:00:00'"
+  },
+  {
+    "id": "Q9",
+    "question": "What was the average total demand in NSW1 on the market day of 15 September 2025 (all 288 intervals of that day: those ending 00:05 on the 15th through 00:00 on the 16th)?",
+    "sql": "SELECT avg(total_demand_mw) FROM price_demand WHERE region = 'NSW1' AND settlement_ts > TIMESTAMP '2025-09-15 00:00:00' AND settlement_ts <= TIMESTAMP '2025-09-16 00:00:00'"
+  }
+]
