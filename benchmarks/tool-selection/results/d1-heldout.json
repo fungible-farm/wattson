@@ -1,0 +1,258 @@
+[
+  {
+    "id": "heldout-load_network-1",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "confidence": 0.9621,
+    "latency_s": 22.719
+  },
+  {
+    "id": "heldout-load_network-2",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "confidence": 0.9657,
+    "latency_s": 21.884
+  },
+  {
+    "id": "heldout-load_network-3",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "confidence": 0.9661,
+    "latency_s": 21.863
+  },
+  {
+    "id": "heldout-load_network-4",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "confidence": 0.9636,
+    "latency_s": 23.423
+  },
+  {
+    "id": "heldout-load_network-5",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "confidence": 0.9747,
+    "latency_s": 21.873
+  },
+  {
+    "id": "heldout-load_network-6",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "confidence": 0.9695,
+    "latency_s": 22.255
+  },
+  {
+    "id": "heldout-load_network-7",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "confidence": 0.9382,
+    "latency_s": 22.589
+  },
+  {
+    "id": "heldout-load_network-8",
+    "family": "load_network",
+    "correct_tool": "load_network",
+    "pick": "load_network",
+    "confidence": 0.9661,
+    "latency_s": 22.589
+  },
+  {
+    "id": "heldout-run_power_flow-1",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "load_network",
+    "confidence": 0.5188,
+    "latency_s": 23.324
+  },
+  {
+    "id": "heldout-run_power_flow-2",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "load_network",
+    "confidence": 0.7338,
+    "latency_s": 23.227
+  },
+  {
+    "id": "heldout-run_power_flow-3",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "load_network",
+    "confidence": 0.9109,
+    "latency_s": 22.998
+  },
+  {
+    "id": "heldout-run_power_flow-4",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "confidence": 0.9189,
+    "latency_s": 23.586
+  },
+  {
+    "id": "heldout-run_power_flow-5",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "load_network",
+    "confidence": 0.6739,
+    "latency_s": 22.62
+  },
+  {
+    "id": "heldout-run_power_flow-6",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "load_network",
+    "confidence": 0.7008,
+    "latency_s": 23.164
+  },
+  {
+    "id": "heldout-run_power_flow-7",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "load_network",
+    "confidence": 0.9205,
+    "latency_s": 23.635
+  },
+  {
+    "id": "heldout-run_power_flow-8",
+    "family": "run_power_flow",
+    "correct_tool": "run_power_flow",
+    "pick": "run_power_flow",
+    "confidence": 0.9191,
+    "latency_s": 23.156
+  },
+  {
+    "id": "heldout-run_study_trial-1",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "run_python",
+    "confidence": 0.5508,
+    "latency_s": 24.46
+  },
+  {
+    "id": "heldout-run_study_trial-2",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "load_network",
+    "confidence": 0.4558,
+    "latency_s": 25.388
+  },
+  {
+    "id": "heldout-run_study_trial-3",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "load_network",
+    "confidence": 0.4985,
+    "latency_s": 24.709
+  },
+  {
+    "id": "heldout-run_study_trial-4",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "load_network",
+    "confidence": 0.6569,
+    "latency_s": 24.059
+  },
+  {
+    "id": "heldout-run_study_trial-5",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "run_python",
+    "confidence": 0.5596,
+    "latency_s": 24.465
+  },
+  {
+    "id": "heldout-run_study_trial-6",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "load_network",
+    "confidence": 0.5193,
+    "latency_s": 25.764
+  },
+  {
+    "id": "heldout-run_study_trial-7",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "load_network",
+    "confidence": 0.4885,
+    "latency_s": 24.58
+  },
+  {
+    "id": "heldout-run_study_trial-8",
+    "family": "run_study_trial",
+    "correct_tool": "run_study_trial",
+    "pick": "load_network",
+    "confidence": 0.6447,
+    "latency_s": 24.11
+  },
+  {
+    "id": "heldout-run_python-1",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "confidence": 0.9775,
+    "latency_s": 26.821
+  },
+  {
+    "id": "heldout-run_python-2",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "confidence": 0.9734,
+    "latency_s": 25.414
+  },
+  {
+    "id": "heldout-run_python-3",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "confidence": 0.9792,
+    "latency_s": 26.195
+  },
+  {
+    "id": "heldout-run_python-4",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "confidence": 0.9811,
+    "latency_s": 24.091
+  },
+  {
+    "id": "heldout-run_python-5",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "confidence": 0.9782,
+    "latency_s": 26.803
+  },
+  {
+    "id": "heldout-run_python-6",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "confidence": 0.9742,
+    "latency_s": 25.565
+  },
+  {
+    "id": "heldout-run_python-7",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "confidence": 0.9788,
+    "latency_s": 26.262
+  },
+  {
+    "id": "heldout-run_python-8",
+    "family": "run_python",
+    "correct_tool": "run_python",
+    "pick": "run_python",
+    "confidence": 0.9812,
+    "latency_s": 23.822
+  }
+]
