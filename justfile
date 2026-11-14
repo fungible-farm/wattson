@@ -339,6 +339,10 @@ harness-compare:
 gateway-mcp-log-check:
     @uv run python scripts/gateway_mcp_log_check.py
 
+# What the gateway log records for a model call (#33): model, token counts, duration and status by default; a per-task header only by opt-in. Throwaway backend and gateway.
+gateway-llm-log-check:
+    @uv run python scripts/gateway_llm_log_check.py
+
 # Print the gateway as a Quadlet (starts at boot under your user systemd) and the install commands. Installs nothing.
 gateway-quadlet:
     @python3 scripts/gateway_quadlet_check.py --print
