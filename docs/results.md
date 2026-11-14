@@ -106,3 +106,21 @@ The notes selected the runbook for Q4, Q6, Q7 and Q9. Q4 was fixed (the model us
 day (6114.8 against 6480.8), a wrong-day error that appeared only with the notes. Net effect: none. Limits: dev questions only and in-sample (the notes were
 written after seeing the Q4 failure), one run each, ten questions, one runbook. The scorer also hides small errors: Q5 passes at 64.7063 against 64.7051 and Q7
 checks only the region. This does not show that runbook notes help; it shows the mechanism runs and can both fix and cause errors.
+
+### Runbook notes on a new question set (#130, 2026-11-14)
+
+Same mechanism, eight new window-average questions on the same table (`benchmarks/runbooks/region-window-average/heldout-questions.json`), written after the runbook
+and run through the model for the first time here. Hashes of the runbook, questions and script were frozen first (`heldout-FREEZE.json`, with an addendum for the
+`--questions` flag); each gold SQL was checked equal to an independent alternative. Same prompt (pre-#141), same threshold (0.10, set on the first set),
+one run per question per arm at temperature 0. Evidence: `heldout-notes-evidence.json`.
+
+| Arm | Passed (of 8) |
+|---|---|
+| Base prompt | 2 |
+| Base prompt plus selected runbook notes | 5 |
+
+The selector chose the runbook for six of the eight. Of those, the notes arm passed five (H1, H3, H4, H5, H6; H1, H4 and H5 were fixed, the base arm having dropped the
+final interval) and failed H7 (the model read the window as starting at 23:55 on the 15th). H2 and H8 (market-day wording, total demand) fell below the threshold,
+got no notes and failed in both arms. No question regressed. Limits: eight questions of one family, one run each, one model; the questions were written by the same
+author as the notes, after seeing the first set, so the family is built around the trap; the 0.10 threshold was set after seeing the first set's scores; the scorer
+tolerates small errors. The result is a first positive signal for notes on a closely related family, not evidence that notes transfer to other shapes.

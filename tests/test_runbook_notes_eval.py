@@ -6,7 +6,7 @@ after the scores were seen) stays the script's own constant.
 """
 from __future__ import annotations
 
-import importlib.util, json, sys
+import hashlib, importlib.util, json, sys
 from pathlib import Path
 
 import pytest
@@ -83,7 +83,22 @@ def test_the_evidence_records_the_threshold_and_its_notes(tmp_path: Path, monkey
     e = json.loads(out.read_text(encoding="utf-8"))
     notes = json.loads((RBS / "region-window-average" / "runbook.json").read_text(encoding="utf-8"))["notes"]
     assert e["selector_threshold"] == ev.THRESHOLD == 0.10 and e["threshold_set_after_seeing_scores"] is True
-    assert e["pass"] == {"base": 10, "notes": 10} and all(FLAG not in p for p in seen)
+    n = len(ev.arm1.QUESTIONS)  # the built-in set, not a hard-coded 10
+    assert e["pass"] == {"base": n, "notes": n} and all(FLAG not in p for p in seen)
     assert [NOTES in p for p in seen] == [r["arm"] == "notes" and bool(r["selected"]) for r in e["results"]]
     q4 = [i for i, r in enumerate(e["results"]) if r["id"] == "Q4"]
     assert all(f"- {n}" in seen[q4[1]] for n in notes) and all(n not in seen[q4[0]] for n in notes)
+
+
+def test_a_questions_file_replaces_the_built_in_set_and_is_fingerprinted(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+    qs, out = tmp_path / "heldout.json", tmp_path / "EVIDENCE.json"
+    qs.write_text(json.dumps([{"id": "H1", "question": AVG, "sql": "SELECT 1"}, {"id": "H2", "question": LOWEST, "sql": "SELECT 2"}]), encoding="utf-8")
+    patch(monkeypatch)
+    monkeypatch.setattr(sys, "argv", ["runbook_notes_eval.py", "--catalog", str(RBS / "catalog.json"), "--runbooks-dir", str(RBS),
+                                      "--out", str(out), "--questions", str(qs)])
+    ev.main()
+    e = json.loads(out.read_text(encoding="utf-8"))
+    assert e["questions_file"] == str(qs) and e["questions_sha256"] == hashlib.sha256(qs.read_bytes()).hexdigest()
+    assert {arm: [r["id"] for r in e["results"] if r["arm"] == arm] for arm in ("base", "notes")} == {"base": ["H1", "H2"], "notes": ["H1", "H2"]}
+    assert e["pass"] == {"base": 2, "notes": 2}  # the counts follow the two questions, not the built-in ten
+    assert f"(questions from {qs.name}, one run each)" in capsys.readouterr().out  # not the in-sample dev-set wording

@@ -2,7 +2,9 @@
 """#130 notes-eval: do notes from accepted runbooks fix what arm 1 (plain text-to-SQL) misses, one run per dev question?
 Arm base = arm 1's prompt with the PR #141 line removed; arm notes appends 'Notes from verified runbooks:' for the runbooks
 whose vocabulary overlaps the question. Usage: python3 scripts/runbook_notes_eval.py --catalog benchmarks/runbooks/catalog.json
---runbooks-dir benchmarks/runbooks --out EVIDENCE.json [--base-url U --model M]"""
+--runbooks-dir benchmarks/runbooks --out EVIDENCE.json [--questions heldout.json] [--base-url U --model M]
+The question set defaults to arm 1's built-in ten; --questions FILE (a JSON list of {id, question, sql}) replaces it, and the file's path and
+sha256 go in the evidence so a run over a held-out set is identifiable."""
 import argparse, hashlib, importlib.util, json, os, re, sys
 
 # Selector threshold. Specified as 0.15 before any score was seen; at 0.15 only Q6 of the ten dev questions was selected and Q4 (0.139) was not, so it was
@@ -84,14 +86,19 @@ def main():
         ap.add_argument(flag, required=True)
     for flag in ("--base-url", "--model"):
         ap.add_argument(flag, default=None)
+    ap.add_argument("--questions", default=None, help="JSON file of {id, question, sql}; default is arm 1's built-in set")
     args = ap.parse_args()
     delegate = load("pi_delegate")
     base_url, model = args.base_url or delegate.DEFAULT_URL, args.model or delegate.DEFAULT_MODEL
+    raw = open(args.questions, "rb").read() if args.questions else None
+    qsha = hashlib.sha256(raw).hexdigest() if raw is not None else None
+    questions = arm1.QUESTIONS if raw is None else [(q["id"], q["question"], q["sql"]) for q in json.loads(raw)]
     runbooks, base = accepted(json.load(open(args.catalog)), args.runbooks_dir), base_prompt()
     sha = hashlib.sha256(base.encode()).hexdigest()
-    print(f"notes-eval: model {model} at {base_url}; {len(runbooks)} accepted runbook(s); prompt_base_sha256={sha[:16]}")
+    print(f"notes-eval: model {model} at {base_url}; {len(runbooks)} accepted runbook(s); prompt_base_sha256={sha[:16]}; "
+          f"{len(questions)} question(s){' from ' + args.questions if args.questions else ''}")
     results = []
-    for qid, text, gold_sql in arm1.QUESTIONS:
+    for qid, text, gold_sql in questions:
         try:
             gold = arm1.run_sql(gold_sql)
             if "error" in gold:
@@ -115,10 +122,10 @@ def main():
               (f" selected={','.join(selected)}" if selected else ""))
     counts = {arm: sum(1 for r in results if r["arm"] == arm and r["passed"]) for arm in ARMS}
     with open(args.out, "w") as fh:
-        json.dump({"prompt_base_sha256": sha, "model": model, "base_url": base_url, "selector_threshold": THRESHOLD, "threshold_set_after_seeing_scores": True, "results": results, "pass": counts}, fh, indent=2)
+        json.dump({"prompt_base_sha256": sha, "model": model, "base_url": base_url, "selector_threshold": THRESHOLD, "threshold_set_after_seeing_scores": True, "questions_file": args.questions, "questions_sha256": qsha, "results": results, "pass": counts}, fh, indent=2)
         fh.write("\n")
-    print(f"summary base {counts['base']}/{len(arm1.QUESTIONS)} notes {counts['notes']}/{len(arm1.QUESTIONS)} "
-          "(dev questions, in-sample, one run each)")
+    scope = f"(questions from {os.path.basename(args.questions)}, one run each)" if args.questions else "(dev questions, in-sample, one run each)"
+    print(f"summary base {counts['base']}/{len(questions)} notes {counts['notes']}/{len(questions)} {scope}")
 
 if __name__ == "__main__":
     main()

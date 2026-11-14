@@ -1,0 +1,19 @@
+{
+  "frozen_at": "2026-11-14T23:02:52",
+  "note": "Frozen before any model saw the held-out questions. Runbook drafted from dev question Q4 only; held-out questions written afterwards by the planner without running a model on them. Selector threshold 0.10 (set on dev, applied unchanged).",
+  "sha256": {
+    "runbook.json": "6ca8d4c4fdecb3447aafd2aacfb61f78f710a8f68a359a5a23569b3d8fa79c73",
+    "heldout-questions.json": "f8bcaa62e4fd8b18f8bf2c357293c05e70b1e4f57fc46a2147ae2162b061828a",
+    "runbook_notes_eval.py": "133a5369c6a458a787cb4ffbd81c2c777006edb614a8b18b9baacd8ce7877ae9"
+  },
+  "addendum": {
+    "at": "2026-11-14T23:14:36",
+    "why": "scripts/runbook_notes_eval.py gained an optional --questions flag (no change to selector, threshold, prompts or scoring) after the first freeze and before any model call on the held-out questions; the gold SQL and its independent alternative were checked equal for all 8 questions (container, no model).",
+    "sha256_runbook_notes_eval_py": "0fb025408202f85ef80072d4cb433db876e514cd47dc951ad4328f99872bd6fa"
+  },
+  "addendum_2": {
+    "at": "2026-11-14T23:33:15",
+    "why": "After the held-out run, only the printed summary label in scripts/runbook_notes_eval.py was changed (it said 'dev questions, in-sample' for a --questions run). The held-out run used the script hashed in the first addendum; nothing that affects prompts, selection or scoring changed.",
+    "sha256_runbook_notes_eval_py": "1578e03967613dd33b83e813eff3e85e3d16d35508cfb7681e458b7cc22807ac"
+  }
+}
