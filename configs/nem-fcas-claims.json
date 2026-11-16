@@ -1,0 +1,18 @@
+[
+ {
+  "claim": "dispatchprice has exactly one row per region and interval (no intervention rows), so INTERVENTION=0 drops nothing",
+  "sql": "SELECT count(*)=count(DISTINCT (SETTLEMENTDATE,REGIONID)) AND max(INTERVENTION)=0 FROM dispatchprice"
+ },
+ {
+  "claim": "every region has the same 288 intervals on the day",
+  "sql": "SELECT count(DISTINCT SETTLEMENTDATE)=288 AND count(*)=288*5 FROM dispatchprice"
+ },
+ {
+  "claim": "no FCAS price is negative (they are floored at zero)",
+  "sql": "SELECT min(least(RAISE6SECRRP,RAISE60SECRRP,RAISE5MINRRP,RAISEREGRRP,LOWER6SECRRP,LOWER60SECRRP,LOWER5MINRRP,LOWERREGRRP))>=0 FROM dispatchprice"
+ },
+ {
+  "claim": "no FCAS price is null",
+  "sql": "SELECT count(*) FILTER (WHERE RAISE6SECRRP IS NULL OR RAISE60SECRRP IS NULL OR RAISE5MINRRP IS NULL OR RAISEREGRRP IS NULL OR LOWER6SECRRP IS NULL OR LOWER60SECRRP IS NULL OR LOWER5MINRRP IS NULL OR LOWERREGRRP IS NULL)=0 FROM dispatchprice"
+ }
+]
