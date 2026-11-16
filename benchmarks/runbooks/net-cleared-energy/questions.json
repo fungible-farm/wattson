@@ -1,0 +1,20 @@
+[
+  {
+    "id": "M1",
+    "question": "Which station (STATIONID) had the highest net cleared energy in MWh on the day, and how much (1 decimal)?",
+    "sql": "SELECT u.station, round(sum(l.TOTALCLEARED)*5/60,1) e FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 GROUP BY 1 ORDER BY e DESC, 1 LIMIT 1",
+    "decimals": 1
+  },
+  {
+    "id": "M3",
+    "question": "Which region's units had the highest net cleared energy in MWh on the day, and how much (1 decimal)?",
+    "sql": "SELECT u.region, round(sum(l.TOTALCLEARED)*5/60,1) e FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 GROUP BY 1 ORDER BY e DESC, 1 LIMIT 1",
+    "decimals": 1
+  },
+  {
+    "id": "M11",
+    "question": "Which station (STATIONID) had the lowest net cleared energy in MWh on the day, and how much (1 decimal)?",
+    "sql": "SELECT u.station, round(sum(l.TOTALCLEARED)*5/60,1) e FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 GROUP BY 1 ORDER BY e ASC, 1 LIMIT 1",
+    "decimals": 1
+  }
+]

@@ -1,0 +1,50 @@
+{
+  "id": "net-cleared-energy-extreme",
+  "family": "net-cleared-energy-extreme",
+  "status": "draft",
+  "source": {
+    "adapter": "manual",
+    "run_id": "drafted-by-hand-from-M1",
+    "journal_sha256": "7d66e67ad073869f31a17b0e9d5ff943df1a53b9e46d553a0f11fb32ccfb31f4"
+  },
+  "parameters": [
+    {
+      "name": "group_col",
+      "type": "string",
+      "description": "the dudetailsummary grouping to rank, region or station (the lowercase aliases of the join subquery)"
+    },
+    {
+      "name": "direction",
+      "type": "string",
+      "description": "DESC for the highest net cleared energy, ASC for the lowest"
+    }
+  ],
+  "sql_template": "SELECT u.{group_col}, round(sum(l.TOTALCLEARED)*5/60,1) AS e FROM dispatchload l JOIN (SELECT DUID, REGIONID AS region, STATIONID AS station FROM dudetailsummary) u USING (DUID) WHERE l.INTERVENTION=0 GROUP BY 1 ORDER BY e {direction}, 1 LIMIT 1",
+  "steps": [
+    {
+      "cmd": "fill every slot of sql_template from the question's declared parameters and save it as filled.sql",
+      "pass": "filled.sql contains no remaining {slot} and quotes no value of its own"
+    },
+    {
+      "cmd": "podman run --rm -i --network none --read-only --userns=keep-id:uid=1000,gid=1000 -v \"$PWD/out/nem:/data:ro\" -v \"$PWD/out/nemosis:/nemosis:ro\" $NEM_IMAGE query < filled.sql",
+      "pass": "the JSON prints one row of two columns, the group label and the rounded MWh, and carries no error key"
+    },
+    {
+      "cmd": "python3 scripts/runbook_leakage_lint.py --runbook <this runbook> --gold <gold.json>",
+      "pass": "PASS question, PASS sql, PASS values"
+    }
+  ],
+  "notes": [
+    "sum TOTALCLEARED including negative values: a unit charging or consuming has negative output, and clipping it at zero changes both the total and which group is lowest.",
+    "always filter INTERVENTION = 0; the intervention rows are a second run of the same interval and double count it.",
+    "energy in MWh is MW times 5 divided by 60 because every dispatch interval is five minutes, and the group label comes back with the figure so the answer is the pair, not the number alone.",
+    "dudetailsummary has one row per DUID in this data, so the join to dispatchload adds no rows; a join that fans out would inflate every total."
+  ],
+  "manual_refs": [
+    {
+      "document": "configs/nem-multitable-schema.v2.txt",
+      "section": "dispatchload and dudetailsummary",
+      "sha256": "8fe526ed27c67083d3a2341c4819d26b94c8c5b2ec126f9ba7174096e555a032"
+    }
+  ]
+}

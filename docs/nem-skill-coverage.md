@@ -16,7 +16,7 @@ Which question families the `nem-market-analysis` skill and the runbook catalog 
 | Family | Tables behind it | Recipe | Gold SQL questions | Runbook | Replay result |
 |---|---|---|---|---|---|
 | Price and demand, windows and averages | DISPATCHPRICE, DISPATCHREGIONSUM | `nemosis-fetch`, `nemosis-reconcile` | H1 to H10 (price_demand); 3 + 8 in the runbook question files | `region-window-average` (accepted) | 3/3 cases, siblings 2/2 |
-| Station and unit lookup, net cleared energy | DISPATCHLOAD, DUDETAILSUMMARY | `nem-unit-lookup` | M1, M2, M3, M7, M8, M10 | none | none |
+| Station and unit lookup, net cleared energy | DISPATCHLOAD, DUDETAILSUMMARY | `nem-unit-lookup` | M1, M2, M3, M7, M8, M10 (M1 and M3 share a shape; M11 added in `benchmarks/runbooks/net-cleared-energy/`) | `net-cleared-energy-extreme` drafted and REJECTED (see Correction) | 0 cases run: leakage failed first |
 | Interconnector flow and losses | DISPATCHINTERCONNECTORRES (+ DISPATCHPRICE) | `nem-interconnector` | M4, M6 | none | none |
 | Regional net interchange | DISPATCHREGIONSUM | none | M5, M9 | none | none |
 | FCAS price | DISPATCHPRICE (FCAS columns) | `nem-fcas` | none | none | none |
@@ -27,7 +27,7 @@ Which question families the `nem-market-analysis` skill and the runbook catalog 
 ## Reading the table
 
 - **One family has a runbook.** Price and demand is the only family with an accepted runbook; every other row has none.
-- **Admission needs three questions in a family** (the source and two siblings, `docs/runbook-replay-design.md`). Unit lookup has six gold questions and is the best next candidate. Interconnector has two (M4, M6) and needs at least one more question before a runbook can be admitted. Regional net interchange has two (M5, M9) and the same gap.
+- **Admission needs three questions in a family** (the source and two siblings, `docs/runbook-replay-design.md`). Unit lookup has six gold questions, but they are not one family (see Correction); only M1 and M3 share a query shape. Interconnector has two (M4, M6) and needs at least one more question before a runbook can be admitted. Regional net interchange has two (M5, M9) and the same gap.
 - **FCAS and bid stack have a recipe but no gold question.** Their scripts run one deterministic statement each and print PASS or FAIL against checks (`scripts/nem_fcas.py`: eight services present, rows for every region, no negative price), which is a data check, not a scored question. Writing gold questions for them is the step that would make them runbook-eligible.
 - **Blocked, not missing by choice:** fuel mix and capacity factor need AEMO's registration workbook, which a person must save (the skill's "Not done" section). FCAS causer-pays (FCAS_4_SECOND) returned no data from NEMOSIS for four windows. Binding constraints are planned with no recipe.
 
@@ -38,3 +38,11 @@ Which question families the `nem-market-analysis` skill and the runbook catalog 
 3. Write gold questions for FCAS and bid stack from their recipes' tables.
 
 None of these is started.
+
+## Correction (2026-11-16, PR for #157 slice B step 1)
+
+- **The six unit-lookup questions are not one family.** Reading their SQL: M1 and M3 are the same query ranked by station or by region; M2 is a distinct count, M7 is multi-step, M8 is a share, M10 is a station count. The first version of this document called unit lookup "the best next candidate" on the strength of the count; that overstated it.
+- **A runbook was drafted and the admission check rejected it.** `net-cleared-energy-extreme` has one SQL template with two slots (`group_col`, `direction`) covering M1, M3 and a new M11 (lowest station). `scripts/runbook_admit.py`, run by pi, returned `REJECTED ... leakage: FAIL sql: M1 quotes 165 chars of the gold sql`. No replay ran. The decision is recorded under `rejected` in `benchmarks/runbooks/catalog.json`.
+- **Why that is the right result, not a lint to get around.** The family's questions are the same query with a different grouping, so the template is the gold SQL with slots. The lint exists to stop a runbook that merely carries the answer's query. Reworking whitespace or aliases to pass would defeat its purpose and was not done.
+- **What this says for #130.** A family whose whole content is one parameterised SQL statement cannot be admitted by a template runbook under the current leakage rule; `region-window-average` passed because its template adds a window the source question did not have. Whether such families need a different runbook shape (procedure notes with no full statement) is an open design question for the owner, not decided here.
+- **Other limits.** M11's winner margin and its independent `sql_alt` were not checked with `scripts/nem_question_lint.py`. The runbook was drafted knowing all three questions, so M3 and M11 are not independent siblings in the way the admission design intends. Gold values were computed in the container from one day of data (2025-09-01).
