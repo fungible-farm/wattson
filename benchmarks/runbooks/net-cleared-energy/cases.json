@@ -1,0 +1,26 @@
+[
+  {
+    "question_id": "M1",
+    "role": "source",
+    "params": {
+      "group_col": "station",
+      "direction": "DESC"
+    }
+  },
+  {
+    "question_id": "M3",
+    "role": "sibling",
+    "params": {
+      "group_col": "region",
+      "direction": "DESC"
+    }
+  },
+  {
+    "question_id": "M11",
+    "role": "sibling",
+    "params": {
+      "group_col": "station",
+      "direction": "ASC"
+    }
+  }
+]

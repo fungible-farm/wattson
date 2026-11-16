@@ -15,5 +15,20 @@
       }
     }
   ],
-  "rejected": []
+  "rejected": [
+    {
+      "id": "net-cleared-energy-extreme",
+      "family": "net-cleared-energy-extreme",
+      "runbook_sha256": "d229bc5e16a931ce11ca291fb21bc1ba581222d5260a2ce288063e6aa0f6e671",
+      "decision_reason": "leakage: FAIL sql: M1 quotes 165 chars of the gold sql in benchmarks/runbooks/net-cleared-energy/runbook.json: \" e from dispatchload l join (select duid, regionid as region, stationid ...\"",
+      "evidence": {
+        "validate": true,
+        "leakage": false,
+        "replay_passed": 0,
+        "replay_total": 0,
+        "siblings_passed": 0,
+        "siblings_total": 0
+      }
+    }
+  ]
 }
