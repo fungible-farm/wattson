@@ -1,0 +1,114 @@
+[
+ {
+  "id": "F1",
+  "question": "Which region had the highest average RAISE6SECRRP (raise 6-second FCAS price, $/MWh) over the day, and what is it (2 decimals)?",
+  "sql": "SELECT REGIONID, round(avg(RAISE6SECRRP),2) a FROM dispatchprice WHERE INTERVENTION=0 GROUP BY 1 ORDER BY a DESC, 1 LIMIT 1",
+  "sql_alt": "SELECT REGIONID, round(sum(RAISE6SECRRP)/count(*),2) FROM dispatchprice WHERE INTERVENTION=0 GROUP BY 1 ORDER BY 2 DESC, 1 LIMIT 1",
+  "decimals": 2,
+  "mutants": [
+   {
+    "name": "lower 6-second service instead of raise",
+    "sql": "SELECT REGIONID, round(avg(LOWER6SECRRP),2) a FROM dispatchprice WHERE INTERVENTION=0 GROUP BY 1 ORDER BY a DESC, 1 LIMIT 1",
+    "must_differ": true,
+    "why": "tests the service named in the question"
+   },
+   {
+    "name": "maximum instead of average",
+    "sql": "SELECT REGIONID, round(max(RAISE6SECRRP),2) a FROM dispatchprice WHERE INTERVENTION=0 GROUP BY 1 ORDER BY a DESC, 1 LIMIT 1",
+    "must_differ": true,
+    "why": "tests the aggregate"
+   }
+  ],
+  "margin_sql": "SELECT round(avg(RAISE6SECRRP),2) FROM dispatchprice WHERE INTERVENTION=0 GROUP BY REGIONID ORDER BY 1 DESC LIMIT 2",
+  "shape": "simple-aggregate"
+ },
+ {
+  "id": "F2",
+  "question": "In how many 5-minute intervals did SA1's RAISEREGRRP (raise regulation FCAS price) exceed 10 $/MWh?",
+  "sql": "SELECT count(*) FROM dispatchprice WHERE INTERVENTION=0 AND REGIONID='SA1' AND RAISEREGRRP>10",
+  "sql_alt": "SELECT sum(CASE WHEN RAISEREGRRP>10 THEN 1 ELSE 0 END) FROM dispatchprice WHERE INTERVENTION=0 AND REGIONID='SA1'",
+  "decimals": null,
+  "mutants": [
+   {
+    "name": "lower regulation service instead of raise",
+    "sql": "SELECT count(*) FROM dispatchprice WHERE INTERVENTION=0 AND REGIONID='SA1' AND LOWERREGRRP>10",
+    "must_differ": true,
+    "why": "tests the service named in the question"
+   },
+   {
+    "name": "a different region",
+    "sql": "SELECT count(*) FROM dispatchprice WHERE INTERVENTION=0 AND REGIONID='TAS1' AND RAISEREGRRP>10",
+    "must_differ": true,
+    "why": "tests the region"
+   }
+  ],
+  "shape": "threshold-count"
+ },
+ {
+  "id": "F3",
+  "question": "Which of the eight FCAS services (RAISE6SEC, RAISE60SEC, RAISE5MIN, RAISEREG, LOWER6SEC, LOWER60SEC, LOWER5MIN, LOWERREG) had the highest price in any region and interval over the day, and what is that price (2 decimals)? Give the column name, for example RAISE6SECRRP.",
+  "sql": "SELECT svc, round(max(p),2) m FROM dispatchprice UNPIVOT (p FOR svc IN (RAISE6SECRRP,RAISE60SECRRP,RAISE5MINRRP,RAISEREGRRP,LOWER6SECRRP,LOWER60SECRRP,LOWER5MINRRP,LOWERREGRRP)) WHERE INTERVENTION=0 GROUP BY 1 ORDER BY m DESC, 1 LIMIT 1",
+  "sql_alt": "SELECT svc, round(m,2) FROM (SELECT 'RAISE6SECRRP' svc, max(RAISE6SECRRP) m FROM dispatchprice WHERE INTERVENTION=0 UNION ALL SELECT 'RAISE60SECRRP' svc, max(RAISE60SECRRP) m FROM dispatchprice WHERE INTERVENTION=0 UNION ALL SELECT 'RAISE5MINRRP' svc, max(RAISE5MINRRP) m FROM dispatchprice WHERE INTERVENTION=0 UNION ALL SELECT 'RAISEREGRRP' svc, max(RAISEREGRRP) m FROM dispatchprice WHERE INTERVENTION=0 UNION ALL SELECT 'LOWER6SECRRP' svc, max(LOWER6SECRRP) m FROM dispatchprice WHERE INTERVENTION=0 UNION ALL SELECT 'LOWER60SECRRP' svc, max(LOWER60SECRRP) m FROM dispatchprice WHERE INTERVENTION=0 UNION ALL SELECT 'LOWER5MINRRP' svc, max(LOWER5MINRRP) m FROM dispatchprice WHERE INTERVENTION=0 UNION ALL SELECT 'LOWERREGRRP' svc, max(LOWERREGRRP) m FROM dispatchprice WHERE INTERVENTION=0) ORDER BY m DESC, 1 LIMIT 1",
+  "decimals": 2,
+  "mutants": [
+   {
+    "name": "energy price instead of the FCAS services",
+    "sql": "SELECT 'RRP', round(max(RRP),2) FROM dispatchprice WHERE INTERVENTION=0",
+    "must_differ": true,
+    "why": "tests that the question is about the eight FCAS columns, not RRP"
+   },
+   {
+    "name": "lowest of the maxima",
+    "sql": "SELECT svc, round(max(p),2) m FROM dispatchprice UNPIVOT (p FOR svc IN (RAISE6SECRRP,RAISE60SECRRP,RAISE5MINRRP,RAISEREGRRP,LOWER6SECRRP,LOWER60SECRRP,LOWER5MINRRP,LOWERREGRRP)) WHERE INTERVENTION=0 GROUP BY 1 ORDER BY m ASC, 1 LIMIT 1",
+    "must_differ": true,
+    "why": "tests highest versus lowest"
+   }
+  ],
+  "margin_sql": "SELECT round(max(p),2) m FROM dispatchprice UNPIVOT (p FOR svc IN (RAISE6SECRRP,RAISE60SECRRP,RAISE5MINRRP,RAISEREGRRP,LOWER6SECRRP,LOWER60SECRRP,LOWER5MINRRP,LOWERREGRRP)) WHERE INTERVENTION=0 GROUP BY svc ORDER BY m DESC LIMIT 2",
+  "shape": "unpivot-aggregate"
+ },
+ {
+  "id": "F4",
+  "question": "In how many intervals was NSW1's RAISEREGRRP strictly greater than its RAISE6SECRRP?",
+  "sql": "SELECT count(*) FROM dispatchprice WHERE INTERVENTION=0 AND REGIONID='NSW1' AND RAISEREGRRP>RAISE6SECRRP",
+  "sql_alt": "SELECT sum((RAISEREGRRP>RAISE6SECRRP)::INT) FROM dispatchprice WHERE INTERVENTION=0 AND REGIONID='NSW1'",
+  "decimals": null,
+  "mutants": [
+   {
+    "name": "greater or equal instead of strictly greater",
+    "sql": "SELECT count(*) FROM dispatchprice WHERE INTERVENTION=0 AND REGIONID='NSW1' AND RAISEREGRRP>=RAISE6SECRRP",
+    "must_differ": true,
+    "why": "tests strictly greater (the two prices tie in one NSW1 interval)"
+   },
+   {
+    "name": "reversed comparison",
+    "sql": "SELECT count(*) FROM dispatchprice WHERE INTERVENTION=0 AND REGIONID='NSW1' AND RAISE6SECRRP>RAISEREGRRP",
+    "must_differ": true,
+    "why": "tests the direction"
+   }
+  ],
+  "shape": "cross-column-count"
+ },
+ {
+  "id": "F5",
+  "question": "In how many 5-minute intervals was RAISE6SECRRP identical in all five regions?",
+  "sql": "SELECT count(*) FROM (SELECT SETTLEMENTDATE FROM dispatchprice WHERE INTERVENTION=0 GROUP BY SETTLEMENTDATE HAVING count(DISTINCT RAISE6SECRRP)=1)",
+  "sql_alt": "SELECT count(*) FROM (SELECT SETTLEMENTDATE FROM dispatchprice WHERE INTERVENTION=0 GROUP BY SETTLEMENTDATE HAVING min(RAISE6SECRRP)=max(RAISE6SECRRP))",
+  "decimals": null,
+  "mutants": [
+   {
+    "name": "raise 60-second service instead",
+    "sql": "SELECT count(*) FROM (SELECT SETTLEMENTDATE FROM dispatchprice WHERE INTERVENTION=0 GROUP BY SETTLEMENTDATE HAVING count(DISTINCT RAISE60SECRRP)=1)",
+    "must_differ": true,
+    "why": "tests the service"
+   },
+   {
+    "name": "RRP instead of the FCAS price",
+    "sql": "SELECT count(*) FROM (SELECT SETTLEMENTDATE FROM dispatchprice WHERE INTERVENTION=0 GROUP BY SETTLEMENTDATE HAVING count(DISTINCT RRP)=1)",
+    "must_differ": true,
+    "why": "tests that the question is about the FCAS column"
+   }
+  ],
+  "shape": "cross-row-aggregate"
+ }
+]

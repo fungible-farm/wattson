@@ -19,7 +19,7 @@ Which question families the `nem-market-analysis` skill and the runbook catalog 
 | Station and unit lookup, net cleared energy | DISPATCHLOAD, DUDETAILSUMMARY | `nem-unit-lookup` | M1, M2, M3, M7, M8, M10 (M1 and M3 share a shape; M11 added in `benchmarks/runbooks/net-cleared-energy/`) | `net-cleared-energy-extreme` drafted and REJECTED (see Correction) | 0 cases run: leakage failed first |
 | Interconnector flow and losses | DISPATCHINTERCONNECTORRES (+ DISPATCHPRICE) | `nem-interconnector` | M4, M6 | none | none |
 | Regional net interchange | DISPATCHREGIONSUM | none | M5, M9 | none | none |
-| FCAS price | DISPATCHPRICE (FCAS columns) | `nem-fcas` | none | none | none |
+| FCAS price | DISPATCHPRICE (FCAS columns) | `nem-fcas` | F1 to F5 (`configs/nem-fcas-questions.proposed.json`, lint PASS, 0 failures) | none | none |
 | Bid stack and supply curve | BIDPEROFFER_D, BIDDAYOFFER_D (+ DISPATCHPRICE, DUDETAILSUMMARY, DISPATCHREGIONSUM) | `nem-bidstack` | none | none | none |
 | Binding constraints | DISPATCHCONSTRAINT, GENCONDATA, SPD* | none | none | none | none |
 | Fuel mix, capacity factor | DISPATCHLOAD, DISPATCH_UNIT_SCADA, Generators and Scheduled Loads | none | none | none | none |
@@ -46,3 +46,9 @@ None of these is started.
 - **Why that is the right result, not a lint to get around.** The family's questions are the same query with a different grouping, so the template is the gold SQL with slots. The lint exists to stop a runbook that merely carries the answer's query. Reworking whitespace or aliases to pass would defeat its purpose and was not done.
 - **What this says for #130.** A family whose whole content is one parameterised SQL statement cannot be admitted by a template runbook under the current leakage rule; `region-window-average` passed because its template adds a window the source question did not have. Whether such families need a different runbook shape (procedure notes with no full statement) is an open design question for the owner, not decided here.
 - **Other limits.** M11's winner margin and its independent `sql_alt` were not checked with `scripts/nem_question_lint.py`. The runbook was drafted knowing all three questions, so M3 and M11 are not independent siblings in the way the admission design intends. Gold values were computed in the container from one day of data (2025-09-01).
+
+## Update: FCAS gold questions (2026-11-16)
+
+`configs/nem-fcas-questions.proposed.json` holds F1 to F5 over `dispatchprice` (2025-09-01, one day): highest average raise 6-second price by region, count above a threshold, highest of the eight services, a strict-greater count, and a cross-region equality count. Each has an independently written `sql_alt`, two wrong-reading variants that must give a different answer, and (F1, F3) a winner margin. `scripts/nem_question_lint.py`, run by pi against `configs/nem-fcas-claims.json`, ended `PASS nem-question-lint: 0 failure(s)`. The first run failed F4: the `>` versus `>=` mutant gave the same count (275) for TAS1, so the question did not test the tie it claimed to; it was moved to NSW1 (263 against 264) and passed on the rerun. No schema file was passed to the lint, because its schema check is hard-coded to the multi-table keywords.
+
+Limits: one day of data; the five questions are one table and mostly one family shape, so they are not yet enough to admit a runbook (that needs the template-versus-leakage question above settled). Bid stack still has no gold question: it needs BIDPEROFFER_D and BIDDAYOFFER_D, which are not fetched, and a fetch of their size has not been agreed.
