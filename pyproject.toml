@@ -47,6 +47,19 @@ semantic = [
 engineering = [
     "highspy==1.15.1",
 ]
+# Open-source power-system engines beyond pandapower (#162). PyPSA is MIT; veragridengine (the renamed GridCal, MPL-2.0) is a source distribution only.
+# pypsa is held below 1.4 because 1.4 needs pandas>=3 and this project pins pandas 2.3.3 to match the lab evidence.
+# ANDES (GPL-3.0) is NOT here: it runs in its own container and wattson code never imports it.
+power = [
+    "pypsa==1.2.4",
+    "veragridengine==6.8.4",
+]
+# OpenDSSDirect.py has its own licence, not a standard BSD: clause 3 requires a research entity (a national laboratory, a university
+# or any non-profit) that redistributes it to publish the corresponding source. Kept apart so no image or default install pulls it
+# in until the owner has decided (see docs/power-packages.md).
+power-opendss = [
+    "OpenDSSDirect.py==0.9.4",
+]
 # Apache Arrow is Apache-2.0; reads operator-approved Parquet inputs.
 forecasting = [
     "pyarrow==25.0.0",
