@@ -2,9 +2,15 @@
 """Lint skills: frontmatter name/description plus relative markdown links. Exit 0 clean, 1 any FAIL, 2 unreadable path."""
 from __future__ import annotations
 
+import json
+import os
 import re
 import sys
 from pathlib import Path
+
+TOOLS = Path(os.environ.get("SKILL_LINT_TOOLS") or Path(__file__).resolve().parents[1] / "benchmarks" / "tool-selection" / "tools.json")
+ALLOW_HEADING = re.compile(r"^## The allow-list", re.M)
+ROW_TOOL = re.compile(r"^\|[^|]*\|\s*`([A-Za-z_][A-Za-z0-9_]*)`\s*\|", re.M)
 
 LINK = re.compile(r"\]\(\s*([^()\s]+)")
 SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.\-]*:")
@@ -54,6 +60,22 @@ def check(md: Path) -> str | None:
             continue
         if not (md.parent / target.split("#")[0]).exists():
             return f"broken link {target}"
+    return tools_problem(text)
+
+
+def tools_problem(text: str) -> str | None:
+    """A skill with an '## The allow-list' table must name exactly the tools registered in tools.json."""
+    match = ALLOW_HEADING.search(text)
+    if not match:
+        return None
+    section = text[match.end():]
+    nxt = re.search(r"^## ", section, re.M)
+    cited = set(ROW_TOOL.findall(section[: nxt.start()] if nxt else section))
+    registered = {tool["name"] for tool in json.loads(TOOLS.read_text(encoding="utf-8"))}
+    if unknown := sorted(cited - registered):
+        return "cites unknown tool " + ", ".join(unknown)
+    if omitted := sorted(registered - cited):
+        return "tools.json tool not listed in skill: " + ", ".join(omitted)
     return None
 
 

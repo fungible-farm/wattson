@@ -63,3 +63,35 @@ def test_unreadable_path_exits_two(tmp_path):
     result = lint(tmp_path / "absent")
     assert result.returncode == 2
     assert "unreadable" in result.stdout
+
+
+TOOL_TABLE = "## The allow-list\n\n| Need | Tool |\n|---|---|\n| a | `alpha_tool` | x |\n| b | `beta_tool` | y |\n"
+
+
+def lint_with_tools(tmp_path, body, names=("alpha_tool", "beta_tool")):
+    import json
+    import os
+
+    registry = tmp_path / "tools.json"
+    registry.write_text(json.dumps([{"name": n, "description": "d"} for n in names]), encoding="utf-8")
+    skill = make_skill(tmp_path, "gamma", name="gamma", body=body)
+    return subprocess.run([sys.executable, str(SCRIPT), str(skill)], capture_output=True, text=True,
+                          env={**os.environ, "SKILL_LINT_TOOLS": str(registry)})
+
+
+def test_allow_list_matching_the_registry_passes(tmp_path):
+    result = lint_with_tools(tmp_path, TOOL_TABLE)
+    assert result.returncode == 0, result.stdout
+    assert result.stdout.strip() == "PASS skill-lint gamma"
+
+
+def test_allow_list_citing_an_unknown_tool_fails(tmp_path):
+    result = lint_with_tools(tmp_path, TOOL_TABLE + "| c | `ghost_tool` | z |\n")
+    assert result.returncode == 1
+    assert "cites unknown tool ghost_tool" in result.stdout
+
+
+def test_allow_list_omitting_a_registered_tool_fails(tmp_path):
+    result = lint_with_tools(tmp_path, TOOL_TABLE, names=("alpha_tool", "beta_tool", "gamma_tool"))
+    assert result.returncode == 1
+    assert "tools.json tool not listed in skill: gamma_tool" in result.stdout

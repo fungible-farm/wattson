@@ -12,6 +12,7 @@ import argparse
 import asyncio
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 from typing import Any, TypedDict
@@ -35,6 +36,8 @@ TOOL_SET_PYTHON2: str = "study+python2"
 # One task at a time reproduces the r1-r3 schedule. Tasks are independent
 # (own MCP process, own journal), so concurrency changes throughput only.
 DEFAULT_CONCURRENCY: int = 1
+# Answers are written to six decimals, so a reported scale is rounded by at most 5e-7.
+SCALE_TOLERANCE: float = 1e-6
 
 
 class TaskResult(TypedDict):
@@ -118,11 +121,14 @@ def relevant_evidence(task: dict[str, Any], answer: str, events: list[dict[str, 
             "line": ("line_rating", "line_loading"),
             "gen": ("gen_dispatch", "trafo_loading"),
         }[kind]
+        study_scale = study.get("scale")
+        study_is_number = isinstance(study_scale, (int, float)) and not isinstance(study_scale, bool)
         if (study.get("operation") == operation
             and study.get("observation") == observation
             and study.get("observation_id") == (secondary if kind == "gen" else primary)
             and (kind == "bus" or study.get("element_id") == primary)
-            and scale is not None and study.get("scale") == scale
+            and scale is not None and study_is_number
+            and math.isclose(study_scale, scale, rel_tol=0.0, abs_tol=SCALE_TOLERANCE)
             and data.get("converged")):
             return True
     return False
