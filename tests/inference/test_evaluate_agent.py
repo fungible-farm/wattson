@@ -38,6 +38,15 @@ def test_evidence_must_bind_final_scale_case_element_and_contingency(task: dict)
     assert not relevant_evidence(task, "1.0", [])
 
 
+def test_trial_scale_is_matched_within_the_answer_precision(task: dict) -> None:
+    """A reported six-decimal scale is a rounded trial value, so exact equality is wrong."""
+    answer = "s = 0.909253"
+    assert relevant_evidence(task, answer, [observation(scale=0.909253)])
+    assert relevant_evidence(task, answer, [observation(scale=0.90925346)])
+    assert not relevant_evidence(task, answer, [observation(scale=0.909263)])
+    assert not relevant_evidence(task, answer, [observation(scale=None)])
+
+
 def test_nonconverged_and_mcp_errors_never_supply_evidence(task: dict) -> None:
     """Transport validation and solver failure must not count as measurements."""
     event = observation()

@@ -148,3 +148,103 @@ def test_how_an_attempt_ended_is_reported(tmp_path: Path) -> None:
     module = agent_mode
     events = [{"kind": "terminal", "payload": {"state": "guard_refused"}}]
     assert module.attempt_ended(journal_with(events, tmp_path / "j.jsonl")) == "guard_refused"
+
+
+# --- --skill: the prompt file may lead with a SKILL.md body, but the grader still sees the original task.
+
+import hashlib
+
+SKILL_TEXT = (
+    "---\n"
+    "name: grid-study\n"
+    "description: The model plans; the solver computes.\n"
+    "---\n"
+    "\n"
+    "# Grid study\n"
+    "\n"
+    "Plan the study, then let the solver return every number.\n"
+)
+
+
+def write_skill(tmp_path: Path, text: str = SKILL_TEXT) -> Path:
+    path = tmp_path / "SKILL.md"
+    path.write_text(text)
+    return path
+
+
+def test_the_prompt_without_a_skill_is_the_bare_task_prompt(constants) -> None:
+    """No --skill: exactly the task prompt, byte for byte, as before the skill option existed."""
+    task_prompt = agent_mode.build_task_row(constants)["task"]["prompt"]
+    assert agent_mode.compose_prompt(task_prompt, None) == task_prompt
+
+
+def test_with_a_skill_the_prompt_starts_with_the_skill_body(tmp_path: Path, constants) -> None:
+    task_prompt = agent_mode.build_task_row(constants)["task"]["prompt"]
+    prompt = agent_mode.compose_prompt(task_prompt, write_skill(tmp_path))
+    assert prompt.startswith("# Grid study\n\nPlan the study, then let the solver return every number.")
+
+
+def test_with_a_skill_the_prompt_ends_with_the_task_prompt(tmp_path: Path, constants) -> None:
+    task_prompt = agent_mode.build_task_row(constants)["task"]["prompt"]
+    prompt = agent_mode.compose_prompt(task_prompt, write_skill(tmp_path))
+    assert prompt.endswith(task_prompt)
+
+
+def test_with_a_skill_the_yaml_frontmatter_is_gone(tmp_path: Path, constants) -> None:
+    task_prompt = agent_mode.build_task_row(constants)["task"]["prompt"]
+    prompt = agent_mode.compose_prompt(task_prompt, write_skill(tmp_path))
+    assert "name:" not in prompt and "description:" not in prompt
+    assert prompt == (
+        "# Grid study\n\nPlan the study, then let the solver return every number.\n\n---\n\nTask:\n" + task_prompt
+    )
+
+
+def test_a_skill_with_no_frontmatter_is_used_whole(tmp_path: Path, constants) -> None:
+    task_prompt = agent_mode.build_task_row(constants)["task"]["prompt"]
+    skill = write_skill(tmp_path, "# Plain skill\n\nNo frontmatter here.\n")
+    prompt = agent_mode.compose_prompt(task_prompt, skill)
+    assert prompt.startswith("# Plain skill\n\nNo frontmatter here.")
+    assert prompt.endswith(task_prompt)
+
+
+def test_the_skill_summary_part_names_the_path_and_its_sha256(tmp_path: Path) -> None:
+    skill = write_skill(tmp_path)
+    part = agent_mode.skill_annotation(skill)
+    assert str(skill) in part
+    assert hashlib.sha256(skill.read_bytes()).hexdigest() in part
+
+
+def test_the_summary_line_is_unchanged_without_a_skill() -> None:
+    assert agent_mode.skill_annotation(None) == ""
+
+
+def test_a_skill_run_writes_the_skill_prompt_and_reports_it(tmp_path: Path, capsys, constants) -> None:
+    """End to end through main(): prompt.txt leads with the skill body, and the summary line records skill= and skill_sha256=."""
+    from wattson.training.parity_check import stub_server
+
+    skill = write_skill(tmp_path)
+    captured: list = []
+    server = stub_server([{"role": "assistant", "content": "1.05"}], captured)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    url = f"http://127.0.0.1:{server.server_address[1]}"
+
+    try:
+        out_dir = tmp_path / "out3"
+        agent_mode.main([
+            "--base-url", url, "--model", "stub",
+            "--out", str(out_dir),
+            "--skill", str(skill),
+        ])
+    finally:
+        server.shutdown()
+
+    written = (out_dir / "prompt.txt").read_text()
+    assert written.startswith("# Grid study")
+    assert written.endswith(constants_target_prompt(constants))
+    out = capsys.readouterr().out
+    assert f"skill={skill}" in out
+    assert hashlib.sha256(skill.read_bytes()).hexdigest() in out
+
+
+def constants_target_prompt(constants) -> str:
+    return agent_mode.build_task_row(constants)["task"]["prompt"]

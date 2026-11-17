@@ -35,3 +35,9 @@ FAIL passed=False numerical=True tool_evidence=False provenance=True
 - It is one run of one task on one model. It does not show that the skill improves results: `agent_mode.py` does not load the skill text, so this is a check that the model's actual calls conform to the skill, not a with-and-without comparison. That comparison is still to do.
 - The tool calls here ran on the harness's local tool server, not through the gateway's MCP route, so the gateway journal holds the four model calls (LLM route) and no `tools/call` records for them. I did not read the gateway journal on sm3lly in this run.
 - The 63 solver calls counted by the harness are inside the three `run_python` calls; the journal shows 3 tool requests.
+
+## Follow-up: tolerance, tool-name lint, skill loading (#157 slice A)
+
+- The evidence check in `src/wattson/inference/evaluate_agent.py` now accepts a trial whose scale is within `SCALE_TOLERANCE = 1e-6` of the reported scale (answers carry six decimals, so rounding is at most 5e-7). The first replay failed this check only because `0.909253` was compared with `==` to `0.90925346…`. The numerical check is unchanged: it still re-solves the reported scale itself.
+- `scripts/skill_lint.py` now compares the tool names in a skill's `## The allow-list` table with `benchmarks/tool-selection/tools.json` and fails on an unknown or an omitted tool.
+- `benchmarks/lab01-simple-loadflow-fit/agent_mode.py --skill PATH` puts the skill body (frontmatter stripped) in front of the task prompt; the grader still sees the original task. The with/without comparison has not been run yet; without `--skill` the behaviour is unchanged.

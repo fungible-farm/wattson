@@ -13,6 +13,7 @@ are read from run.py itself, not duplicated here.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
 import json
 import subprocess
@@ -32,6 +33,8 @@ CASE_ID: str = "snem-sa-2000"          # the case Lab 1's snemSA.m is served as 
 HARNESS_TIMEOUT_S: int = 600           # one attempt; the evaluator allows each inference call up to 1800 s, a fit needs a few
 RESOLVE_MAX_ITER: int = 50             # the iteration cap the tool schema requires and every trained call uses
 STDERR_SHOWN_CHARS: int = 500
+SKILL_FENCE: str = "---"                      # the line that opens and closes a SKILL.md's YAML frontmatter
+SKILL_SEPARATOR: str = "\n\n---\n\nTask:\n"  # between the skill body and the task prompt in prompt.txt
 
 
 def _load_run_py_constants() -> dict[str, Any]:
@@ -47,6 +50,37 @@ def _load_run_py_constants() -> dict[str, Any]:
         "SCALE_HI": mod.SCALE_HI,
         "EXPECTED_FILE": mod.EXPECTED_FILE,
     }
+
+
+def strip_skill_frontmatter(text: str) -> str:
+    """Return a SKILL.md without its leading YAML frontmatter block (``---`` ... ``---``).
+
+    A file with no opening fence, or one whose fence is never closed, is returned whole (trimmed).
+    """
+    lines = text.splitlines()
+    if lines and lines[0].strip() == SKILL_FENCE:
+        for i in range(1, len(lines)):
+            if lines[i].strip() == SKILL_FENCE:
+                lines = lines[i + 1:]
+                break
+    return "\n".join(lines).strip()
+
+
+def compose_prompt(task_prompt: str, skill: Path | None) -> str:
+    """The content of prompt.txt: the task prompt alone, or the skill body, a separator, then the task prompt.
+
+    The grader is built from build_task_row, so the skill reaches the model but never the grading.
+    """
+    if skill is None:
+        return task_prompt
+    return f"{strip_skill_frontmatter(skill.read_text())}{SKILL_SEPARATOR}{task_prompt}"
+
+
+def skill_annotation(path: Path | None) -> str:
+    """The skill part of the stdout summary line: empty without --skill, so today's output is byte-identical."""
+    if path is None:
+        return ""
+    return f" skill={path} skill_sha256={hashlib.sha256(path.read_bytes()).hexdigest()}"
 
 
 def build_task_row(constants: dict[str, Any]) -> dict[str, Any]:
@@ -120,6 +154,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--model", required=True, help="Model name")
     parser.add_argument("--enforce", action="store_true", help="Enforce provenance guard")
     parser.add_argument("--out", default="out/lab01-agent", help="Output directory")
+    parser.add_argument("--skill", type=Path, default=None, help="A SKILL.md to put in front of the task prompt (frontmatter stripped); the grader still sees the original task")
     args = parser.parse_args(argv)
 
     root = wattson.cli.server_root(args.base_url)
@@ -132,7 +167,7 @@ def main(argv: list[str] | None = None) -> int:
     # Build task and write prompt
     task = build_task_row(constants)
     prompt_file = out / "prompt.txt"
-    prompt_file.write_text(task["task"]["prompt"])
+    prompt_file.write_text(compose_prompt(task["task"]["prompt"], args.skill))
 
     # Remove old journal if present (probe refuses to overwrite)
     journal = out / "journal.jsonl"
@@ -218,6 +253,7 @@ def main(argv: list[str] | None = None) -> int:
         f"{'PASS' if result['passed'] else 'FAIL'} "
         f"passed={result['passed']} numerical={result['numerical_pass']} "
         f"tool_evidence={result['tool_evidence_pass']} provenance={result['provenance_pass']}"
+        f"{skill_annotation(args.skill)}"
     )
 
     return 0 if result["passed"] else 1
