@@ -41,3 +41,15 @@ FAIL passed=False numerical=True tool_evidence=False provenance=True
 - The evidence check in `src/wattson/inference/evaluate_agent.py` now accepts a trial whose scale is within `SCALE_TOLERANCE = 1e-6` of the reported scale (answers carry six decimals, so rounding is at most 5e-7). The first replay failed this check only because `0.909253` was compared with `==` to `0.90925346…`. The numerical check is unchanged: it still re-solves the reported scale itself.
 - `scripts/skill_lint.py` now compares the tool names in a skill's `## The allow-list` table with `benchmarks/tool-selection/tools.json` and fails on an unknown or an omitted tool.
 - `benchmarks/lab01-simple-loadflow-fit/agent_mode.py --skill PATH` puts the skill body (frontmatter stripped) in front of the task prompt; the grader still sees the original task. The with/without comparison has not been run yet; without `--skill` the behaviour is unchanged.
+
+## With and without the skill (same task, neo-coder, one gateway, 2026-11-18)
+
+`agent_mode.py` run in the same container as above, three runs without the skill and three with `--skill skills/grid-study/SKILL.md`, then one run with a revised skill. Journals are under `benchmarks/lab01-simple-loadflow-fit/evidence/skill-comparison/` (one per arm; the three runs inside an arm gave the same answer).
+
+| Arm | Runs | Result | What the model did |
+|---|---|---|---|
+| no skill | 3 | PASS 3/3 (numerical, tool evidence, provenance) | 3 `run_python` calls, 63 solver trials, final `0.909253` |
+| skill | 3 | FAIL 0/3 | 3 `run_python` calls, stopped at the first in-tolerance trial, final message `The scale factor is **0.925**.` plus a sentence; the grader found no scale in it |
+| skill + "follow the task's output format" rule | 1 | FAIL | 12 `run_python` calls refining the scale to nine digits, turn budget exhausted, no final answer |
+
+Reading: for this model on this task the skill did not help. The 0.925 answer is inside the task's 0.002 tolerance, so the failure is the answer format ("return only the scale factor"), which the skill never states. The rule added to fix that made the model chase ever finer digits instead of answering, so it was not merged. Limits: one task, one model, temperature as served; three runs per arm are one sample because the output repeated; the revised skill was run once. No claim is made that the skill is good or bad in general. A fair test needs more tasks (the other Lab 1 families) and a second model.
