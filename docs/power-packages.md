@@ -48,4 +48,16 @@ Commands run for this record: `uv lock` (project, with each extra), `uv lock --c
 
 Both solvers converged. The pass tolerance is 1e-4 pu absolute (solvers do not agree to the last digit, and the margin over the measured 3e-12 is large on purpose). pi also ran the 7 tests in `tests/test_veragrid_crosscheck.py`: all passed.
 
-Limits: one case, base load and one scaled load only; no outage, line-rating or generator-dispatch study; buses are matched by position (a count mismatch is an error, an order mismatch would show as a large difference); x86_64 not checked. This shows VeraGrid can serve as a second solver for `load_scale` studies on this case; it does not change the power tools, which still use pandapower.
+Limits: one case, base load and one scaled load only (outage, loading and dispatch are in the next section); buses are matched by position (a count mismatch is an error, an order mismatch would show as a large difference); x86_64 not checked. This shows VeraGrid can serve as a second solver for `load_scale` studies on this case; it does not change the power tools, which still use pandapower.
+
+## Outage, branch loading and dispatch (2026-11-18)
+
+`scripts/veragrid_studies.py` runs the same inputs through both solvers on `snemSA.m` (503 buses, 698 branches) and compares bus voltages and per-branch apparent power (MVA, at the lower-numbered end, matched by bus pair). 15 runs: the base case, 12 single-branch outages (the 6 most heavily loaded branches that have no parallel circuit, then 6 seeded random ones), generator output x1.1, and the largest generator +25 MW. pandapower side: `wattson.gridfit.load_case` and `_runpp_counted`; VeraGrid 6.8.4 Newton-Raphson, a fresh grid per run.
+
+Result: 15/15 pass. Both solvers converged in every run. Max bus-voltage difference 4.1e-8 pu (outage 101-157; every other run is 6e-12 pu or less). Max branch-flow difference 6.8e-5 MVA, on the same branch (222-400) in every run including the base case, so it is a constant model difference on that one branch (probably a transformer magnetising or tap detail), far under the 1e-3 MVA tolerance and not caused by any study.
+
+Loading: the case's own ratings are all the 10000 MVA placeholder, so no real rating exists. The check uses a derived limit (90% of the base-case 90th-percentile flow, 71.7 MVA, a deliberately tight one) and requires the same set of overloaded branches from both solvers. They matched in all 15 runs (58 to 81 branches over the limit, changing with the outage, so the check can tell cases apart).
+
+Finding, not a failure: two outages (203-204 and 92-103) cut off a small group of buses (13 and 12) from the slack. pandapower reports those buses as NaN (de-energised). VeraGrid reports numbers for them (a mix of solved and setpoint-looking values). That is a policy difference in handling islands, not a solver error; the comparison excludes those buses and counts them, and the energised network agreed to 2e-12 pu. Anyone using VeraGrid for outage screening must treat islanded buses explicitly rather than trust its numbers there.
+
+Limits: one case; N-1 on 12 of the 295 or so unique branches, not the full set; generator limits and reactive-power limits are not tested (no run hit a limit that was checked); optimal power flow and dynamic studies are not covered; derived rather than real ratings; x86_64 untested.
