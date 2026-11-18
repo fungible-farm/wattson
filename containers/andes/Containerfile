@@ -1,0 +1,17 @@
+# wattson-andes: the GPL-3.0 ANDES package, isolated in its own container (#162), the way NEMOSIS is (#116).
+#
+# ANDES (CURENT, Hantao Cui) is GPL-3.0-or-later; wattson is Apache-2.0/MIT. Nothing in wattson imports it: this image reads a
+# case from /in (or ANDES's own bundled case), runs the power flow, and writes JSON to /out. Wattson code only reads that JSON.
+# No network at run time. Build and run it with a memory cap (`--memory 4g --memory-swap 4g`); sm3lly rejects containers without one.
+#
+# Build:  podman build -f containers/andes/Containerfile -t wattson-andes:local .
+# Run:    podman run --rm --network none --memory 4g --memory-swap 4g -v OUTDIR:/out:z wattson-andes:local --out /out
+FROM docker.io/library/python:3.12-slim
+RUN pip install --no-cache-dir andes==2.0.0 \
+ && mkdir -p /licenses && python -c "import importlib.metadata as m; d=m.distribution('andes'); open('/licenses/ANDES-GPL-3.0-NOTICE.txt','w').write('ANDES '+d.version+' is licensed under GPL-3.0-or-later (https://github.com/CURENT/andes/blob/master/LICENSE).\n')" \
+ && useradd --create-home --uid 1000 wattson && mkdir -p /in /out && chown wattson:wattson /out
+COPY scripts/andes_run.py /opt/andes/andes_run.py
+USER wattson
+WORKDIR /out
+ENTRYPOINT ["python", "/opt/andes/andes_run.py"]
+CMD ["--help"]
