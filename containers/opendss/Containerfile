@@ -1,0 +1,20 @@
+# wattson-opendss: OpenDSSDirect.py in its own container (#162), kept out of every other image.
+#
+# The OpenDSSDirect.py licence (Alliance for Sustainable Energy, LLC) requires, in clause 3, that the entire corresponding source of a
+# redistribution by a research entity (which names non-profit organisations) be made publicly available under that licence, and
+# clause 4 limits how a modified version may be named. Until the project partners' counsel has read it, this image is built and used
+# LOCALLY ONLY and is not pushed to any registry (#162).
+#
+# One job: solve a DSS circuit from /in (or a small built-in one) and write bus voltages as JSON to /out. No network at run time.
+#
+# Build:  podman build -f containers/opendss/Containerfile -t wattson-opendss:local .
+# Run:    podman run --rm --network none --memory 4g --memory-swap 4g -v OUTDIR:/out:z wattson-opendss:local --out /out
+FROM docker.io/library/python:3.12-slim
+RUN pip install --no-cache-dir OpenDSSDirect.py==0.9.4 \
+ && mkdir -p /licenses && python -c "import importlib.metadata as m; d=m.distribution('OpenDSSDirect.py'); open('/licenses/OpenDSSDirect-NOTICE.txt','w').write('OpenDSSDirect.py '+d.version+': see the licence in the package and https://github.com/dss-extensions/OpenDSSDirect.py/blob/master/LICENSE (clause 3 applies to redistribution).\n')" \
+ && useradd --create-home --uid 1000 wattson && mkdir -p /in /out && chown wattson:wattson /out
+COPY scripts/opendss_run.py /opt/opendss/opendss_run.py
+USER wattson
+WORKDIR /out
+ENTRYPOINT ["python", "/opt/opendss/opendss_run.py"]
+CMD ["--help"]
