@@ -36,3 +36,16 @@ Commands run for this record: `uv lock` (project, with each extra), `uv lock --c
 2. ANDES container (separate PR).
 3. Whether to lift `pandas==2.3.3` so PyPSA 1.4 and later can be used (changes the lab evidence environment).
 4. x86_64 install and import of the `power` extra (aarch64 is checked); and a real study with PyPSA and with VeraGrid, which no one has run yet.
+
+## VeraGrid against the pandapower path (cross-check, 2026-11-18)
+
+`scripts/veragrid_crosscheck.py` reads one MATPOWER case in both solvers, scales every load by the same factor, runs each one's Newton-Raphson and compares bus voltage magnitudes by absolute per-unit difference. pi ran it on `snemSA.m` (503 buses) with `veragridengine` 6.8.4 and the pinned pandapower, in the scratch venv from `uv sync --frozen --extra power`, aarch64, CPython 3.14:
+
+| scale | max abs dV | mean abs dV | bus 2008 pandapower | bus 2008 VeraGrid |
+|---|---|---|---|---|
+| 1.0 | 1.170e-12 | 1.232e-13 | 0.9348006352290091 | 0.9348006352291675 |
+| 0.909253 | 2.930e-12 | 2.327e-13 | 0.9422000193653158 | 0.9422000193656556 |
+
+Both solvers converged. The pass tolerance is 1e-4 pu absolute (solvers do not agree to the last digit, and the margin over the measured 3e-12 is large on purpose). pi also ran the 7 tests in `tests/test_veragrid_crosscheck.py`: all passed.
+
+Limits: one case, base load and one scaled load only; no outage, line-rating or generator-dispatch study; buses are matched by position (a count mismatch is an error, an order mismatch would show as a large difference); x86_64 not checked. This shows VeraGrid can serve as a second solver for `load_scale` studies on this case; it does not change the power tools, which still use pandapower.
